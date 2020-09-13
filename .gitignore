@@ -26,6 +26,8 @@ hs_err_pid*
 .gradle/
 .vscode/
 .wpilib/
+.settings/
+
 
 #build files
 build/
