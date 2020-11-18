@@ -31,4 +31,4 @@ hs_err_pid*
 build/
 
 #various ide stuff
-.settings/
+.settings/*

@@ -4,7 +4,6 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -79,6 +78,12 @@ public class DriveTrain extends SubsystemBase {
     setOpenLoopRight(limit(rightMotorOutput));
 
   }
+
+/*TODO */
+    //driveTrain.stopTurnController();
+    //driveTrain.stop();
+    //driveTrain.zeroAngle();
+    //driveTrain.TurnToAngle();
 
 
 public void setOpenLoopLeft(double power){ //run motors
