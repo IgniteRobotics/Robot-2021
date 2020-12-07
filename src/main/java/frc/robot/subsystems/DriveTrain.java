@@ -12,8 +12,17 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.kauailabs.navx.frc.*;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveTrain extends SubsystemBase {
+  
+  private final double MIN_TURN_POWER = 0.35;
+  private double rotateToAngleRate;
+  private AHRS navX;
+  private PIDController turnController;
   /**
    * Creates a new ExampleSubsystem.
    */
@@ -31,6 +40,23 @@ public class DriveTrain extends SubsystemBase {
     rightFollower.follow(rightMaster);
     leftMaster.setInverted(true);
     rightMaster.setInverted(false);
+    navX = new AHRS(SPI.Port.kMXP, (byte) 200);
+    private double kP_TURN = SmartDashboard.getNumber(kP_TURN, 0.007);//0.007;
+    private double kI_TURN = SmartDashboard.getNumber(kI_TURN, 0);
+    private double kD_TURN = SmartDashboard.getNumber(kD_TURN, 0);
+  
+    private final double kP_DRIVE = SmartDashboard.getNumber(kP_DRIVE, 1);
+    private final double kI_DRIVE = 0;
+    private final double kD_DRIVE = 0;
+    private final double kF_DRIVE = 0;
+
+    turnController = new PIDController(kP_TURN, kI_TURN, kD_TURN, navX, this);
+
+    turnController.setInputRange(-180.0f, 180.0f);
+    turnController.setOutputRange(-1.0, 1.0);
+    turnController.setAbsoluteTolerance(TURN_TOLERANCE);
+    turnController.setContinuous(true);
+    
 
    // leftFollower.setInverted(InvertType.FollowMaster); What do these do?
    // rightFollower.setInverted(InvertType.FollowMaster);
@@ -39,6 +65,40 @@ public class DriveTrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public void zeroAngle() {
+    navX.reset();
+  }
+
+  public void stop() {
+    leftMaster.stopMotor();
+    rightMaster.stopMotor();
+  }
+  public void pidWrite(double output) {
+    rotateToAngleRate = output;
+  }
+
+  public void enableTurnController(double setpoint) {
+    turnController.setSetpoint(setpoint);
+    rotateToAngleRate = 0;
+    turnController.enable();
+  }
+
+  public void turnToAngle() {
+    if (Math.abs(rotateToAngleRate) <= MIN_TURN_POWER) {
+      this.setOpenLoopLeft(Math.copySign(MIN_TURN_POWER, rotateToAngleRate));
+      this.setOpenLoopRight(-Math.copySign(MIN_TURN_POWER, rotateToAngleRate));
+    } else {
+      this.setOpenLoopLeft(rotateToAngleRate);
+      this.setOpenLoopRight(-rotateToAngleRate);
+    }
+  }
+
+  public void stopTurnController() {
+    rotateToAngleRate = 0;
+    turnController.disable();
+    turnController.reset();
   }
 
   public void arcadeDrive(double throttle, double rotation, double deadband){
@@ -81,8 +141,6 @@ public class DriveTrain extends SubsystemBase {
 
 /*TODO */
     //driveTrain.stopTurnController();
-    //driveTrain.stop();
-    //driveTrain.zeroAngle();
     //driveTrain.TurnToAngle();
 
 

@@ -22,8 +22,9 @@ public class TurnToAngle extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     this.driveTrain = driveTrain;
     this.setpoint = setpoint;
+
+    addRequirements(this.driveTrain);
     
-    requires(this.driveTrain);
   }
 
   // Called when the command is initially scheduled.
@@ -51,6 +52,6 @@ public class TurnToAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //return driveTrain.isTurnCompleted();
+    return driveTrain.isTurnCompleted();
   }
 }
