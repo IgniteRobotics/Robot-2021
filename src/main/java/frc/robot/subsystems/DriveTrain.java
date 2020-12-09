@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.*;
 import edu.wpi.first.wpilibj.SPI;
+
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -23,14 +24,22 @@ public class DriveTrain extends SubsystemBase {
   private double rotateToAngleRate;
   private AHRS navX;
   private PIDController turnController;
-  /**
-   * Creates a new ExampleSubsystem.
-   */
   private WPI_TalonSRX leftMaster;
   private WPI_VictorSPX leftFollower;
   private WPI_TalonSRX rightMaster;
   private WPI_VictorSPX rightFollower;
+  private double kP_TURN;
+  private double kI_TURN;
+  private double kD_TURN;
+  private double kP_DRIVE;
+  private double kI_DRIVE;
+  private double kD_DRIVE;
+  private double kF_DRIVE;
   public DriveTrain(int leftMasterID, int leftFollowerID, int rightMasterID, int rightFollowerID) {
+    
+    /**
+   * Creates a new ExampleSubsystem.
+   */
   
     leftMaster = new WPI_TalonSRX(leftMasterID);
     leftFollower = new WPI_VictorSPX(leftFollowerID);
@@ -38,25 +47,30 @@ public class DriveTrain extends SubsystemBase {
     rightFollower = new WPI_VictorSPX(rightFollowerID);
     leftFollower.follow(leftMaster);
     rightFollower.follow(rightMaster);
+    
     leftMaster.setInverted(true);
     rightMaster.setInverted(false);
+    
     navX = new AHRS(SPI.Port.kMXP, (byte) 200);
-    private double kP_TURN = SmartDashboard.getNumber(kP_TURN, 0.007);//0.007;
-    private double kI_TURN = SmartDashboard.getNumber(kI_TURN, 0);
-    private double kD_TURN = SmartDashboard.getNumber(kD_TURN, 0);
+    kP_TURN = SmartDashboard.getNumber("kP_TURN", 0.007);//0.007;
+    kI_TURN = SmartDashboard.getNumber("kI_TURN", 0);
+    kD_TURN = SmartDashboard.getNumber("kD_TURN", 0);
   
-    private final double kP_DRIVE = SmartDashboard.getNumber(kP_DRIVE, 1);
-    private final double kI_DRIVE = 0;
-    private final double kD_DRIVE = 0;
-    private final double kF_DRIVE = 0;
+    kP_DRIVE = SmartDashboard.getNumber("kP_DRIVE", 1);
+    kI_DRIVE = 0;
+    kD_DRIVE = 0;
+    kF_DRIVE = 0;
 
-    turnController = new PIDController(kP_TURN, kI_TURN, kD_TURN, navX, this);
+    //replace with new pid controller 
 
-    turnController.setInputRange(-180.0f, 180.0f);
+    turnController = new PIDController(kP_TURN, kI_TURN, kD_TURN); //navx 
+
+    turnController.enableContinuousInput(-180.0f, 180.0f);
+    
     turnController.setOutputRange(-1.0, 1.0);
     turnController.setAbsoluteTolerance(TURN_TOLERANCE);
-    turnController.setContinuous(true);
-    
+
+    //replace with new pid controller 
 
    // leftFollower.setInverted(InvertType.FollowMaster); What do these do?
    // rightFollower.setInverted(InvertType.FollowMaster);
