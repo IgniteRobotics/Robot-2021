@@ -125,7 +125,7 @@ public class DriveTrain extends SubsystemBase {
 
     // TODO: Fix when Implementing turn to angle!
     // https://docs.wpilib.org/en/latest/docs/software/advanced-controls/controllers/pidcontroller.html#setting-continuous-input
-    //turnController.enableContinuousInput(-180.0f, 180.0f);
+    turnController.enableContinuousInput(-180.0f, 180.0f);
     // turnController.setOutputRange(-1.0, 1.0);
     // turnController.setAbsoluteTolerance(TURN_TOLERANCE);
     // turnController.setContinuous(true);
