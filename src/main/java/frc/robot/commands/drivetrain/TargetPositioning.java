@@ -24,7 +24,7 @@ public class TargetPositioning extends CommandBase {
   private static double min_command = 0.05;
   // the range you want.
   private double targetDistance;
-  //allowed margin of error
+  //allowed margin of errorit 
   private double marginOfErrorDist = 5.0;
   private double marginOfErrorTurn = 2.0;
   
