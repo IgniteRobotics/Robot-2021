@@ -26,7 +26,7 @@ public class Shooter extends SubsystemBase {
    */
   public Shooter() {
     motor = new WPI_TalonSRX(Constants.kShooterTalonMotorPort);
-    follow1 = new WPI_VictorSPX(Constants.kShooterVictorMotorPort);
+    follow1 = new WPI_TalonSRX(Constants.kShooterTalonMotorPort2);
     motor.configFactoryDefault();
     motor.setNeutralMode(NeutralMode.Coast);
     follow1.follow(motor);

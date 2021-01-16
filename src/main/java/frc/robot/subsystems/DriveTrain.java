@@ -36,12 +36,13 @@ public class DriveTrain extends SubsystemBase {
   private WPI_TalonSRX rightMaster;
   private WPI_VictorSPX rightFollower;
 
+  boolean isSlowMode = false;
+
   private PIDController turnController;
 
   private AHRS navX;
 
-  private Command defaultCommand;
-
+  private Command defaultCommand;   
   private final double kP_TURN = 0.007;
   private final double kI_TURN = 0;
   private final double kD_TURN = 0;
@@ -66,7 +67,7 @@ public class DriveTrain extends SubsystemBase {
   /**
    * Creates a new MyDriveTrain.
    */
-  public DriveTrain(int leftMasterID, int leftFollowerID, int rightMasterID, int rightFollowerID) {
+  public DriveTrain(int leftMasterID, int leftFollowerID, int leftFollower2ID, int rightMasterID, int rightFollowerID, int rightFollower2ID) {
     leftMaster = new WPI_TalonSRX(leftMasterID);
     leftFollower = new WPI_VictorSPX(leftFollowerID);
     rightMaster = new WPI_TalonSRX(rightMasterID);
@@ -290,6 +291,13 @@ public class DriveTrain extends SubsystemBase {
   
   public void setOpenLoopRight(double power) {
     rightMaster.set(ControlMode.PercentOutput, power);
+  }
+
+  public void toggleSlowMode() {
+    isSlowMode = !(isSlowMode);
+  }
+
+    isSlowMode = !(isSlowMode);
   }
 
 }

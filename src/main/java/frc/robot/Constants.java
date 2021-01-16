@@ -35,7 +35,7 @@ public final class Constants {
 	public static final int kSorterMotorPort = 11;
 	public static final int kSpindexerMotorPort = 14;
 	public static final int kShooterTalonMotorPort = 13;
-	public static final int kShooterVictorMotorPort = 8;
+	public static final int kShooterTalonMotorPort2 = 8;
 	public static final int kKickerMotorPort = 9;
 	public static final int kClimberMotorPort = 7;
 	public static final int kTurretMotorPort = 12;
