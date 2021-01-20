@@ -13,6 +13,7 @@ import edu.wpi.first.wpiutil.math.MathUtil;
 import edu.wpi.first.wpilibj.controller.PIDController;
 //import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -28,13 +29,14 @@ import frc.robot.util.Util;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
-public class DriveTrain extends SubsystemBase {
-
+import edu.wpi.first.wpilibj.PIDBase.AbsoluteTolerance;
+public class DriveTrain extends PIDSubsystem {
+  //TODO: Add second follower!
   private WPI_TalonSRX leftMaster;
   private WPI_VictorSPX leftFollower;
   private WPI_TalonSRX rightMaster;
   private WPI_VictorSPX rightFollower;
+  private final double TURN_TOLERANCE = 2.0f;
 
   boolean isSlowMode = false;
 
@@ -43,9 +45,9 @@ public class DriveTrain extends SubsystemBase {
   private AHRS navX;
 
   private Command defaultCommand;   
-  private final double kP_TURN = 0.007;
-  private final double kI_TURN = 0;
-  private final double kD_TURN = 0;
+  private final static double kP_TURN = 0.007;
+  private final static double kI_TURN = 0;
+  private final static double kD_TURN = 0;
 
   private final double kP_DRIVE = 1;
   private final double kI_DRIVE = 0;
@@ -55,19 +57,22 @@ public class DriveTrain extends SubsystemBase {
   private final int CRUISE_VELOCITY = 2000;
   private final int MAX_ACCELERATION = 1000;
 
-  private final double TURN_TOLERANCE = 2.0f;
   private final double DRIVE_TOLERANCE = 100.0;
 
   private final double MIN_TURN_POWER = 0.35;
-  
 
   private double rotateToAngleRate;
-
 
   /**
    * Creates a new MyDriveTrain.
    */
   public DriveTrain(int leftMasterID, int leftFollowerID, int leftFollower2ID, int rightMasterID, int rightFollowerID, int rightFollower2ID) {
+    //this PID controller is for TurnToAngle
+    super(new PIDController(kP_TURN, kI_TURN, kD_TURN));
+    getController().setTolerance(TURN_TOLERANCE);                  //setTolerance is deprecated, change later
+
+
+    
     leftMaster = new WPI_TalonSRX(leftMasterID);
     leftFollower = new WPI_VictorSPX(leftFollowerID);
     rightMaster = new WPI_TalonSRX(rightMasterID);
@@ -122,11 +127,11 @@ public class DriveTrain extends SubsystemBase {
 
     //turnController = new PIDController(kP_TURN, kI_TURN, kD_TURN, navX, this);
 
-    turnController = new PIDController(kP_TURN, kI_TURN, kD_TURN);
+   // turnController = new PIDController(kP_TURN, kI_TURN, kD_TURN);
 
     // TODO: Fix when Implementing turn to angle!
     // https://docs.wpilib.org/en/latest/docs/software/advanced-controls/controllers/pidcontroller.html#setting-continuous-input
-    turnController.enableContinuousInput(-180.0f, 180.0f);
+  //  turnController.enableContinuousInput(-180.0f, 180.0f);
     // turnController.setOutputRange(-1.0, 1.0);
     // turnController.setAbsoluteTolerance(TURN_TOLERANCE);
     // turnController.setContinuous(true);
@@ -295,9 +300,44 @@ public class DriveTrain extends SubsystemBase {
 
   public void toggleSlowMode() {
     isSlowMode = !(isSlowMode);
-  }
+  
 
     isSlowMode = !(isSlowMode);
   }
+
+  public void enable(double setpoints){ //this is enableTurnController
+
+  }
+
+  public void  disable(){
+
+  }
+
+  //Overrrided methods for pid controller
+  @Override
+  public double getMeasurement(){
+    return this.getAngle();
+  }
+  @Override
+  public void useOutput(double output, double setpoint) { //Use percent output for now, but the example uses voltage
+    this.turnToAngle();
+  }
+
+  public void setSetpoint(){
+
+  }
+
+  public void turnToAngle() {
+    if (Math.abs(rotateToAngleRate) <= MIN_TURN_POWER) {
+      this.setOpenLoopLeft(Math.copySign(MIN_TURN_POWER, rotateToAngleRate));
+      this.setOpenLoopRight(-Math.copySign(MIN_TURN_POWER, rotateToAngleRate));
+    } else {
+      this.setOpenLoopLeft(rotateToAngleRate);
+      this.setOpenLoopRight(-rotateToAngleRate);
+    }
+  }
+
+
+
 
 }
