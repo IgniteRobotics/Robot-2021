@@ -19,7 +19,7 @@ import frc.robot.Constants;
 public class Shooter extends SubsystemBase {
   
   private WPI_TalonSRX motor;
-  private WPI_VictorSPX follow1;
+  //private WPI_VictorSPX follow1;
   
   /**
    * Creates a new motor1.
@@ -29,9 +29,9 @@ public class Shooter extends SubsystemBase {
   //  follow1 = new WPI_TalonSRX(Constants.kShooterTalonMotorPort2);
     motor.configFactoryDefault();
     motor.setNeutralMode(NeutralMode.Coast);
-    follow1.follow(motor);
-    follow1.setNeutralMode(NeutralMode.Coast);
-    follow1.setInverted(true);
+    //follow1.follow(motor);
+    //follow1.setNeutralMode(NeutralMode.Coast);
+    //follow1.setInverted(true);
 
   }
 
@@ -77,14 +77,14 @@ public class Shooter extends SubsystemBase {
     motor.setSensorPhase(true);
         
     motor.setNeutralMode(NeutralMode.Coast);
-    follow1.setNeutralMode(NeutralMode.Coast);
-    follow1.setInverted(true);
+    //follow1.setNeutralMode(NeutralMode.Coast);
+    //follow1.setInverted(true);
     //follow2.setNeutralMode(NeutralMode.Coast);
   }
 
   public int getvelocity(){
    System.out.println(""+motor.getSelectedSensorPosition());
-   return(motor.getSelectedSensorVelocity());
+   return (int) (motor.getSelectedSensorVelocity());
   }
 
 }

@@ -67,6 +67,7 @@ private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driv
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+    configureSubsystemCommands();
   }
 
   /**
@@ -82,6 +83,10 @@ private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driv
     new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new TargetPositioning(m_driveTrain, 222));
 
     
+  }
+
+  private void configureSubsystemCommands() {
+    m_driveTrain.setDefaultCommand(teleDriveCommand);
   }
 
 

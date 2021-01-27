@@ -174,11 +174,11 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public int getLeftEncoderPos() {
-    return leftMaster.getSelectedSensorPosition();
+    return (int) leftMaster.getSelectedSensorPosition();
   }
 
   public int getRightEncoderPos() {
-    return rightMaster.getSelectedSensorPosition();
+    return (int) rightMaster.getSelectedSensorPosition();
   }
 
   public double getLeftEncoderVel() {

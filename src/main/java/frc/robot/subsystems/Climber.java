@@ -96,7 +96,7 @@ public class Climber extends SubsystemBase {
   }
 
   public int getEncoderPos() {
-    return climberLeader.getSelectedSensorPosition();
+    return (int) climberLeader.getSelectedSensorPosition();
   }
 
   public double getEncoderVel() {
