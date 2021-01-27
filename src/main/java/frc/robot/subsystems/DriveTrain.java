@@ -27,10 +27,14 @@ public class DriveTrain extends SubsystemBase {
   //TODO: Add second follower!
   private WPI_TalonSRX leftMaster;
   private WPI_VictorSPX leftFollower;
+  private WPI_VictorSPX leftFollower2;
+
+
   private WPI_TalonSRX rightMaster;
   private WPI_VictorSPX rightFollower;
+  private WPI_VictorSPX rightFollower2;
 
-  boolean isSlowMode = false;
+  public boolean isSlowMode = false;
 
   private Command defaultCommand;   
 
@@ -55,8 +59,11 @@ public class DriveTrain extends SubsystemBase {
     
     leftMaster = new WPI_TalonSRX(leftMasterID);
     leftFollower = new WPI_VictorSPX(leftFollowerID);
+    leftFollower2 = new WPI_VictorSPX(leftFollower2ID);
+
     rightMaster = new WPI_TalonSRX(rightMasterID);
     rightFollower = new WPI_VictorSPX(rightFollowerID);
+    rightFollower2 = new WPI_VictorSPX(rightFollower2ID);
 
 
     leftMaster.setNeutralMode(NeutralMode.Brake);
@@ -65,9 +72,18 @@ public class DriveTrain extends SubsystemBase {
     leftFollower.setNeutralMode(NeutralMode.Brake);
     rightFollower.setNeutralMode(NeutralMode.Brake);
 
+    leftFollower2.setNeutralMode(NeutralMode.Brake);
+    rightFollower2.setNeutralMode(NeutralMode.Brake);
+
     leftFollower.follow(leftMaster);
     rightFollower.follow(rightMaster);
 
+    leftFollower2.follow(leftMaster);
+    rightFollower2.follow(rightMaster);
+
+
+
+    
     leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
 
@@ -79,6 +95,12 @@ public class DriveTrain extends SubsystemBase {
 
     leftFollower.setInverted(InvertType.FollowMaster);
     rightFollower.setInverted(InvertType.FollowMaster);
+
+    leftFollower2.setInverted(InvertType.FollowMaster);
+    rightFollower2.setInverted(InvertType.FollowMaster);
+
+
+
 
     rightMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 20);
     rightMaster.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 10, 20);
@@ -260,6 +282,9 @@ public class DriveTrain extends SubsystemBase {
 
   public void toggleSlowMode() {
     isSlowMode = !(isSlowMode);
+  }
+  public boolean isSlowMode(){
+    return isSlowMode;
   }
 
 

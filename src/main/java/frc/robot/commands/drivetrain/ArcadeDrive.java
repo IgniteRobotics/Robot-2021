@@ -45,7 +45,7 @@ public class ArcadeDrive extends CommandBase { //TODO Figure out how to make a b
 
   private double getSpeed() {
     double speed = driverJoystick.getRawAxis(Constants.AXIS_LEFT_STICK_Y);
-    if(m_driveTrain.isSlowMode) {bo
+    if(m_driveTrain.isSlowMode) {
       speed *= Constants.SLOW_MODE_SPEED_MODIFIER;
     }
     return speed;

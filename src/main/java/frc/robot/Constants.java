@@ -19,12 +19,13 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final int kLeftMasterPort = 1;
-    public static final int kLeftFollowerPort = 3;
-    public static final int kLeftFollowerPort2 = 5;
-    public static final int kRightMasterPort = 2;
-    public static final int kRightFollowerPort = 4;
-    public static final int kRightFollowerPort2 = 6;
+    public static final int kLeftMasterPort = 2;
+    public static final int kLeftFollowerPort = 4;
+	public static final int kLeftFollowerPort2 = 6;
+	
+    public static final int kRightMasterPort = 1;
+    public static final int kRightFollowerPort = 3;
+    public static final int kRightFollowerPort2 = 5;
 
     public static final int kDriveControllerPort = 0;
     public static final int kManipControllerPort = 1;
