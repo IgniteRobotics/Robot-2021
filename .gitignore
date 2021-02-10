@@ -29,4 +29,4 @@ hs_err_pid*
 
 #build files
 build/
-.settings/org.eclipse.buildship.core.prefs
+.settings/
