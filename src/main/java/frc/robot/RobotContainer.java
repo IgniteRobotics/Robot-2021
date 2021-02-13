@@ -19,6 +19,10 @@ import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.commands.drivetrain.ToggleSlowMode;
 import frc.robot.commands.drivetrain.ArcadeDrive;
@@ -43,21 +47,30 @@ private Shooter m_shooter = new Shooter();
 
 private Joystick m_driveController = new Joystick(Constants.kDriveControllerPort);
 private Joystick m_manipController = new Joystick(Constants.kManipControllerPort);
+
+
+
+
 private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
 //rivate AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
 
-
-
-
-
-
-
+SendableChooser chooseAuton = new SendableChooser<>()
+m_chooser.addOption("Complex Auto", m_complexAuto); //Change these to our auton commands
 
 
 
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+
+  //Let's store our auton commands here and hope that this is a good place to store them
+
+
+  //put name of challenge and then whatever it's used for 
+private final command autoNavPath1;
+private final command autoNavPath2;
+private final command autoNavPath3;
+
+
 
 
 
@@ -96,7 +109,19 @@ private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driv
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
+    // Each trejectory will have its own command and we will choose which one to run in auton thorugh smartdashboard
+    //there are around 3 different paths for autonomous
+
+
+
+
+
+
     return m_autoCommand;
+
+
+
+
+
   }
 }
