@@ -54,8 +54,8 @@ private Joystick m_manipController = new Joystick(Constants.kManipControllerPort
 private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
 //rivate AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
 
-SendableChooser chooseAuton = new SendableChooser<>()
-m_chooser.addOption("Complex Auto", m_complexAuto); //Change these to our auton commands
+SendableChooser chooseAuton = new SendableChooser<>();
+//m_chooser.addOption("Complex Auto", m_complexAuto); //Change these to our auton commands
 
 
 
@@ -64,14 +64,10 @@ m_chooser.addOption("Complex Auto", m_complexAuto); //Change these to our auton 
 
   //Let's store our auton commands here and hope that this is a good place to store them
 
-
   //put name of challenge and then whatever it's used for 
-private final command autoNavPath1;
-private final command autoNavPath2;
-private final command autoNavPath3;
-
-
-
+//private final command autoNavPath1;
+//private final command autoNavPath2;
+//private final command autoNavPath3;
 
 
   /**
@@ -115,10 +111,7 @@ private final command autoNavPath3;
 
 
 
-
-
     return m_autoCommand;
-
 
 
 

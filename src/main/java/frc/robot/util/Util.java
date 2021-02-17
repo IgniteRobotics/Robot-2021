@@ -63,4 +63,10 @@ public class Util {
 		return (meters / WHEEL_CIRCUMFERENCE_METERS) * ENCODER_TICKS_PER_REVOLUTION;
 	}
 
+	public static double getRevolutionsFromTicks(double encoder_ticks) {
+		double revolutions =  encoder_ticks / ENCODER_TICKS_PER_REVOLUTION;
+		return revolutions;
+	}
+
+
 }
