@@ -154,7 +154,7 @@ gradle-app.setting
 .classpath
 .project
 .settings/
-.settings/*
+.settings/org.eclipse.buildship.core.prefs
 bin/
 imgui.ini
 
