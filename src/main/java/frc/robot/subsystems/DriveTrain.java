@@ -19,6 +19,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
+
 import frc.robot.util.Util;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,14 +50,20 @@ public class DriveTrain extends SubsystemBase {
   private final double DRIVE_TOLERANCE = 100.0;
 
 
+  private double currentTimeStamp;
+  private double currentLeftRevs;
+  private double currentRightRevs;
+
+  private double previousTimeStamp;
+  private double previousLeftRevs = 0.0;
+  private double previousRightRevs = 0.0;
+  
 
   /**
    * Creates a new MyDriveTrain.
    */
   public DriveTrain(int leftMasterID, int leftFollowerID, int leftFollower2ID, int rightMasterID, int rightFollowerID, int rightFollower2ID) {
 
-
-    
     leftMaster = new WPI_TalonSRX(leftMasterID);
     leftFollower = new WPI_VictorSPX(leftFollowerID);
     leftFollower2 = new WPI_VictorSPX(leftFollower2ID);
@@ -133,6 +140,27 @@ public class DriveTrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+     currentTimeStamp = System.currentTimeMillis();
+     currentLeftRevs = getLeftEncoderRevolutions();
+     currentRightRevs = -getRightEncoderRevolutions();
+ 
+     double deltaTimeMillis = currentTimeStamp - previousTimeStamp;
+
+     double deltaLRevs = currentLeftRevs - previousLeftRevs;
+     double deltaRRevs = currentRightRevs - previousRightRevs;
+     double leftRevsPerMil = deltaLRevs / deltaTimeMillis;
+     double rightRevsPerMil = deltaRRevs / deltaTimeMillis;
+
+    
+     double leftRPM = leftRevsPerMil * 60000;
+     double rightRPM = rightRevsPerMil * 60000;
+ 
+    SmartDashboard.putNumber("Left RPM", leftRPM);
+    SmartDashboard.putNumber("Right RPM", rightRPM);
+
+    previousTimeStamp = currentTimeStamp;
+    previousLeftRevs = currentLeftRevs;
+    previousRightRevs = currentRightRevs;
   }
 
   public void arcadeDrive(double throttle, double rotation, double deadband){
@@ -184,6 +212,8 @@ public class DriveTrain extends SubsystemBase {
   public double getLeftEncoderVel() {
     return leftMaster.getSelectedSensorVelocity();
   }
+
+
 
   public double getRightEncoderVel() {
     return rightMaster.getSelectedSensorVelocity();
@@ -288,7 +318,15 @@ public class DriveTrain extends SubsystemBase {
   }
 
 
+  public double getLeftEncoderRevolutions() {
+    double revolutions = Util.getRevolutionsFromTicks(leftMaster.getSelectedSensorPosition());
+    return revolutions;
+  }
 
+  public double getRightEncoderRevolutions() {
+    double revolutions = Util.getRevolutionsFromTicks(rightMaster.getSelectedSensorPosition());
+    return revolutions;
+  }
 
 
 
