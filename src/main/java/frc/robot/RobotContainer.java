@@ -7,6 +7,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
+import java.io.IOException;
+import java.nio.file.Paths;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveToDistance;
@@ -28,8 +35,8 @@ import frc.robot.commands.drivetrain.ToggleSlowMode;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.Intake.RunIntake;
 import frc.robot.commands.drivetrain.TargetPositioning;
-
-
+import frc.robot.commands.drivetrain.Slalom;
+import frc.robot.subsystems.RamseteDriveSubsystem;
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -41,7 +48,7 @@ public class RobotContainer {
 
   private DriveTrain m_driveTrain = new DriveTrain(Constants.kLeftMasterPort, Constants.kLeftFollowerPort, Constants.kLeftFollowerPort2, 
   Constants.kRightMasterPort, Constants.kRightFollowerPort, Constants.kRightFollowerPort2);
-// private RamseteDriveSubsystem m_driveTrain = new RamseteDriveSubsystem();
+private RamseteDriveSubsystem ramsetedriveTrain = new RamseteDriveSubsystem();
 private Intake m_intake = new Intake();
 private Shooter m_shooter = new Shooter();
 
@@ -54,9 +61,12 @@ private Joystick m_manipController = new Joystick(Constants.kManipControllerPort
 private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
 //rivate AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
 
-SendableChooser chooseAuton = new SendableChooser<>();
+//SendableChooser chooseAuton = new SendableChooser<>();
 //m_chooser.addOption("Complex Auto", m_complexAuto); //Change these to our auton commands
 
+
+
+ 
 
 
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
@@ -108,13 +118,22 @@ SendableChooser chooseAuton = new SendableChooser<>();
     // Each trejectory will have its own command and we will choose which one to run in auton thorugh smartdashboard
     //there are around 3 different paths for autonomous
 
+    Trajectory trajectory = loadTrajectory("slalom");
+    if(trajectory == null) {
+      return null;
+    }
 
 
+    //remember to change this to follow trajecotry
+    return new Slalom(ramsetedriveTrain, trajectory);
+  }
 
-    return m_autoCommand;
-
-
-
-
+  protected static Trajectory loadTrajectory(String trajectoryName) {
+    try{
+    return TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", "output", trajectoryName + ".wpilib.json")));
+    } catch(IOException e) {
+      DriverStation.reportError("Failed to load auto trajectory: " + trajectoryName, false);
+      return null;
+    }
   }
 }

@@ -174,6 +174,12 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     m_odometry.resetPosition(savedPose, Rotation2d.fromDegrees(getHeading()));
   }
 
+  public void resetOdometry(Pose2d startingPose) {
+    resetEncoders();
+    m_odometry.resetPosition(startingPose ,  Rotation2d.fromDegrees(  getHeading()  ));
+
+  }
+
 
   //not sure if I want to use this. Might want to use the other drivetrain's arcadeDrive() - Rossy
   public void arcadeDrive(final double speed, final double rotation, final boolean useSquares) {
