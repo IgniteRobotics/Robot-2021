@@ -35,7 +35,8 @@ import frc.robot.commands.drivetrain.ToggleSlowMode;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.Intake.RunIntake;
 import frc.robot.commands.drivetrain.TargetPositioning;
-import frc.robot.commands.drivetrain.Slalom;
+
+import frc.robot.commands.drivetrain.DriveTrajectory;
 import frc.robot.subsystems.RamseteDriveSubsystem;
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -118,14 +119,14 @@ private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driv
     // Each trejectory will have its own command and we will choose which one to run in auton thorugh smartdashboard
     //there are around 3 different paths for autonomous
 
-    Trajectory trajectory = loadTrajectory("slalom");
+    Trajectory trajectory = loadTrajectory("slalom"); //change this to change default path in auton
     if(trajectory == null) {
       return null;
     }
 
 
     //remember to change this to follow trajecotry
-    return new Slalom(ramsetedriveTrain, trajectory);
+    return new DriveTrajectory(ramsetedriveTrain, trajectory);
   }
 
   protected static Trajectory loadTrajectory(String trajectoryName) {
