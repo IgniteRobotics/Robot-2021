@@ -17,8 +17,6 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveToDistance;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
@@ -50,8 +48,8 @@ public class RobotContainer {
   private DriveTrain m_driveTrain = new DriveTrain(Constants.kLeftMasterPort, Constants.kLeftFollowerPort, Constants.kLeftFollowerPort2, 
   Constants.kRightMasterPort, Constants.kRightFollowerPort, Constants.kRightFollowerPort2);
 private RamseteDriveSubsystem ramsetedriveTrain = new RamseteDriveSubsystem();
-private Intake m_intake = new Intake();
-private Shooter m_shooter = new Shooter();
+//private Intake m_intake = new Intake();
+//private Shooter m_shooter = new Shooter();
 
 private Joystick m_driveController = new Joystick(Constants.kDriveControllerPort);
 private Joystick m_manipController = new Joystick(Constants.kManipControllerPort);
@@ -70,8 +68,6 @@ private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driv
  
 
 
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   //Let's store our auton commands here and hope that this is a good place to store them
 
