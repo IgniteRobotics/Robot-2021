@@ -68,5 +68,16 @@ public class Util {
 		return revolutions;
 	}
 
+	public static double limit(double value, double limit) {
+		limit = Math.abs(limit);
+		if (value > limit){
+		  return limit;
+		}
+		if (value < -limit) {
+		  return -limit;
+		}
+		return value; 
+	  
+	  }
 
 }

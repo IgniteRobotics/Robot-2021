@@ -215,7 +215,10 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     }
   }
 
-  public void tankDriveVelocity(final double leftVelocity, final double rightVelocity) {
+  public void tankDriveVelocity(double leftVelocity, double rightVelocity) {
+    //TODO - remove later.  liting velocity to 1 m/s
+    leftVelocity = Util.limit(leftVelocity, 1.0);
+    rightVelocity = Util.limit(rightVelocity, 1.0);
     final double leftAccel = (leftVelocity - Util.stepsPerDecisecToMetersPerSec(leftMaster.getSelectedSensorVelocity()))
         / .20;
     final double rightAccel = (rightVelocity
