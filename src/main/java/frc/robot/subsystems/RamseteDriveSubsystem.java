@@ -39,6 +39,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.robot.Constants;
 
 import frc.robot.util.Util;
@@ -293,4 +295,75 @@ public class RamseteDriveSubsystem extends SubsystemBase {
             this)
         .andThen(this::stop, this);
   }
+
+  public double getLeftEncoderVel() {
+    return leftMaster.getSelectedSensorVelocity();
+  }
+
+  public double getRightEncoderVel() {
+    return rightMaster.getSelectedSensorVelocity();
+  }
+
+  public double getLeftMasterVoltage() {
+    return leftMaster.getMotorOutputVoltage();
+  }
+
+  public double getRightMasterVoltage() {
+    return rightMaster.getMotorOutputVoltage();
+  }
+
+  
+  public double getLeftPercentOutput() {
+    return leftMaster.getMotorOutputPercent();
+  }
+
+  public double getRightPercentOutput() {
+    return rightMaster.getMotorOutputPercent();
+  }
+
+  public double getLeftMasterCurrent() {
+    return leftMaster.getStatorCurrent();
+  }
+
+  public double getRightMasterCurrent() {
+    return rightMaster.getStatorCurrent();
+  }
+
+  public boolean isConnected() {
+    return navX.isConnected();
+  }
+
+  public double getAngle() {
+    return navX.getAngle();
+  }
+
+  public double getYaw() {
+    return navX.getYaw();
+  }
+
+  public double getClosedLoopTarget() {
+    return leftMaster.getClosedLoopTarget();
+  }
+
+  public void outputTelemetry() {
+    SmartDashboard.putNumber("Drivetrain/Left enc pos", this.getLeftEncoderPosition());
+    SmartDashboard.putNumber("Drivetrain/Right enc pos", this.getRightEncoderPosition());
+    SmartDashboard.putNumber("Drivetrain/Left enc vel", this.getLeftEncoderVel());
+    SmartDashboard.putNumber("Drivetrain/Right enc vel", this.getRightEncoderVel());
+    SmartDashboard.putNumber("Drivetrain/Left master voltage", this.getLeftMasterVoltage());
+    SmartDashboard.putNumber("Drivetrain/Right master voltage", this.getRightMasterVoltage());
+    SmartDashboard.putNumber("Drivetrain/Left master current", this.getLeftMasterCurrent());
+    SmartDashboard.putNumber("Drivetrain/Right master current", this.getRightMasterCurrent());
+    SmartDashboard.putNumber("Drivetrain/Left percent out", this.getLeftPercentOutput());
+    SmartDashboard.putNumber("Drivetrain/Right percent out", this.getRightPercentOutput());
+    SmartDashboard.putBoolean("Drivetrain/Is navX connected?", this.isConnected());
+    SmartDashboard.putNumber("Drivetrain/Angle", this.getAngle());
+    SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
+    SmartDashboard.putNumber("Drivetrain/Closed loop target", this.getClosedLoopTarget());
+    // SmartDashboard.putNumber("Drivetrain/Turn error", this.getTurnError());
+    // SmartDashboard.putNumber("Drivetrain/Turn setpoint", this.getTurnSetpoint());
+  }
+
+
+
 }
