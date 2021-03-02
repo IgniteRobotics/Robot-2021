@@ -151,6 +151,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), Util.getMetersFromEncoderTicks(getLeftEncoderPosition()),
         Util.getMetersFromEncoderTicks(getRightEncoderPosition()));
+    outputTelemetry();
   }
 
   public Pose2d getCurrentPose() {

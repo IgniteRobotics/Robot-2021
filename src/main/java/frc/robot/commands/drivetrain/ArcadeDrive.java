@@ -24,7 +24,7 @@ public class ArcadeDrive extends CommandBase { //TODO Figure out how to make a b
   /**
    * Creates a new ArcadeDrive.
    */
-  public ArcadeDrive(Joystick driveController, /*RamseteDriveSubsystem driveTrain*/DriveTrain driveTrain) {
+  public ArcadeDrive(Joystick driveController, DriveTrain driveTrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.driverJoystick = driveController;
     this.m_driveTrain = driveTrain;
