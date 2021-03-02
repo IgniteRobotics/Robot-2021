@@ -55,7 +55,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
   private final WPI_VictorSPX rightFollower = new WPI_VictorSPX(Constants.kRightFollowerPort);
   private final WPI_VictorSPX rightFollower2 = new WPI_VictorSPX(Constants.kRightFollowerPort2);
 
-  private final DifferentialDrive m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
+  private DifferentialDrive m_driveTrain;
 
   private final AHRS navX = new AHRS(SPI.Port.kMXP);
 
@@ -114,6 +114,9 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     leftFollower2.follow(leftMaster);
     rightFollower.follow(rightMaster);
     rightFollower2.follow(rightMaster);
+
+    //inversion etc has to happen BEFORE this statement!
+    m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
   }
 
   public void addDashboardWidgets(ShuffleboardLayout dashboard) {
