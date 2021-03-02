@@ -361,6 +361,8 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Drivetrain/Angle", this.getAngle());
     SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
     SmartDashboard.putNumber("Drivetrain/Closed loop target", this.getClosedLoopTarget());
+    SmartDashboard.putBoolean("Drivetrain/Using Encoders?", this.useEncoders);
+    
     // SmartDashboard.putNumber("Drivetrain/Turn error", this.getTurnError());
     // SmartDashboard.putNumber("Drivetrain/Turn setpoint", this.getTurnSetpoint());
   }

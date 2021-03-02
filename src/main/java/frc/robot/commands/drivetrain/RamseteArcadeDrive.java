@@ -8,6 +8,7 @@
 package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveTrain;
@@ -40,6 +41,7 @@ public class RamseteArcadeDrive extends CommandBase { //TODO Figure out how to m
   @Override
   public void execute() {
     m_driveTrain.arcadeDrive(getSpeed(), getRotation(), true);
+    outputTelemetry();
   }
 
   private double getSpeed() {
@@ -69,5 +71,10 @@ public class RamseteArcadeDrive extends CommandBase { //TODO Figure out how to m
   @Override
   public boolean isFinished() {
     return false;
+  }
+
+  public void outputTelemetry() {
+    SmartDashboard.putNumber("RamseteAD/Speed", this.getSpeed());
+    SmartDashboard.putNumber("RamseteAD/Rotation", this.getRotation());
   }
 }
