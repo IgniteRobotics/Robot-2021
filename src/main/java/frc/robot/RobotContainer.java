@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.commands.drivetrain.ToggleSlowMode;
 import frc.robot.commands.drivetrain.ArcadeDrive;
@@ -35,6 +34,7 @@ import frc.robot.commands.Intake.RunIntake;
 import frc.robot.commands.drivetrain.TargetPositioning;
 
 import frc.robot.commands.drivetrain.DriveTrajectory;
+import frc.robot.commands.drivetrain.RamseteArcadeDrive;
 import frc.robot.subsystems.RamseteDriveSubsystem;
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -45,9 +45,9 @@ import frc.robot.subsystems.RamseteDriveSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  private DriveTrain m_driveTrain = new DriveTrain(Constants.kLeftMasterPort, Constants.kLeftFollowerPort, Constants.kLeftFollowerPort2, 
-  Constants.kRightMasterPort, Constants.kRightFollowerPort, Constants.kRightFollowerPort2);
-private RamseteDriveSubsystem ramsetedriveTrain = new RamseteDriveSubsystem();
+// private DriveTrain m_driveTrain = new DriveTrain(Constants.kLeftMasterPort, Constants.kLeftFollowerPort, Constants.kLeftFollowerPort2, 
+// Constants.kRightMasterPort, Constants.kRightFollowerPort, Constants.kRightFollowerPort2);
+private RamseteDriveSubsystem m_driveTrain = new RamseteDriveSubsystem();
 //private Intake m_intake = new Intake();
 //private Shooter m_shooter = new Shooter();
 
@@ -57,7 +57,8 @@ private Joystick m_manipController = new Joystick(Constants.kManipControllerPort
 
 
 
-private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
+//private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
+private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
 //rivate AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
 
 //SendableChooser chooseAuton = new SendableChooser<>();
@@ -94,9 +95,9 @@ private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driv
    */
   private void configureButtonBindings() {
     //new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new ExampleCommand(m_driveTrain);
-    new JoystickButton(m_driveController, Constants.BUTTON_LEFT_BUMPER).whileHeld(new ToggleSlowMode(m_driveTrain));
-    new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(new TargetPositioning(m_driveTrain, 138));
-    new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new TargetPositioning(m_driveTrain, 222));
+    // new JoystickButton(m_driveController, Constants.BUTTON_LEFT_BUMPER).whileHeld(new ToggleSlowMode(m_driveTrain));
+    // new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(new TargetPositioning(m_driveTrain, 138));
+    // new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new TargetPositioning(m_driveTrain, 222));
 
     
   }
@@ -122,7 +123,7 @@ private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driv
 
 
     //remember to change this to follow trajecotry
-    return new DriveTrajectory(ramsetedriveTrain, trajectory);
+    return new DriveTrajectory(m_driveTrain, trajectory);
   }
 
   protected static Trajectory loadTrajectory(String trajectoryName) {
