@@ -51,7 +51,7 @@ public class RamseteArcadeDrive extends CommandBase { //TODO Figure out how to m
   }
 
   private double getRotation() {
-    double rotation = -(driverJoystick.getRawAxis(Constants.AXIS_RIGHT_STICK_X));
+    double rotation = (driverJoystick.getRawAxis(Constants.AXIS_RIGHT_STICK_X));
     // if(m_driveTrain.isSlowMode) {
     //   rotation *= Constants.SLOW_MODE_SPEED_MODIFIER;
     // }
