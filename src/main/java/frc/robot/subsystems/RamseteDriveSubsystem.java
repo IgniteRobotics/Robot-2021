@@ -63,7 +63,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
   private Pose2d savedPose;
 
-  private boolean useEncoders;
+  private boolean useEncoders = true;
   private boolean encodersAvailable;
 
   private final SlewRateLimiter speedRateLimiter = new SlewRateLimiter(Constants.SPEED_RATE_LIMIT_ARCADE);
@@ -117,26 +117,6 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
     //inversion etc has to happen BEFORE this statement!
     m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
-  }
-
-  public void addDashboardWidgets(ShuffleboardLayout dashboard) {
-    dashboard.addString("Pose", () -> m_odometry.getPoseMeters().toString());
-
-    var useEncodersEntry = dashboard.addPersistent("Use Encoders", useEncoders)
-        .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
-    useEncodersEntry.addListener(this::handleEncoderEntry, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
-  }
-
-  private void handleEncoderEntry(EntryNotification notification) {
-    var entry = notification.getEntry();
-    if(entry.getBoolean(true) && (!encodersAvailable || !useEncoders)) {
-      useEncoders = true;
-      enableEncoders();
-    }
-    else if(!entry.getBoolean(true)) {
-      useEncoders = false;
-    }
-    entry.setBoolean(useEncoders);
   }
 
   private void enableEncoders() {
@@ -199,7 +179,8 @@ public class RamseteDriveSubsystem extends SubsystemBase {
       zRotation *= Constants.kMaxAngularVelocity;
       var wheelSpeeds = Constants.kDriveKinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, zRotation));
       if(useEncoders) {
-        tankDriveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+        //tankDriveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+        m_driveTrain.arcadeDrive(speed, rotation, useSquares);
       }
       else {
       m_driveTrain.arcadeDrive(speed, rotation, useSquares);
