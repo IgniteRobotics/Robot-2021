@@ -96,11 +96,11 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     enableEncoders();
 
     setNeutralMode(NeutralMode.Brake);
-
+//uninvert right
     rightMaster.setSensorPhase(true);
-    rightMaster.setInverted(true);
-    rightFollower.setInverted(true);
-    rightFollower2.setInverted(true);
+    rightMaster.setInverted(false);
+    rightFollower.setInverted(false);
+    rightFollower2.setInverted(false);
 
     leftMaster.setSensorPhase(true);
     leftMaster.setInverted(false);
@@ -166,6 +166,20 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
   }
 
+//left rotation negative 
+  //  right encoder negative 
+    //left encoder negative
+//right  positive joystick 
+  //encoder negative - should be positive 
+
+//forward
+  //speed goes up 
+  //both encoders should go in same direction 
+  //left encoder positive - good
+  //right encoder negative
+
+
+//joysticks and can ID's are correct
 
   //not sure if I want to use this. Might want to use the other drivetrain's arcadeDrive() - Rossy
   public void arcadeDrive(final double speed, final double rotation, final boolean useSquares) {
