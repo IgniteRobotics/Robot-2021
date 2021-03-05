@@ -123,7 +123,7 @@ private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveCont
 
 
     //remember to change this to follow trajecotry
-    return new DriveTrajectory(m_driveTrain, trajectory);
+    return new DriveTrajectory(m_driveTrain, trajectory).andThen(() -> m_driveTrain.tankDriveVolts(0.0, 0.0));
   }
 
   protected static Trajectory loadTrajectory(String trajectoryName) {

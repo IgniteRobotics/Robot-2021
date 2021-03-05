@@ -240,9 +240,10 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     this.leftFollower.setVoltage(leftVolts);
     this.leftFollower2.setVoltage(leftVolts);
 
-    this.rightMaster.setVoltage(rightVolts);
-    this.rightFollower.setVoltage(rightVolts);
-    this.rightFollower2.setVoltage(rightVolts);
+    //if you're raw setting volts, you need to flip the right side.
+    this.rightMaster.setVoltage(-rightVolts);
+    this.rightFollower.setVoltage(-rightVolts);
+    this.rightFollower2.setVoltage(-rightVolts);
   }
   
 
