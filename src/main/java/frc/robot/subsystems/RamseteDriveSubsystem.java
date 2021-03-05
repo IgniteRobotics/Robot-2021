@@ -70,7 +70,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
   private final SlewRateLimiter rotationRateLimiter = new SlewRateLimiter(Constants.ROTATION_RATE_LIMIT_ARCADE);
 
   public RamseteDriveSubsystem() {
-    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading())); //assume robot starts at x =0, y=0, theta = 0
+    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); //assume robot starts at x =0, y=0, theta = 0
     resetEncoders();
     navX.zeroYaw();
 
@@ -157,13 +157,12 @@ public class RamseteDriveSubsystem extends SubsystemBase {
   public void resetOdometry() {
     resetEncoders();
     savedPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0)); 
-    m_odometry.resetPosition(savedPose, Rotation2d.fromDegrees(getHeading()));
+    m_odometry.resetPosition(savedPose, Rotation2d.fromDegrees(0));
   }
 
   public void resetOdometry(Pose2d startingPose) {
     resetEncoders();
-    m_odometry.resetPosition(startingPose ,  Rotation2d.fromDegrees(  getHeading()  ));
-
+    m_odometry.resetPosition(startingPose , startingPose.getRotation());
   }
 
 //left rotation negative 
