@@ -156,13 +156,15 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
   public void resetOdometry() {
     resetEncoders();
+    this.zeroHeading();
     savedPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0)); 
-    m_odometry.resetPosition(savedPose, Rotation2d.fromDegrees(0));
+    m_odometry.resetPosition(savedPose, Rotation2d.fromDegrees(getAngle()));
   }
 
   public void resetOdometry(Pose2d startingPose) {
     resetEncoders();
-    m_odometry.resetPosition(startingPose , startingPose.getRotation());
+    this.zeroHeading();
+    m_odometry.resetPosition(startingPose , Rotation2d.fromDegrees(getAngle()));
   }
 
 //left rotation negative 
