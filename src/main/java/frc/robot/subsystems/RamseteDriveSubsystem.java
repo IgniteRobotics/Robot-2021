@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants;
@@ -68,6 +69,9 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
   private final SlewRateLimiter speedRateLimiter = new SlewRateLimiter(Constants.SPEED_RATE_LIMIT_ARCADE);
   private final SlewRateLimiter rotationRateLimiter = new SlewRateLimiter(Constants.ROTATION_RATE_LIMIT_ARCADE);
+
+    // create a field to send odometry data to.
+  private Field2d m_field = new Field2d();
 
   public RamseteDriveSubsystem() {
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); //assume robot starts at x =0, y=0, theta = 0
@@ -117,6 +121,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
     //inversion etc has to happen BEFORE this statement!
     m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
+    SmartDashboard.putData("Field", m_field);
   }
 
   private void enableEncoders() {
@@ -134,6 +139,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), Util.getMetersFromEncoderTicks(getLeftEncoderPosition()),
         Util.getMetersFromEncoderTicks(getRightEncoderPosition()));
+    m_field.setRobotPose(m_odometry.getPoseMeters());
     outputTelemetry();
   }
 
