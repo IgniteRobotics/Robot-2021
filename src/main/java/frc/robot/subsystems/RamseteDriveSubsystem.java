@@ -97,7 +97,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
     setNeutralMode(NeutralMode.Brake);
 //uninvert right
-    rightMaster.setSensorPhase(true);
+    rightMaster.setSensorPhase(false);
     rightMaster.setInverted(false);
     rightFollower.setInverted(false);
     rightFollower2.setInverted(false);
