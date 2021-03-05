@@ -235,6 +235,17 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     m_driveTrain.feed();
   }
 
+  public void tankDriveVolts(double leftVolts, double rightVolts){
+    this.leftMaster.setVoltage(leftVolts);
+    this.leftFollower.setVoltage(leftVolts);
+    this.leftFollower2.setVoltage(leftVolts);
+
+    this.rightMaster.setVoltage(rightVolts);
+    this.rightFollower.setVoltage(rightVolts);
+    this.rightFollower2.setVoltage(rightVolts);
+  }
+  
+
   private double safeClamp(final double input) {
     if (Double.isNaN(input)) {
       return 0;

@@ -116,7 +116,7 @@ private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveCont
     // Each trejectory will have its own command and we will choose which one to run in auton thorugh smartdashboard
     //there are around 3 different paths for autonomous
 
-    Trajectory trajectory = loadTrajectory("slalom"); //change this to change default path in auton
+    Trajectory trajectory = loadTrajectory("line"); //change this to change default path in auton
     if(trajectory == null) {
       return null;
     }
