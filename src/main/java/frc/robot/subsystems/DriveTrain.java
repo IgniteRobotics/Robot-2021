@@ -165,9 +165,11 @@ public class DriveTrain extends SubsystemBase {
 
   public void arcadeDrive(double throttle, double rotation, double deadband){
     throttle = limit(throttle); 
-    //throttle = Util.applyDeadband(throttle, deadband) add util later
+    throttle = Util.applyDeadband(throttle, deadband);
     rotation = limit(-rotation); // why negative?
-    //throttle = Util.applyDeadband(rotation, deadband);
+
+    rotation = Util.applyDeadband(rotation, deadband);
+    
     throttle = Math.copySign(throttle * throttle, throttle);
     rotation = Math.copySign(rotation * rotation, rotation);
 

@@ -8,14 +8,15 @@
 package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.RamseteDriveSubsystem;
 
-public class ArcadeDrive extends CommandBase { //TODO Figure out how to make a button trigger slow mode
+public class RamseteArcadeDrive extends CommandBase { //TODO Figure out how to make a button trigger slow mode
   
-  // private final RamseteDriveSubsystem m_driveTrain;
-  private final DriveTrain m_driveTrain;
+  private final RamseteDriveSubsystem m_driveTrain;
   private final Joystick driverJoystick;
 
   private boolean isSlowMode = false; //Figure out a button for this. 
@@ -24,7 +25,7 @@ public class ArcadeDrive extends CommandBase { //TODO Figure out how to make a b
   /**
    * Creates a new ArcadeDrive.
    */
-  public ArcadeDrive(Joystick driveController, DriveTrain driveTrain) {
+  public RamseteArcadeDrive(Joystick driveController, RamseteDriveSubsystem driveTrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.driverJoystick = driveController;
     this.m_driveTrain = driveTrain;
@@ -39,23 +40,23 @@ public class ArcadeDrive extends CommandBase { //TODO Figure out how to make a b
   //Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // m_driveTrain.arcadeDrive(getSpeed(), getRotation(), true);
-    m_driveTrain.arcadeDrive(getSpeed(), getRotation(), Constants.kDriveDeadband);
+    m_driveTrain.arcadeDrive(getSpeed(), getRotation(), true);
+    outputTelemetry();
   }
 
   private double getSpeed() {
     double speed = -driverJoystick.getRawAxis(Constants.AXIS_LEFT_STICK_Y);
-    if(m_driveTrain.isSlowMode) {
-      speed *= Constants.SLOW_MODE_SPEED_MODIFIER;
-    }
+    // if(m_driveTrain.isSlowMode) {
+    //   speed *= Constants.SLOW_MODE_SPEED_MODIFIER;
+    // }
     return speed;
   }
 
   private double getRotation() {
-    double rotation = -(driverJoystick.getRawAxis(Constants.AXIS_RIGHT_STICK_X));
-    if(m_driveTrain.isSlowMode) {
-      rotation *= Constants.SLOW_MODE_SPEED_MODIFIER;
-    }
+    double rotation = (driverJoystick.getRawAxis(Constants.AXIS_RIGHT_STICK_X));
+    // if(m_driveTrain.isSlowMode) {
+    //   rotation *= Constants.SLOW_MODE_SPEED_MODIFIER;
+    // }
     return rotation;
   }
 
@@ -70,5 +71,10 @@ public class ArcadeDrive extends CommandBase { //TODO Figure out how to make a b
   @Override
   public boolean isFinished() {
     return false;
+  }
+
+  public void outputTelemetry() {
+    SmartDashboard.putNumber("RamseteAD/Speed", this.getSpeed());
+    SmartDashboard.putNumber("RamseteAD/Rotation", this.getRotation());
   }
 }

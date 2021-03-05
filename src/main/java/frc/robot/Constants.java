@@ -76,11 +76,25 @@ public final class Constants {
 	public static final double SLOW_MODE_SPEED_MODIFIER = 0.5;
 	public static final double CLIMBER_JOG_DEADBAND = 0.1;
 
-	public static final double ksVolts = 0.584;
-	public static final double kvVoltSecondsPerMeter = 2.04;
-	public static final double kaVoltSecondsSquaredPerMeter = 0.39;
+	public static final double ksVolts = 1.02;
+	public static final double kvVoltSecondsPerMeter = 1.02;
+	public static final double kaVoltSecondsSquaredPerMeter =  0.268;
+	public static final double kG = 0;
+	public static final double kCos = 0;
+	
 
-	public static final double kPDriveVel = 14.4;
+	
+
+
+
+
+
+
+
+	// public static final double kPDriveVel = 14.4;
+	//TODO: tune this value!!!
+	public static final double kPDriveVel = 0.000181;
+
 
 	public static final double kTrackwidthMeters = 0.67;
 	public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
