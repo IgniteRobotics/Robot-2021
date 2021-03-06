@@ -287,7 +287,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
   }
 
   public double getHeading() {
-    return Math.IEEEremainder(navX.getAngle(), 360.0) * (1.0);
+    return Math.IEEEremainder(-navX.getAngle(), 360.0) * (1.0);
   }
 
   public void setNeutralMode(final NeutralMode neutralMode) {
