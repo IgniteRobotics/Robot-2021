@@ -18,7 +18,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveToDistance;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.runIndexer;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
@@ -28,8 +30,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-
+import frc.robot.subsystems.Intake;
+import frc.robot.commands.Intake.RunIntake;
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.commands.drivetrain.ToggleSlowMode;
 import frc.robot.commands.drivetrain.ArcadeDrive;
@@ -51,11 +53,10 @@ public class RobotContainer {
 private RamseteDriveSubsystem ramsetedriveTrain = new RamseteDriveSubsystem();
 private Intake m_intake = new Intake();
 private Shooter m_shooter = new Shooter();
+private Indexer m_indexer = new Indexer();
 
 private Joystick m_driveController = new Joystick(Constants.kDriveControllerPort);
 private Joystick m_manipController = new Joystick(Constants.kManipControllerPort);
-
-
 
 
 private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
@@ -97,11 +98,14 @@ private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driv
    */
   private void configureButtonBindings() {
     //new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new ExampleCommand(m_driveTrain);
-    new JoystickButton(m_driveController, Constants.BUTTON_LEFT_BUMPER).whileHeld(new ToggleSlowMode(m_driveTrain));
+    new JoystickButton(m_driveController, Constants.BUTTON_LEFT_BUMPER).whileHeld(new ToggleSlowMode(m_driveTrain)); //TODO fix this
     new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(new TargetPositioning(m_driveTrain, 138));
     new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new TargetPositioning(m_driveTrain, 222));
 
-    
+    //should this be manipulator or driver controller?
+    //if you want to increase the speed of the intake increase this number up to max of 1
+    new JoystickButton(m_manipController, Constants.BUTTON_LEFT_BUMPER).whileHeld(new RunIntake(0.6, m_intake));
+    new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(new runIndexer(0.20, m_indexer)); //check if this works
   }
 
   private void configureSubsystemCommands() {

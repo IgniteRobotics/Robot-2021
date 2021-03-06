@@ -39,6 +39,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.robot.Constants;
 
 import frc.robot.util.Util;
@@ -53,7 +55,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
   private final WPI_VictorSPX rightFollower = new WPI_VictorSPX(Constants.kRightFollowerPort);
   private final WPI_VictorSPX rightFollower2 = new WPI_VictorSPX(Constants.kRightFollowerPort2);
 
-  private final DifferentialDrive m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
+  private DifferentialDrive m_driveTrain;
 
   private final AHRS navX = new AHRS(SPI.Port.kMXP);
 
@@ -61,7 +63,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
   private Pose2d savedPose;
 
-  private boolean useEncoders;
+  private boolean useEncoders = true;
   private boolean encodersAvailable;
 
   private final SlewRateLimiter speedRateLimiter = new SlewRateLimiter(Constants.SPEED_RATE_LIMIT_ARCADE);
@@ -94,13 +96,13 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     enableEncoders();
 
     setNeutralMode(NeutralMode.Brake);
+//uninvert right
+    rightMaster.setSensorPhase(true);
+    rightMaster.setInverted(false);
+    rightFollower.setInverted(false);
+    rightFollower2.setInverted(false) ;
 
-    rightMaster.setSensorPhase(false);
-    rightMaster.setInverted(true);
-    rightFollower.setInverted(true);
-    rightFollower2.setInverted(true);
-
-    leftMaster.setSensorPhase(false);
+    leftMaster.setSensorPhase(true);
     leftMaster.setInverted(false);
     leftFollower.setInverted(false);
     leftFollower2.setInverted(false);
@@ -112,26 +114,9 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     leftFollower2.follow(leftMaster);
     rightFollower.follow(rightMaster);
     rightFollower2.follow(rightMaster);
-  }
 
-  public void addDashboardWidgets(ShuffleboardLayout dashboard) {
-    dashboard.addString("Pose", () -> m_odometry.getPoseMeters().toString());
-
-    var useEncodersEntry = dashboard.addPersistent("Use Encoders", useEncoders)
-        .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
-    useEncodersEntry.addListener(this::handleEncoderEntry, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
-  }
-
-  private void handleEncoderEntry(EntryNotification notification) {
-    var entry = notification.getEntry();
-    if(entry.getBoolean(true) && (!encodersAvailable || !useEncoders)) {
-      useEncoders = true;
-      enableEncoders();
-    }
-    else if(!entry.getBoolean(true)) {
-      useEncoders = false;
-    }
-    entry.setBoolean(useEncoders);
+    //inversion etc has to happen BEFORE this statement!
+    m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
   }
 
   private void enableEncoders() {
@@ -149,6 +134,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), Util.getMetersFromEncoderTicks(getLeftEncoderPosition()),
         Util.getMetersFromEncoderTicks(getRightEncoderPosition()));
+    outputTelemetry();
   }
 
   public Pose2d getCurrentPose() {
@@ -180,6 +166,20 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
   }
 
+//left rotation negative 
+  //  right encoder negative 
+    //left encoder negative
+//right  positive joystick 
+  //encoder negative - should be positive 
+
+//forward
+  //speed goes up 
+  //both encoders should go in same direction 
+  //left encoder positive - good
+  //right encoder negative
+
+
+//joysticks and can ID's are correct
 
   //not sure if I want to use this. Might want to use the other drivetrain's arcadeDrive() - Rossy
   public void arcadeDrive(final double speed, final double rotation, final boolean useSquares) {
@@ -193,7 +193,8 @@ public class RamseteDriveSubsystem extends SubsystemBase {
       zRotation *= Constants.kMaxAngularVelocity;
       var wheelSpeeds = Constants.kDriveKinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, zRotation));
       if(useEncoders) {
-        tankDriveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+        //tankDriveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+        m_driveTrain.arcadeDrive(speed, rotation, useSquares);
       }
       else {
       m_driveTrain.arcadeDrive(speed, rotation, useSquares);
@@ -215,7 +216,10 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     }
   }
 
-  public void tankDriveVelocity(final double leftVelocity, final double rightVelocity) {
+  public void tankDriveVelocity(double leftVelocity, double rightVelocity) {
+    //TODO - remove later.  liting velocity to 1 m/s
+    //leftVelocity = Util.limit(leftVelocity, 1.0);
+    //rightVelocity = Util.limit(rightVelocity, 1.0);
     final double leftAccel = (leftVelocity - Util.stepsPerDecisecToMetersPerSec(leftMaster.getSelectedSensorVelocity()))
         / .20;
     final double rightAccel = (rightVelocity
@@ -290,4 +294,77 @@ public class RamseteDriveSubsystem extends SubsystemBase {
             this)
         .andThen(this::stop, this);
   }
+
+  public double getLeftEncoderVel() {
+    return leftMaster.getSelectedSensorVelocity();
+  }
+
+  public double getRightEncoderVel() {
+    return rightMaster.getSelectedSensorVelocity();
+  }
+
+  public double getLeftMasterVoltage() {
+    return leftMaster.getMotorOutputVoltage();
+  }
+
+  public double getRightMasterVoltage() {
+    return rightMaster.getMotorOutputVoltage();
+  }
+
+  
+  public double getLeftPercentOutput() {
+    return leftMaster.getMotorOutputPercent();
+  }
+
+  public double getRightPercentOutput() {
+    return rightMaster.getMotorOutputPercent();
+  }
+
+  public double getLeftMasterCurrent() {
+    return leftMaster.getStatorCurrent();
+  }
+
+  public double getRightMasterCurrent() {
+    return rightMaster.getStatorCurrent();
+  }
+
+  public boolean isConnected() {
+    return navX.isConnected();
+  }
+
+  public double getAngle() {
+    return navX.getAngle();
+  }
+
+  public double getYaw() {
+    return navX.getYaw();
+  }
+
+  public double getClosedLoopTarget() {
+    return leftMaster.getClosedLoopTarget();
+  }
+
+  public void outputTelemetry() {
+    SmartDashboard.putNumber("Drivetrain/Left enc pos", this.getLeftEncoderPosition());
+    SmartDashboard.putNumber("Drivetrain/Right enc pos", this.getRightEncoderPosition());
+    SmartDashboard.putNumber("Drivetrain/Left enc vel", this.getLeftEncoderVel());
+    SmartDashboard.putNumber("Drivetrain/Right enc vel", this.getRightEncoderVel());
+    SmartDashboard.putNumber("Drivetrain/Left master voltage", this.getLeftMasterVoltage());
+    SmartDashboard.putNumber("Drivetrain/Right master voltage", this.getRightMasterVoltage());
+    SmartDashboard.putNumber("Drivetrain/Left master current", this.getLeftMasterCurrent());
+    SmartDashboard.putNumber("Drivetrain/Right master current", this.getRightMasterCurrent());
+    SmartDashboard.putNumber("Drivetrain/Left percent out", this.getLeftPercentOutput());
+    SmartDashboard.putNumber("Drivetrain/Right percent out", this.getRightPercentOutput());
+    SmartDashboard.putBoolean("Drivetrain/Is navX connected?", this.isConnected());
+    SmartDashboard.putNumber("Drivetrain/Angle", this.getAngle());
+    SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
+    SmartDashboard.putNumber("Drivetrain/Closed loop target", this.getClosedLoopTarget());
+    SmartDashboard.putBoolean("Drivetrain/Using Encoders?", this.useEncoders);
+    
+    // SmartDashboard.putNumber("Drivetrain/Turn error", this.getTurnError());
+    // SmartDashboard.putNumber("Drivetrain/Turn setpoint", this.getTurnSetpoint());
+  }
+
+
+
 }

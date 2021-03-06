@@ -15,24 +15,52 @@ import com.ctre.phoenix.motorcontrol.*;
 import frc.robot.RobotContainer;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import frc.robot.Constants;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Shooter extends SubsystemBase {
   
-  private WPI_TalonSRX motor;
+  private int max_degrees = 360;
+  private WPI_TalonSRX left_motor =  new WPI_TalonSRX(Constants.kShooterTalonMotorPort); //shooter
   //private WPI_VictorSPX follow1;
+  private CANSparkMax hood_motor = new CANSparkMax(0, MotorType.kBrushless);
+  private CANEncoder hoodEncoder = hood_motor.getEncoder();
+  private CANPIDController hoodPidController = hood_motor.getPIDController();
+
+
+  //3:2 (.666)  from falcon shooter motor to shooter 
+  // hooder motor 25:1 (25 reduction)
+  //2.91 counts per 1 degree
+  
+  //TODO set the device ID of the sparkmax controller!!!!!
+
+  private WPI_TalonSRX right_motor;  
+
+  //confirm with team for limit switch on hood
+  
   
   /**
    * Creates a new motor1.
    */
   public Shooter() {
-    motor = new WPI_TalonSRX(Constants.kShooterTalonMotorPort);
+  
   //  follow1 = new WPI_TalonSRX(Constants.kShooterTalonMotorPort2);
     motor.configFactoryDefault();
     motor.setNeutralMode(NeutralMode.Coast);
     //follow1.follow(motor);
     //follow1.setNeutralMode(NeutralMode.Coast);
     //follow1.setInverted(true);
+    
 
+  }
+
+  private void configureHood() {
+    // Modify constants later
+    hoodPidController.setP(0);
+    hoodPidController.setI(0);
+    hoodPidController.setD(0);
+    hoodPidController.setIZone(0);
+    hoodPidController.setFF(0);
   }
 
   @Override
@@ -49,9 +77,6 @@ public class Shooter extends SubsystemBase {
   
 
   public void configuration(int kSlotIdx, int kPIDLoopIdx, int kTimeoutMs, double kP, double kI, double kD, double kF){
-
-
-
     /* Config sensor used for Primary PID [Velocity] */
     motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,kPIDLoopIdx, kTimeoutMs);
     motor.setSensorPhase(true);
