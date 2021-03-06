@@ -352,11 +352,11 @@ public class RamseteDriveSubsystem extends SubsystemBase {
   }
 
   public double getAngle() {
-    return navX.getAngle();
+    return -navX.getAngle();
   }
 
   public double getYaw() {
-    return navX.getYaw();
+    return -navX.getYaw();
   }
 
   public double getClosedLoopTarget() {
