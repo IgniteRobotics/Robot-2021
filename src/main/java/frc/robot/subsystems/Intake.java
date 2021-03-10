@@ -28,7 +28,6 @@ public class Intake extends SubsystemBase {
     intakeMotor = new WPI_VictorSPX(Constants.kIntakeMotorPort);
     intakeMotor.setInverted(false);
     intakeMotor.setNeutralMode(NeutralMode.Brake);
-
     isExtended = false;
 
     intakePistonSolenoid = new Solenoid(Constants.kIntakeSolenoidPort);
