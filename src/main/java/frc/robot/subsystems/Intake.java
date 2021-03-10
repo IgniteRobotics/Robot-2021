@@ -54,7 +54,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void spin(double speed) {
-    intakeMotor.set(ControlMode.PercentOutput, speed);
+    intakeMotor.set(ControlMode.PercentOutput, speed); 
   }
 
   public void stop() {
