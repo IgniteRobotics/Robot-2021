@@ -34,7 +34,7 @@ public class Spindexer extends SubsystemBase {
    * Creates a new Spindexer.
    */
   public Spindexer() {
-    spindexerMotor = new WPI_TalonSRX(Constants.kSpindexerMotorPort);
+    spindexerMotor = new WPI_TalonSRX(99);
     spindexerMotor.setInverted(false);
     spindexerMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     spindexerMotor.setNeutralMode(NeutralMode.Brake);

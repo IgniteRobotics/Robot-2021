@@ -79,4 +79,7 @@ public class Util {
 		return (GEAR_TEETH_PER_DEGREE) * degrees * HOOD_GEAR_RATIO * (TICKS_PER_REVOLUTION_NEO / 360);
 	}
 
+	public static double degreesToMoveHood(double ticks) {
+		return ticks / ((GEAR_TEETH_PER_DEGREE) * HOOD_GEAR_RATIO * (TICKS_PER_REVOLUTION_NEO / 360));
+	}
 }

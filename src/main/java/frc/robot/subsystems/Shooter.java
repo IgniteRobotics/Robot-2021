@@ -24,27 +24,32 @@ import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Shooter extends SubsystemBase {
   private WPI_TalonSRX leftMotor =  new WPI_TalonSRX(Constants.kShooterTalonMotorPort); //shooter
-  private WPI_TalonSRX followMotor;
+  private WPI_TalonSRX followMotor =  new WPI_TalonSRX(Constants.kShooterTalonMotorFollowerPort);
   private double shootergearRatio = 1.5;
   private WPI_TalonSRX kickUp = new WPI_TalonSRX(  Constants.kShooterTalonMotorKickUpPort); //TODO confirm this
-
+  
   private CANSparkMax hood_motor = new CANSparkMax(Constants.kShooterSparkMotorHoodPort, MotorType.kBrushless);
   private CANEncoder hoodEncoder = hood_motor.getEncoder();
   private CANPIDController hoodPidController = hood_motor.getPIDController();
-
+  
   private int maxDegrees = 80; //set this later
   private double hoodPositionTicks = 0;
   private boolean hoodReset = false;
-
+  private boolean extended; 
   private double zeroPosition;
-
+  
   private CANDigitalInput hoodLimitSwitch = hood_motor.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
-
+  
+  //m_pidController.setOutputRange(kMinOutput, kMaxOutput)
+  
+  
+  
   //3:2 (.666)  from falcon shooter motor to shooter 
   
   // hooder motor 25:1 (25 reduction)
@@ -66,10 +71,12 @@ public class Shooter extends SubsystemBase {
     followMotor.setNeutralMode(NeutralMode.Coast);
     followMotor.setInverted(true);
     hood_motor.setIdleMode(IdleMode.kBrake);
-
+    
     hoodEncoder.setPositionConversionFactor(42);
     
-   
+    kickUp.setInverted(true);
+    
+    
     configureHood();
     //shooterConfiguration(0,0,0,0); TODO set this later
   }
@@ -91,7 +98,7 @@ public class Shooter extends SubsystemBase {
     if (hoodLimitSwitch.get() == true){
       hood_motor.set(0);
     } 
-
+    
     if(!hoodReset) {
       resetHood();
     }
@@ -135,19 +142,30 @@ public class Shooter extends SubsystemBase {
   }
   
   public double getHoodAngle() {
-    
-    
-    return -1.0;
+    return Util.degreesToMoveHood(getHoodTicks());
   }
   
+  public void retractHood(){
+    
+  }
+  
+  public void extendHood() {
+    
+  }
+  public double getHoodTicks() {
+    return hoodEncoder.getPosition();
+  }
   
   public void changeHoodAngle(double targetAngle) {
-
+    // v+ hood raises
     double targetTicks = Util.ticksToMoveHood(targetAngle);
-    double deltaTicks = targetTicks - hoodPositionTicks; 
-
+    changeHoodTicks(targetTicks);
   }
-
+  
+  public void changeHoodTicks(double targetTicks) {
+    hoodPidController.setReference(targetTicks, ControlType.kPosition);
+  }
+  
   public void resetHood() {
     if(!hoodLimitSwitch.get()) {
       hood_motor.set(-0.3);
@@ -155,9 +173,8 @@ public class Shooter extends SubsystemBase {
       // reset encoders
       hood_motor.set(0);
       hoodReset = true;
-     
-      zeroPosition = hoodEncoder.getPosition();
-      hoodPositionTicks = 0;
+
+      hoodEncoder.setPosition(0);
     }
   }
   

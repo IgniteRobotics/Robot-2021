@@ -34,9 +34,20 @@ public final class Constants {
 	
 	public static final int kIntakeMotorPort = 10; //TODO find out what these actually are.
 	public static final int kSorterMotorPort = 11;
-	public static final int kSpindexerMotorPort = 14;
-	public static final int kShooterTalonMotorPort = 13;
-	public static final int kShooterTalonMotorPort2 = 8;
+	public static final int kIndexerMotorPortLeft = 7;
+	public static final int kIndexerMotorPortRight = 8;
+	
+
+	//shooter ports
+	public static final int kShooterTalonMotorPort = 14;
+	public static final int kShooterTalonMotorKickUpPort = 12; 
+	public static final int kShooterSparkMotorHoodPort = 15;
+	public static final int kShooterTalonMotorFollowerPort = 13;
+
+
+
+
+
 	public static final int kKickerMotorPort = 9;
 	public static final int kClimberMotorPort = 7;
 	public static final int kTurretMotorPort = 12;
@@ -131,7 +142,5 @@ public final class Constants {
 	public static final double TICKS_PER_REVOLUTION_NEO = 42;
 	public static final double HOOD_GEAR_RATIO = 25;
 
-	//shooter motors
-	public static final int kShooterTalonMotorKickUpPort = -1; 
-	public static final int kShooterSparkMotorHoodPort = -1;
+
 }
