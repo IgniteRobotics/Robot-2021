@@ -34,9 +34,20 @@ public final class Constants {
 	
 	public static final int kIntakeMotorPort = 10; //TODO find out what these actually are.
 	public static final int kSorterMotorPort = 11;
-	public static final int kSpindexerMotorPort = 14;
-	public static final int kShooterTalonMotorPort = 13;
-	public static final int kShooterTalonMotorPort2 = 8;
+	public static final int kIndexerMotorPortLeft = 7;
+	public static final int kIndexerMotorPortRight = 8;
+	
+
+	//shooter ports
+	public static final int kShooterTalonMotorPort = 14;
+	public static final int kShooterTalonMotorKickUpPort = 12; 
+	public static final int kShooterSparkMotorHoodPort = 15;
+	public static final int kShooterTalonMotorFollowerPort = 13;
+
+
+
+
+
 	public static final int kKickerMotorPort = 9;
 	public static final int kClimberMotorPort = 7;
 	public static final int kTurretMotorPort = 12;
@@ -116,4 +127,20 @@ public final class Constants {
 	public static final double OPEN_LOOP_RAMP = 0.25;
 
 	public static final SimpleMotorFeedforward FEED_FORWARD = new SimpleMotorFeedforward(ksVolts, kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
+
+	public static int ENCODER_TICKS_PER_REVOLUTION = 8192;
+
+	public static int ENCODER_TICKS_PER_REVOLUTION_TALON = 8192;	
+	
+	public static int WHEEL_DIAMETER = 6; //in inches
+	public static double WHEEL_DIAMETER_METERS = 0.1524;
+	
+	public static double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_METERS * Math.PI;
+	
+	// variables for hood angle
+	public static final double GEAR_TEETH_PER_DEGREE = 360.0 / 366.0;
+	public static final double TICKS_PER_REVOLUTION_NEO = 42;
+	public static final double HOOD_GEAR_RATIO = 25;
+
+
 }

@@ -52,7 +52,7 @@ public class RobotContainer {
 
 private RamseteDriveSubsystem m_driveTrain = new RamseteDriveSubsystem();
 private Intake m_intake = new Intake();
-private Shooter m_shooter = new Shooter();
+//private Shooter m_shooter = new Shooter();
 private Indexer m_indexer = new Indexer();
 
 private Joystick m_driveController = new Joystick(Constants.kDriveControllerPort);
@@ -107,6 +107,7 @@ private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveCont
     //if you want to increase the speed of the intake increase this number up to max of 1
     new JoystickButton(m_manipController, Constants.BUTTON_LEFT_BUMPER).whileHeld(new RunIntake(0.6, m_intake));
     new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(new runIndexer(0.20, m_indexer)); //check if this works
+    
   }
 
   private void configureSubsystemCommands() {
