@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveToDistance;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ShootBall;
 import frc.robot.commands.runIndexer;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Indexer;
@@ -52,7 +53,7 @@ public class RobotContainer {
 
 private RamseteDriveSubsystem m_driveTrain = new RamseteDriveSubsystem();
 private Intake m_intake = new Intake();
-//private Shooter m_shooter = new Shooter();
+private Shooter m_shooter = new Shooter();
 private Indexer m_indexer = new Indexer();
 
 private Joystick m_driveController = new Joystick(Constants.kDriveControllerPort);
@@ -65,8 +66,9 @@ private Joystick m_manipController = new Joystick(Constants.kManipControllerPort
 private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
 //rivate AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
 
-//SendableChooser chooseAuton = new SendableChooser<>();
-//m_chooser.addOption("Complex Auto", m_complexAuto); //Change these to our auton commands
+private ShootBall shootCommand = new ShootBall(m_shooter, m_indexer);
+
+SendableChooser<Command> chooseAuton = new SendableChooser<>();
 
 
 
@@ -87,8 +89,9 @@ private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveCont
    */
   public RobotContainer() {
     // Configure the button bindings
-    configureButtonBindings();
-    configureSubsystemCommands();
+    this.configureButtonBindings();
+    this.configureSubsystemCommands();
+    this.configureAutonChooser();
   }
 
   /**
@@ -107,6 +110,12 @@ private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveCont
     //if you want to increase the speed of the intake increase this number up to max of 1
     new JoystickButton(m_manipController, Constants.BUTTON_LEFT_BUMPER).whileHeld(new RunIntake(0.6, m_intake));
     new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(new runIndexer(0.20, m_indexer)); //check if this works
+
+    //adding driver control for intake and shooter
+    new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new RunIntake(0.6, m_intake));
+
+    new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
+    new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new runIndexer(.3, m_indexer));
     
   }
 
@@ -114,6 +123,43 @@ private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveCont
     m_driveTrain.setDefaultCommand(teleDriveCommand);
   }
 
+  private void configureAutonChooser() {
+
+    SmartDashboard.putData("Auto Chooser", this.chooseAuton);
+
+    String[] paths = {
+      "28-BarrelRacing6",
+      "28-Bounce-A3",
+      "28-Bounce-A6",
+      "28-Bounce-A9",
+      "28-Bounce-finish",
+      "28-GS-A-Blue",
+      "28-GS-A-Red",
+      "28-GS-B-Blue",
+      "28-GS-B-Red",
+      "28-Slalom",
+      "Sam's Barrol",
+      "Sam's Bounce",
+      "Sam's Slalom",
+      "barrel1",
+      "barrelracing",
+      "bounceRace1",
+      "halfSlalom",
+      "leftTurn",
+      "line",
+      "oneMeter1",
+      "rightTurn",
+      "slalom",
+      "slalom1",
+      "test",
+      "twoMeter"
+    };
+
+    for (String s: paths){
+      this.chooseAuton.addOption(s, this.loadTrajectory(s));
+    }
+
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -121,22 +167,15 @@ private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveCont
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // Each trejectory will have its own command and we will choose which one to run in auton thorugh smartdashboard
-    //there are around 3 different paths for autonomous
-
-    Trajectory trajectory = loadTrajectory("line"); //change this to change default path in auton
-    if(trajectory == null) {
-      return null;
-    }
-
-
-    //remember to change this to follow trajecotry
-    return new DriveTrajectory(m_driveTrain, trajectory).andThen(() -> m_driveTrain.tankDriveVolts(0.0, 0.0));
+    System.out.println("Auto: " + chooseAuton.getSelected().getName());
+    return chooseAuton.getSelected();
   }
 
-  protected static Trajectory loadTrajectory(String trajectoryName) {
+  protected Command loadTrajectory(String trajectoryName) {
     try{
-    return TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", "output", trajectoryName + ".wpilib.json")));
+      Trajectory trajectory =  TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", "output", trajectoryName + ".wpilib.json")));
+      return new DriveTrajectory(m_driveTrain, trajectory).andThen(() -> m_driveTrain.tankDriveVolts(0.0, 0.0));
+    
     } catch(IOException e) {
       DriverStation.reportError("Failed to load auto trajectory: " + trajectoryName, false);
       return null;

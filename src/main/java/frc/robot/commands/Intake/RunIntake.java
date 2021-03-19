@@ -27,7 +27,8 @@ public class RunIntake extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.toggleIntake();
+    //TODO: check pneumatics
+    //m_intake.toggleIntake();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -40,7 +41,8 @@ public class RunIntake extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_intake.stop();
-    m_intake.toggleIntake();
+    //TODO: check pneumatics
+    //m_intake.toggleIntake();
   }
 
   // Returns true when the command should end.

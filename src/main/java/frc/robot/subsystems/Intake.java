@@ -31,17 +31,17 @@ public class Intake extends SubsystemBase {
 
     isExtended = false;
 
-    intakePistonSolenoid = new Solenoid(Constants.kIntakeSolenoidPort);
+    intakePistonSolenoid = null; //new Solenoid(Constants.kIntakeSolenoidPort);
   }
 
   private void extendIntake() {
     isExtended = true;
-    intakePistonSolenoid.set(true);
+    //intakePistonSolenoid.set(true);
   }
 
   private void retractIntake() {
     isExtended = false;
-    intakePistonSolenoid.set(false);
+    //intakePistonSolenoid.set(false);
   }
 
   public void toggleIntake() {
