@@ -52,7 +52,7 @@ public class RobotContainer {
 
 private RamseteDriveSubsystem m_driveTrain = new RamseteDriveSubsystem();
 private Intake m_intake = new Intake();
-//private Shooter m_shooter = new Shooter();
+private Shooter m_shooter = new Shooter();
 private Indexer m_indexer = new Indexer();
 
 private Joystick m_driveController = new Joystick(Constants.kDriveControllerPort);
