@@ -14,18 +14,23 @@ public class Indexer extends SubsystemBase {
   /** Creates a new Indexer. */
 
   //TODO confirm motor controllers
-  private WPI_TalonSRX indexerMaster = new WPI_TalonSRX(Constants.kIndexerMotorPortLeft); //TODO CHANGE THESE TO GOOD CAN IDS
+  private WPI_TalonSRX indexerMaster = new WPI_TalonSRX(Constants.kIndexerMotorPortLeft); 
   private WPI_TalonSRX  indexerFollower = new WPI_TalonSRX(Constants.kIndexerMotorPortRight);
 
 
 
   public Indexer() {
     indexerFollower.setInverted(true);
+    indexerFollower.follow(indexerMaster);
   }
   public void runIndexer(double speed) { //more like percent output
 
     indexerMaster.set(ControlMode.PercentOutput, speed);
 
+  }
+
+  public void stop(){
+    indexerMaster.set(ControlMode.PercentOutput, 0);
   }
 
   @Override

@@ -25,6 +25,7 @@ public class ShootBall extends CommandBase {
 
   public ShootBall(Shooter shooter, Indexer indexer) {
     this.shooter = shooter;
+    this.indexer = indexer;
     addRequirements(shooter, indexer);
 
     tab = Shuffleboard.getTab("Shooter");
@@ -69,6 +70,7 @@ public class ShootBall extends CommandBase {
   private void stop() {
     shooter.setVelocity(0);
     shooter.stopKickup();
+    indexer.stop();
   }
 
   // Called once the command ends or is interrupted.

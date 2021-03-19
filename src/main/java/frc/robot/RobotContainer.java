@@ -115,6 +115,7 @@ SendableChooser<Command> chooseAuton = new SendableChooser<>();
     new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new RunIntake(0.6, m_intake));
 
     new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
+    new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new runIndexer(.3, m_indexer));
     
   }
 
