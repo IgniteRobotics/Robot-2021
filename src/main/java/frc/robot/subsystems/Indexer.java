@@ -34,6 +34,10 @@ public class Indexer extends SubsystemBase {
     indexerFollower.set(ControlMode.PercentOutput, 0);
   }
 
+  public double getPower(){
+    return indexerMaster.get();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

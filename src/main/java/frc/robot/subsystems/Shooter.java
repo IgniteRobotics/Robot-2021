@@ -66,11 +66,11 @@ public class Shooter extends SubsystemBase {
   */
   public Shooter() {
     leftMotor.configFactoryDefault();
-    leftMotor.setSensorPhase(true);
+    leftMotor.setInverted(true);
     leftMotor.setNeutralMode(NeutralMode.Coast);
     followMotor.follow(leftMotor);
     followMotor.setNeutralMode(NeutralMode.Coast);
-    followMotor.setInverted(true);
+    followMotor.setInverted(false);
     hood_motor.setIdleMode(IdleMode.kBrake);
     
     hoodEncoder.setPositionConversionFactor(42);
@@ -188,5 +188,9 @@ public class Shooter extends SubsystemBase {
   
   public void stopKickup() {
     kickUp.set(ControlMode.PercentOutput, 0);
+  }
+
+  public double getKickupPower(){
+    return kickUp.get();
   }
 }
