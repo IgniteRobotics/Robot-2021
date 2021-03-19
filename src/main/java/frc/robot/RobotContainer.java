@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveToDistance;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ShootBall;
 import frc.robot.commands.runIndexer;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Indexer;
@@ -52,7 +53,7 @@ public class RobotContainer {
 
 private RamseteDriveSubsystem m_driveTrain = new RamseteDriveSubsystem();
 private Intake m_intake = new Intake();
-//private Shooter m_shooter = new Shooter();
+private Shooter m_shooter = new Shooter();
 private Indexer m_indexer = new Indexer();
 
 private Joystick m_driveController = new Joystick(Constants.kDriveControllerPort);
@@ -64,6 +65,8 @@ private Joystick m_manipController = new Joystick(Constants.kManipControllerPort
 //private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
 private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
 //rivate AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
+
+private ShootBall shootCommand = new ShootBall(m_shooter, m_indexer);
 
 SendableChooser<Command> chooseAuton = new SendableChooser<>();
 
@@ -107,6 +110,11 @@ SendableChooser<Command> chooseAuton = new SendableChooser<>();
     //if you want to increase the speed of the intake increase this number up to max of 1
     new JoystickButton(m_manipController, Constants.BUTTON_LEFT_BUMPER).whileHeld(new RunIntake(0.6, m_intake));
     new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(new runIndexer(0.20, m_indexer)); //check if this works
+
+    //adding driver control for intake and shooter
+    new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new RunIntake(0.6, m_intake));
+
+    new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
     
   }
 

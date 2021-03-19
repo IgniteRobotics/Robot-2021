@@ -19,20 +19,27 @@ public class ShootBall extends CommandBase {
   private ShuffleboardTab tab;
   private NetworkTableEntry targetShooterVelocityEntry;
   private NetworkTableEntry intakeEffortEntry;
+  private NetworkTableEntry kickupEffortEntry;
 
   private static final int RANGE = 50;
 
   public ShootBall(Shooter shooter, Indexer indexer) {
     this.shooter = shooter;
     addRequirements(shooter, indexer);
+
+    tab = Shuffleboard.getTab("Shooter");
+    targetShooterVelocityEntry = tab.add("Target Shooter Velocity", 0).withProperties(Map.of("min", 0)).getEntry();
+    intakeEffortEntry = tab.add("Intake Effort Percentage", 0.4).withProperties(Map.of("min", -1, "max", 1)).getEntry();
+    kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.3).withProperties(Map.of("min", 0, "max", 1)).getEntry();
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    tab = Shuffleboard.getTab("Shooter");
-    targetShooterVelocityEntry = tab.add("Target Shooter Velocity", 0).withProperties(Map.of("min", 0)).getEntry();
-    intakeEffortEntry = tab.add("Intake Effort Percentage", 0.4).withProperties(Map.of("min", -1, "max", 1)).getEntry();
+    // tab = Shuffleboard.getTab("Shooter");
+    // targetShooterVelocityEntry = tab.add("Target Shooter Velocity", 0).withProperties(Map.of("min", 0)).getEntry();
+    // intakeEffortEntry = tab.add("Intake Effort Percentage", 0.4).withProperties(Map.of("min", -1, "max", 1)).getEntry();
+    // kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.3).withProperties(Map.of("min", 0, "max", 1)).getEntry();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -40,11 +47,12 @@ public class ShootBall extends CommandBase {
   public void execute() {
     double targetVelocity = targetShooterVelocityEntry.getDouble(0);
     double intakeEffort = intakeEffortEntry.getDouble(0.4);
+    double kickupEffort = kickupEffortEntry.getDouble(0.3);
     // get velocity from the Shuffleboard
     setShooterVelocity(targetVelocity);
 
     if(targetVelocity - RANGE < shooter.getShooterRPM() && targetVelocity + RANGE > shooter.getShooterRPM()) {
-      shooter.runKickup();
+      shooter.runKickup(kickupEffort);
       indexer.runIndexer(intakeEffort); 
     } else {
       shooter.stopKickup();

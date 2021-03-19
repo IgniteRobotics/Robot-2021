@@ -40,7 +40,8 @@ public class Shooter extends SubsystemBase {
   
   private int maxDegrees = 80; //set this later
   private double hoodPositionTicks = 0;
-  private boolean hoodReset = false;
+  //TODO fix limit switch for hood reset
+  private boolean hoodReset = true;
   private boolean extended; 
   private double zeroPosition;
   
@@ -100,7 +101,8 @@ public class Shooter extends SubsystemBase {
     } 
     
     if(!hoodReset) {
-      resetHood();
+      //TODO undo this once it's tested.
+      //resetHood();
     }
   }
   
@@ -152,6 +154,8 @@ public class Shooter extends SubsystemBase {
   public void extendHood() {
     
   }
+
+
   public double getHoodTicks() {
     return hoodEncoder.getPosition();
   }
@@ -178,8 +182,8 @@ public class Shooter extends SubsystemBase {
     }
   }
   
-  public void runKickup() {
-    kickUp.set(ControlMode.PercentOutput, .40); //TODO configure this
+  public void runKickup(double effort) {
+    kickUp.set(ControlMode.PercentOutput, effort); 
   }
   
   public void stopKickup() {
