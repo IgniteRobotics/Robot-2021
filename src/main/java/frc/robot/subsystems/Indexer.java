@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -14,23 +14,24 @@ public class Indexer extends SubsystemBase {
   /** Creates a new Indexer. */
 
   //TODO confirm motor controllers
-  private WPI_TalonSRX indexerMaster = new WPI_TalonSRX(Constants.kIndexerMotorPortLeft); 
-  private WPI_TalonSRX  indexerFollower = new WPI_TalonSRX(Constants.kIndexerMotorPortRight);
+  private WPI_VictorSPX indexerMaster = new WPI_VictorSPX(Constants.kIndexerMotorPortLeft); 
+  private WPI_VictorSPX indexerFollower = new WPI_VictorSPX(Constants.kIndexerMotorPortRight);
 
 
 
   public Indexer() {
     indexerFollower.setInverted(true);
-    indexerFollower.follow(indexerMaster);
   }
   public void runIndexer(double speed) { //more like percent output
 
     indexerMaster.set(ControlMode.PercentOutput, speed);
+    indexerFollower.set(ControlMode.PercentOutput, speed);
 
   }
 
   public void stop(){
     indexerMaster.set(ControlMode.PercentOutput, 0);
+    indexerFollower.set(ControlMode.PercentOutput, 0);
   }
 
   @Override
