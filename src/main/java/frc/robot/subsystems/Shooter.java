@@ -133,6 +133,12 @@ public class Shooter extends SubsystemBase {
     leftMotor.set(ControlMode.Velocity, velocity);
   }
   public void setpower(double power){
+    //limit to 1.0  do not let run backwards.
+    if (power > 1.0) {
+      power = 1.0;
+    } else if (power < 0) {
+      power = 0;
+    }
     leftMotor.set(ControlMode.PercentOutput, power);
   }
 
