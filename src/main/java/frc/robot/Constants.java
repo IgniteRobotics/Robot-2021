@@ -131,6 +131,9 @@ public final class Constants {
 	public static int ENCODER_TICKS_PER_REVOLUTION = 8192;
 
 	public static int ENCODER_TICKS_PER_REVOLUTION_TALON = 8192;	
+
+	public static double SHOOTER_GEAR_RATIO = 1.5;
+	public static int SHOOTER_MAX_RPM = 6000;
 	
 	public static int WHEEL_DIAMETER = 6; //in inches
 	public static double WHEEL_DIAMETER_METERS = 0.1524;
