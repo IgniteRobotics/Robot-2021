@@ -142,5 +142,9 @@ public final class Constants {
 	public static final double TICKS_PER_REVOLUTION_NEO = 42;
 	public static final double HOOD_GEAR_RATIO = 25;
 
-
+	//default arcade drive modifiers
+	public static final double VELOCITY_RAMP_EXPONENT = 2;
+	public static final double VELOCITY_LIMIT_MULTIPLIER = 1;
+	public static final double TURN_RAMP_EXPONENT = 2;
+	public static final double TURN_LIMIT_MULTIPLIER = 1;
 }

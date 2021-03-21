@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -33,7 +35,9 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -72,6 +76,18 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
     // create a field to send odometry data to.
   private Field2d m_field = new Field2d();
+
+  private ShuffleboardTab tab;
+  private NetworkTableEntry velocityRampExponentEntry;
+  private NetworkTableEntry velocityLimitMultiplierEntry;
+  private NetworkTableEntry turnRampExponentEntry;
+  private NetworkTableEntry turnLimitMultiplierEntry;
+
+  private double velocityRampExponent;
+  private double velocityLimitMultiplier;
+  private double turnRampExponent;
+  private double turnLimitMultiplier;
+
 
   public RamseteDriveSubsystem() {
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); //assume robot starts at x =0, y=0, theta = 0
@@ -122,6 +138,18 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     //inversion etc has to happen BEFORE this statement!
     m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
     SmartDashboard.putData("Field", m_field);
+
+    tab = Shuffleboard.getTab("Drivetrain");
+    velocityRampExponentEntry = tab.add("DT Vel Ramp Exp", Constants.VELOCITY_RAMP_EXPONENT).withProperties(Map.of("min", 1)).getEntry();
+    velocityLimitMultiplierEntry = tab.add("DT Vel Lim Mult", Constants.VELOCITY_LIMIT_MULTIPLIER).withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
+    turnRampExponentEntry = tab.add("DT Turn Ramp Exp", Constants.TURN_RAMP_EXPONENT).withProperties(Map.of("min", 1)).getEntry();
+    turnLimitMultiplierEntry = tab.add("DT Trun Lim Mult", Constants.TURN_LIMIT_MULTIPLIER).withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
+
+    velocityLimitMultiplier = velocityLimitMultiplierEntry.getDouble(Constants.VELOCITY_LIMIT_MULTIPLIER);
+    velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);
+    turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
+    turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
+
   }
 
   private void enableEncoders() {
@@ -140,6 +168,12 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), Util.getMetersFromEncoderTicks(getLeftEncoderPosition()),
         Util.getMetersFromEncoderTicks(getRightEncoderPosition()));
     m_field.setRobotPose(m_odometry.getPoseMeters());
+
+    velocityLimitMultiplier = velocityLimitMultiplierEntry.getDouble(Constants.VELOCITY_LIMIT_MULTIPLIER);
+    velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);
+    turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
+    turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
+    
     outputTelemetry();
   }
 
@@ -173,32 +207,17 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     m_odometry.resetPosition(startingPose , Rotation2d.fromDegrees(getAngle()));
   }
 
-//left rotation negative 
-  //  right encoder negative 
-    //left encoder negative
-//right  positive joystick 
-  //encoder negative - should be positive 
-
-//forward
-  //speed goes up 
-  //both encoders should go in same direction 
-  //left encoder positive - good
-  //right encoder negative
-
-
-//joysticks and can ID's are correct
-
-  //not sure if I want to use this. Might want to use the other drivetrain's arcadeDrive() - Rossy
   public void arcadeDrive(final double speed, final double rotation, final boolean useSquares) {
       var xSpeed = speedRateLimiter.calculate(safeClamp(speed));
       var zRotation = -rotationRateLimiter.calculate(safeClamp(rotation));
       if (useSquares) {
-        xSpeed *= Math.abs(xSpeed);
-        zRotation *= Math.abs(zRotation);
+        // xSpeed *= Math.abs(xSpeed);
+        // zRotation *= Math.abs(zRotation);
+        xSpeed = Util.applyLimiters(xSpeed, velocityRampExponent, velocityLimitMultiplier);
+        zRotation = Util.applyLimiters(zRotation, turnRampExponent, turnLimitMultiplier);
       }
-      xSpeed *= Constants.kMaxSpeedMetersPerSecond;
-      zRotation *= Constants.kMaxAngularVelocity;
-      var wheelSpeeds = Constants.kDriveKinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, zRotation));
+      // xSpeed *= Constants.kMaxSpeedMetersPerSecond;
+      // zRotation *= Constants.kMaxAngularVelocity;
       if(useEncoders) {
         //tankDriveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
         m_driveTrain.arcadeDrive(speed, rotation, useSquares);
