@@ -220,10 +220,10 @@ public class RamseteDriveSubsystem extends SubsystemBase {
       // zRotation *= Constants.kMaxAngularVelocity;
       if(useEncoders) {
         //tankDriveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
-        m_driveTrain.arcadeDrive(speed, rotation, useSquares);
+        m_driveTrain.arcadeDrive(xSpeed, zRotation, useSquares);
       }
       else {
-      m_driveTrain.arcadeDrive(speed, rotation, useSquares);
+      m_driveTrain.arcadeDrive(xSpeed, zRotation, useSquares);
     }
   }
 
@@ -398,6 +398,12 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
     SmartDashboard.putNumber("Drivetrain/Closed loop target", this.getClosedLoopTarget());
     SmartDashboard.putBoolean("Drivetrain/Using Encoders?", this.useEncoders);
+    SmartDashboard.putNumber("Drivetrain/Current VRamp Exp", this.velocityRampExponent);
+    SmartDashboard.putNumber("Drivetrain/Current VRamp Lim", this.velocityLimitMultiplier);
+    SmartDashboard.putNumber("Drivetrain/Current TRamp Exp", this.turnRampExponent);
+    SmartDashboard.putNumber("Drivetrain/Current TRamp Lim", this.turnLimitMultiplier);
+
+    SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
     
     // SmartDashboard.putNumber("Drivetrain/Turn error", this.getTurnError());
     // SmartDashboard.putNumber("Drivetrain/Turn setpoint", this.getTurnSetpoint());
