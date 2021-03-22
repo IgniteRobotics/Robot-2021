@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import java.util.Map;
 
@@ -21,7 +22,10 @@ public class ShootBall extends CommandBase {
   private NetworkTableEntry intakeEffortEntry;
   private NetworkTableEntry kickupEffortEntry;
 
+  private Limelight limelight;
+
   private static final int RANGE = 50;
+  private static final double ANGLE_RANGE = 5;
 
   public ShootBall(Shooter shooter, Indexer indexer) {
     this.shooter = shooter;
@@ -49,10 +53,14 @@ public class ShootBall extends CommandBase {
     double targetVelocity = targetShooterVelocityEntry.getDouble(0);
     double intakeEffort = intakeEffortEntry.getDouble(0.4);
     double kickupEffort = kickupEffortEntry.getDouble(0.3);
+    double shooterAngle = shooter.getHoodAngle();
+    double computedAngle = computeAngleFromDistance();
     // get velocity from the Shuffleboard
     setShooterVelocity(targetVelocity);
+    shooter.changeHoodAngle(computedAngle);
 
-    if(targetVelocity - RANGE < shooter.getShooterRPM() && targetVelocity + RANGE > shooter.getShooterRPM()) {
+    if((targetVelocity - RANGE < shooter.getShooterRPM() && targetVelocity + RANGE > shooter.getShooterRPM()) &&
+        (shooterAngle - ANGLE_RANGE < computedAngle && shooterAngle + ANGLE_RANGE > computedAngle)) {
       shooter.runKickup(kickupEffort);
       indexer.runIndexer(intakeEffort); 
     } else {
@@ -65,6 +73,11 @@ public class ShootBall extends CommandBase {
     if(velocity >= 0) {
       shooter.setVelocity(velocity);
     }
+  }
+
+  private double computeAngleFromDistance() {
+    // Implementation TODO
+    return -1;
   }
 
   private void stop() {

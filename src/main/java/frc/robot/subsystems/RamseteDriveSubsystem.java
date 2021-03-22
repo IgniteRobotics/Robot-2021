@@ -261,6 +261,13 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     return MathUtil.clamp(input, -1, 1);
   }
 
+public void driveCurvature( double xSpeed, double zRotation, boolean isQuickTurn ) {
+  m_driveTrain.curvatureDrive(xSpeed, zRotation, isQuickTurn);
+}
+
+
+
+
   public void resetEncoders() {
     leftMaster.setSelectedSensorPosition(0);
     rightMaster.setSelectedSensorPosition(0);
