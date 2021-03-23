@@ -9,9 +9,15 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.motorcontrol.can.*;
+
+import java.util.Map;
+
 import com.ctre.phoenix.VelocityPeriod;
 import com.ctre.phoenix.motorcontrol.*;
 import frc.robot.RobotContainer;
@@ -46,6 +52,16 @@ public class Shooter extends SubsystemBase {
   private double zeroPosition;
   
   private CANDigitalInput hoodLimitSwitch = hood_motor.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+
+  private ShuffleboardTab tab;
+  private NetworkTableEntry flywheel_kP_entry;
+  private NetworkTableEntry flywheel_kI_entry;
+  private NetworkTableEntry flywheel_kD_entry;
+
+  private double flywheel_kP_value;
+  private double flywheel_kI_value;
+  private double flywheel_kD_value;
+  
   
   //m_pidController.setOutputRange(kMinOutput, kMaxOutput)
   
@@ -66,7 +82,16 @@ public class Shooter extends SubsystemBase {
   */
   public Shooter() {
 
-    configureFlywheel();
+    tab = Shuffleboard.getTab("Shooter");
+    flywheel_kP_entry = tab.add("Shooter kP", Constants.TALON_DEFAULT_KP).withProperties(Map.of("min", 0)).getEntry();
+    flywheel_kI_entry = tab.add("Shooter kI", Constants.TALON_DEFAULT_KI).withProperties(Map.of("min", 0)).getEntry();
+    flywheel_kD_entry = tab.add("Shooter kD", Constants.TALON_DEFAULT_KD).withProperties(Map.of("min", 0)).getEntry();
+
+    flywheel_kP_value = flywheel_kP_entry.getDouble(Constants.TALON_DEFAULT_KP);
+    flywheel_kI_value = flywheel_kI_entry.getDouble(Constants.TALON_DEFAULT_KI);
+    flywheel_kD_value = flywheel_kD_entry.getDouble(Constants.TALON_DEFAULT_KD);
+
+    configureFlywheel(flywheel_kP_value,flywheel_kI_value,flywheel_kD_value);
 
     hood_motor.setIdleMode(IdleMode.kBrake);
     
@@ -79,12 +104,13 @@ public class Shooter extends SubsystemBase {
     //shooterConfiguration(0,0,0,0); TODO set this later
   }
 
-  private void configureFlywheel(){
+  private void configureFlywheel(double kP, double kI, double kD){
     this.leftMotor.configFactoryDefault();
     this.leftMotor.setInverted(true);
     this.leftMotor.setNeutralMode(NeutralMode.Coast);
 
-    this.leftMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    this.leftMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,Constants.TALON_PID_LOOP_IDX, 
+    Constants.TALON_CONFIG_TIMOUT_MS);
 
     /* Config the peak and nominal outputs */
     this.leftMotor.configNominalOutputForward(0, 10);
@@ -94,10 +120,10 @@ public class Shooter extends SubsystemBase {
     
     
     /* Config the Velocity closed loop gains in slot0 */
-    this.leftMotor.config_kF(0, 0, 10);
-    this.leftMotor.config_kP(0, 0, 10);
-    this.leftMotor.config_kI(0, 0, 10);
-    this.leftMotor.config_kD(0, 0, 10);
+    this.leftMotor.config_kF(Constants.TALON_PID_LOOP_IDX, Constants.TALON_DEFAULT_KF, 10);
+    this.leftMotor.config_kP(Constants.TALON_PID_LOOP_IDX, kP, 10);
+    this.leftMotor.config_kI(Constants.TALON_PID_LOOP_IDX, kI, 10);
+    this.leftMotor.config_kD(Constants.TALON_PID_LOOP_IDX, kD, 10);
 
 
     this.followMotor.follow(leftMotor);
