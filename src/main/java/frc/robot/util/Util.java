@@ -84,6 +84,10 @@ public class Util {
 	}
 
 	public static double ticksFromRPM(int rpm){
-		return (rpm * ENCODER_TICKS_PER_REVOLUTION_TALON)/ SHOOTER_GEAR_RATIO;
+		double ticksPer100Ms = ((((rpm * ENCODER_TICKS_PER_REVOLUTION_TALON)
+									/SHOOTER_GEAR_RATIO)
+									/60)  //mintues to seconds
+									/10); // seconds to 100ms
+		return ticksPer100Ms;
 	}
 }
