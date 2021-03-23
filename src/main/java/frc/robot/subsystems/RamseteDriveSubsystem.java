@@ -218,12 +218,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
       }
       // xSpeed *= Constants.kMaxSpeedMetersPerSecond;
       // zRotation *= Constants.kMaxAngularVelocity;
-      if(useEncoders) {
-        //tankDriveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
-        m_driveTrain.arcadeDrive(xSpeed, zRotation, useSquares);
-      }
-      else {
-      m_driveTrain.arcadeDrive(xSpeed, zRotation, useSquares);
+      m_driveTrain.arcadeDrive(xSpeed, zRotation, false);
     }
   }
 
