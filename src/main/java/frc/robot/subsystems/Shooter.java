@@ -9,9 +9,15 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.motorcontrol.can.*;
+
+import java.util.Map;
+
 import com.ctre.phoenix.VelocityPeriod;
 import com.ctre.phoenix.motorcontrol.*;
 import frc.robot.RobotContainer;
@@ -28,10 +34,10 @@ import com.revrobotics.ControlType;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+
 public class Shooter extends SubsystemBase {
-  private WPI_TalonSRX leftMotor =  new WPI_TalonSRX(Constants.kShooterTalonMotorPort); //shooter
-  private WPI_TalonSRX followMotor =  new WPI_TalonSRX(Constants.kShooterTalonMotorFollowerPort);
-  private double shootergearRatio = 1.5;
+  private WPI_TalonFX leftMotor =  new WPI_TalonFX(Constants.kShooterTalonMotorPort); //shooter
+  private WPI_TalonFX followMotor =  new WPI_TalonFX(Constants.kShooterTalonMotorFollowerPort);
   private WPI_TalonSRX kickUp = new WPI_TalonSRX(  Constants.kShooterTalonMotorKickUpPort); //TODO confirm this
   
   private CANSparkMax hood_motor = new CANSparkMax(Constants.kShooterSparkMotorHoodPort, MotorType.kBrushless);
@@ -46,6 +52,16 @@ public class Shooter extends SubsystemBase {
   private double zeroPosition;
   
   private CANDigitalInput hoodLimitSwitch = hood_motor.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+
+  private ShuffleboardTab tab;
+  private NetworkTableEntry flywheel_kP_entry;
+  private NetworkTableEntry flywheel_kI_entry;
+  private NetworkTableEntry flywheel_kD_entry;
+
+  private double flywheel_kP_value;
+  private double flywheel_kI_value;
+  private double flywheel_kD_value;
+  
   
   //m_pidController.setOutputRange(kMinOutput, kMaxOutput)
   
@@ -65,12 +81,18 @@ public class Shooter extends SubsystemBase {
   * Creates a new motor1.
   */
   public Shooter() {
-    leftMotor.configFactoryDefault();
-    leftMotor.setInverted(true);
-    leftMotor.setNeutralMode(NeutralMode.Coast);
-    followMotor.follow(leftMotor);
-    followMotor.setNeutralMode(NeutralMode.Coast);
-    followMotor.setInverted(false);
+
+    tab = Shuffleboard.getTab("Shooter");
+    flywheel_kP_entry = tab.add("Shooter kP", Constants.TALON_DEFAULT_KP).withProperties(Map.of("min", 0)).getEntry();
+    flywheel_kI_entry = tab.add("Shooter kI", Constants.TALON_DEFAULT_KI).withProperties(Map.of("min", 0)).getEntry();
+    flywheel_kD_entry = tab.add("Shooter kD", Constants.TALON_DEFAULT_KD).withProperties(Map.of("min", 0)).getEntry();
+
+    flywheel_kP_value = flywheel_kP_entry.getDouble(Constants.TALON_DEFAULT_KP);
+    flywheel_kI_value = flywheel_kI_entry.getDouble(Constants.TALON_DEFAULT_KI);
+    flywheel_kD_value = flywheel_kD_entry.getDouble(Constants.TALON_DEFAULT_KD);
+
+    configureFlywheel(flywheel_kP_value,flywheel_kI_value,flywheel_kD_value);
+
     hood_motor.setIdleMode(IdleMode.kBrake);
     
     hoodEncoder.setPositionConversionFactor(42);
@@ -80,6 +102,33 @@ public class Shooter extends SubsystemBase {
     
     configureHood();
     //shooterConfiguration(0,0,0,0); TODO set this later
+  }
+
+  private void configureFlywheel(double kP, double kI, double kD){
+    this.leftMotor.configFactoryDefault();
+    this.leftMotor.setInverted(true);
+    this.leftMotor.setNeutralMode(NeutralMode.Coast);
+
+    this.leftMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,Constants.TALON_PID_LOOP_IDX, 
+    Constants.TALON_CONFIG_TIMOUT_MS);
+
+    /* Config the peak and nominal outputs */
+    this.leftMotor.configNominalOutputForward(0, 10);
+    this.leftMotor.configNominalOutputReverse(0, 10);
+    this.leftMotor.configPeakOutputForward(1, 10);
+    this.leftMotor.configPeakOutputReverse(-1, 10);
+    
+    
+    /* Config the Velocity closed loop gains in slot0 */
+    this.leftMotor.config_kF(Constants.TALON_PID_LOOP_IDX, Constants.TALON_DEFAULT_KF, 10);
+    this.leftMotor.config_kP(Constants.TALON_PID_LOOP_IDX, kP, 10);
+    this.leftMotor.config_kI(Constants.TALON_PID_LOOP_IDX, kI, 10);
+    this.leftMotor.config_kD(Constants.TALON_PID_LOOP_IDX, kD, 10);
+
+
+    this.followMotor.follow(leftMotor);
+    this.followMotor.setNeutralMode(NeutralMode.Coast);
+    this.followMotor.setInverted(false);
   }
   
   private void configureHood() {
@@ -110,9 +159,23 @@ public class Shooter extends SubsystemBase {
     leftMotor.set(ControlMode.Velocity, velocity);
   }
   public void setpower(double power){
+    //limit to 1.0  do not let run backwards.
+    if (power > 1.0) {
+      power = 1.0;
+    } else if (power < 0) {
+      power = 0;
+    }
     leftMotor.set(ControlMode.PercentOutput, power);
   }
-  
+
+  public void setRPM(int rpm){
+    if (rpm > Constants.SHOOTER_MAX_RPM){
+      rpm = Constants.SHOOTER_MAX_RPM;
+    } else if (rpm < 0) {
+      rpm = 0;
+    }
+    this.setVelocity(Util.ticksFromRPM(rpm));
+  }  
   
   public void shooterConfiguration(int kSlotIdx, int kPIDLoopIdx, int kTimeoutMs, double kP, double kI, double kD, double kF){
     /* Config sensor used for Primary PID [Velocity] */
@@ -137,7 +200,7 @@ public class Shooter extends SubsystemBase {
   public double getShooterRPM(){ //need to convert this to RPM 
     // System.out.println(""+leftMotor.getSelectedSensorPosition());
     
-    double ticksPerWheelRevolution = Constants.ENCODER_TICKS_PER_REVOLUTION_TALON * shootergearRatio;
+    double ticksPerWheelRevolution = Constants.ENCODER_TICKS_PER_REVOLUTION_TALON * Constants.SHOOTER_GEAR_RATIO;
     double sensorVelocity = leftMotor.getSelectedSensorVelocity() * 600    / ticksPerWheelRevolution ;
     return sensorVelocity;
     

@@ -93,15 +93,6 @@ public final class Constants {
 	public static final double kG = 0;
 	public static final double kCos = 0;
 	
-
-	
-
-
-
-
-
-
-
 	// public static final double kPDriveVel = 14.4;
 	//TODO: tune this value!!!
 	public static final double kPDriveVel = 0.000181;
@@ -130,7 +121,18 @@ public final class Constants {
 
 	public static int ENCODER_TICKS_PER_REVOLUTION = 8192;
 
+	//Talon bits.
 	public static int ENCODER_TICKS_PER_REVOLUTION_TALON = 8192;	
+	public static int TALON_PID_LOOP_IDX = 0;
+	public static int TALON_CONFIG_TIMOUT_MS = 30;
+	// 1023 is output in ?? at 100% power.  20660 is velocity at 100%
+	public static double TALON_DEFAULT_KF = 1023.0/20660.0;  // 0.0495ish
+	public static double TALON_DEFAULT_KP = 0.1;
+	public static double TALON_DEFAULT_KI = 0.001;
+	public static double TALON_DEFAULT_KD = 5.0;
+
+	public static double SHOOTER_GEAR_RATIO = 1.5;
+	public static int SHOOTER_MAX_RPM = 6000;
 	
 	public static int WHEEL_DIAMETER = 6; //in inches
 	public static double WHEEL_DIAMETER_METERS = 0.1524;

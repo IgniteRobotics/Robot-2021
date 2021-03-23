@@ -88,4 +88,12 @@ public class Util {
 	public static double degreesToMoveHood(double ticks) {
 		return ticks / ((GEAR_TEETH_PER_DEGREE) * HOOD_GEAR_RATIO * (TICKS_PER_REVOLUTION_NEO / 360));
 	}
+
+	public static double ticksFromRPM(int rpm){
+		double ticksPer100Ms = ((((rpm * ENCODER_TICKS_PER_REVOLUTION_TALON)
+									/SHOOTER_GEAR_RATIO)
+									/60)  //mintues to seconds
+									/10); // seconds to 100ms
+		return ticksPer100Ms;
+	}
 }

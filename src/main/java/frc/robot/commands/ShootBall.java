@@ -50,7 +50,8 @@ public class ShootBall extends CommandBase {
     double intakeEffort = intakeEffortEntry.getDouble(0.4);
     double kickupEffort = kickupEffortEntry.getDouble(0.3);
     // get velocity from the Shuffleboard
-    setShooterVelocity(targetVelocity);
+    //setShooterVelocity(targetVelocity);
+    setShooterRPM((int)targetVelocity);
 
     if(targetVelocity - RANGE < shooter.getShooterRPM() && targetVelocity + RANGE > shooter.getShooterRPM()) {
       shooter.runKickup(kickupEffort);
@@ -64,6 +65,14 @@ public class ShootBall extends CommandBase {
   private void setShooterVelocity(double velocity) {
     if(velocity >= 0) {
       shooter.setVelocity(velocity);
+    }
+  }
+
+  private void setShooterRPM(int rpm){
+    if (rpm >= 0){
+      shooter.setRPM(rpm);
+    } else {
+      shooter.setRPM(0);
     }
   }
 
