@@ -14,6 +14,12 @@ public class Util {
 			return 0.0;
 		}
 	}
+
+	public static double applyLimiters(double value, double exp, double mult){
+		value = Math.copySign(Math.pow(value, exp), value);
+		value *= mult;
+		return value;
+	}
 	
 	public static double getEncoderTicksFromInches(double inches) {
 		return getEncoderTicksFromInches(WHEEL_DIAMETER, inches);
