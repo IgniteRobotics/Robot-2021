@@ -27,9 +27,10 @@ public class ShootBall extends CommandBase {
   private static final int RANGE = 50;
   private static final double ANGLE_RANGE = 5;
 
-  public ShootBall(Shooter shooter, Indexer indexer) {
+  public ShootBall(Shooter shooter, Indexer indexer, Limelight limelight) {
     this.shooter = shooter;
     this.indexer = indexer;
+    this.limelight = limelight;
     addRequirements(shooter, indexer);
 
     tab = Shuffleboard.getTab("Shooter");

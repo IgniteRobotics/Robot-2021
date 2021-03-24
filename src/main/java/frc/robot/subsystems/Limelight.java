@@ -13,6 +13,7 @@ import frc.robot.Constants;
 public class Limelight extends SubsystemBase {
   private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   private NetworkTableEntry ty = table.getEntry("ty");
+  private NetworkTableEntry tx = table.getEntry("tx");
   
   /** Creates a new Limelight. */
   public Limelight() {}
@@ -32,5 +33,9 @@ public class Limelight extends SubsystemBase {
 
     //TODO confirm these values 
     return (Constants.TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(ty + Constants.LIMELIGHT_ANGLE));
+  }
+
+  public double getHorizontalOffset() {
+    return tx.getDouble(0.0);
   }
 }

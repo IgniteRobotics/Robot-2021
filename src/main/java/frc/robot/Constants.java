@@ -142,7 +142,7 @@ public final class Constants {
 	public static final double TICKS_PER_REVOLUTION_NEO = 42;
 	public static final double HOOD_GEAR_RATIO = 25;
 
-	public static final double LIMELIGHT_HEIGHT = 0;
-	public static final double LIMELIGHT_ANGLE = 0;
+	public static final double LIMELIGHT_HEIGHT = 0.61595;
+	public static final double LIMELIGHT_ANGLE = 41.6; // degrees
 	public static final double TARGET_HEIGHT = 2.49555;
 }
