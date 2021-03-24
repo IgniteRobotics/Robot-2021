@@ -13,33 +13,37 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.RamseteDriveSubsystem;
 
 public class TurnToAngle extends PIDCommand {
 
-  private DriveTrain m_driveTrain;
+  private RamseteDriveSubsystem m_driveTrain;
 
   private final static double kP_TURN = 0.007;
   private final static double kI_TURN = 0;
   private final static double kD_TURN = 0;
 
-  private double angle;
-
   private final static AHRS navX = new AHRS(SPI.Port.kMXP, (byte) 200);
 
-  public TurnToAngle(DriveTrain driveTrain, double angle) {
+  private Limelight limelight;
+
+  public TurnToAngle(RamseteDriveSubsystem driveTrain, Limelight limelight) {
     super(
       new PIDController(kP_TURN, kI_TURN,kD_TURN),
       navX::getYaw,
-      angle,
-      output -> driveTrain.setOpenLoopBoth(-output, output),
+      limelight::getHorizontalOffset,
+      output -> driveTrain.tankDrivePower(-output, output),
       driveTrain
     );
     this.m_driveTrain = driveTrain;
-    this.angle = angle;
+    this.limelight = limelight;
+
     getController().enableContinuousInput(-180, 180);
     getController().setTolerance(2.0f);
 
     addRequirements(m_driveTrain);
+    addRequirements(limelight);
 
   }
 
@@ -66,8 +70,6 @@ public class TurnToAngle extends PIDCommand {
   @Override
   public void end(boolean interrupted) {
       super.end(interrupted);
-      this.m_driveTrain.setOpenLoopBoth(0,0);
+      this.m_driveTrain.tankDrivePower(0,0);
   }
-
-
 }
