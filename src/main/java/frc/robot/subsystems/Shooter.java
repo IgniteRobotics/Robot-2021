@@ -200,9 +200,10 @@ public class Shooter extends SubsystemBase {
   public double getShooterRPM(){ //need to convert this to RPM 
     // System.out.println(""+leftMotor.getSelectedSensorPosition());
     
-    double ticksPerWheelRevolution = Constants.ENCODER_TICKS_PER_REVOLUTION_TALON * Constants.SHOOTER_GEAR_RATIO;
-    double sensorVelocity = leftMotor.getSelectedSensorVelocity() * 600    / ticksPerWheelRevolution ;
-    return sensorVelocity;
+    // double ticksPerWheelRevolution = Constants.ENCODER_TICKS_PER_REVOLUTION_TALON * Constants.SHOOTER_GEAR_RATIO;
+    // double sensorVelocity = leftMotor.getSelectedSensorVelocity() * 600    / ticksPerWheelRevolution ;
+    double rpm = Util.RPMFromTicks(leftMotor.getSelectedSensorVelocity());
+    return rpm;
     
   }
   
