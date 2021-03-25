@@ -105,7 +105,8 @@ public class Shooter extends SubsystemBase {
     hood_kP_entry = tab.add("hood kP", Constants.HOOD_DEFAULT_KP).withProperties(Map.of("min", 0)).getEntry();
     hood_kI_entry = tab.add("hood kI", Constants.HOOD_DEFAULT_KI).withProperties(Map.of("min", 0)).getEntry();
     hood_kD_entry = tab.add("hood kD", Constants.HOOD_DEFAULT_KD).withProperties(Map.of("min", 0)).getEntry();
-    hood_max_vel_entry = tab.add("hood max V", 200).withProperties(Map.of("min", 0)).getEntry();
+    hood_max_vel_entry = tab.add("hood max V", Constants.HOOD_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
+    hood_max_position_entry = tab.add("hood max position", Constants.HOOD_MAX_POSITION).withProperties(Map.of("min", 0)).getEntry();
 
     hood_kP_value = hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP);
     hood_kI_value = hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI);
@@ -176,13 +177,14 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Shooter RPM", getShooterRPM());
+    SmartDashboard.putNumber("Shooter RPM", this.getShooterRPM());
+    SmartDashboard.putNumber("Hood Postiton Ticks", this.getHoodTicks());
     
-    if (hoodLimitSwitch.get() == true){
-      hood_motor.set(0);
+    if (this.hoodLimitSwitch.get() == true){
+      this.hood_motor.set(0);
     } 
     
-    if(!hoodReset) {
+    if(!this.hoodReset) {
       //TODO undo this once it's tested.
       //resetHood();
     }

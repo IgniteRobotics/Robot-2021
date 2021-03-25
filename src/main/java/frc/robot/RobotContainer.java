@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveToDistance;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.ShootBall;
+import frc.robot.commands.TestExtendShooterHood;
+import frc.robot.commands.TestRetractHood;
 import frc.robot.commands.runIndexer;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Indexer;
@@ -122,7 +124,9 @@ public class RobotContainer {
       new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new RunIntake(0.6, m_intake));
       
       new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(shootSequence);
-      new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new runIndexer(.3, m_indexer));
+      new JoystickButton(m_driveController, Constants.BUTTON_X).whenPressed(new TestExtendShooterHood(m_shooter));
+      new JoystickButton(m_driveController, Constants.BUTTON_Y).whenPressed(new TestRetractHood(m_shooter));
+      
       
     }
     
