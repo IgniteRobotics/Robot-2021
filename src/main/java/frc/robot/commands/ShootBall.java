@@ -61,7 +61,9 @@ public class ShootBall extends CommandBase {
     setShooterRPM((int)targetVelocity);
     shooter.changeHoodAngle(computedAngle);
 
-    if((targetVelocity - RANGE < shooter.getShooterRPM() && targetVelocity + RANGE > shooter.getShooterRPM()) &&
+    double shooterRPM = shooter.getShooterRPM();
+
+    if((targetVelocity - RANGE < shooterRPM && targetVelocity + RANGE > shooterRPM) &&
         (shooterAngle - ANGLE_RANGE < computedAngle && shooterAngle + ANGLE_RANGE > computedAngle)) {
       shooter.runKickup(kickupEffort);
       indexer.runIndexer(intakeEffort); 
@@ -84,7 +86,7 @@ public class ShootBall extends CommandBase {
       shooter.setRPM(0);
     }
   }
-  
+
   private double computeAngleFromDistance() {
     // Implementation TODO
     return -1;
