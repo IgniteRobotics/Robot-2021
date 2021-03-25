@@ -131,6 +131,12 @@ public final class Constants {
 	public static double TALON_DEFAULT_KI = 0.001;
 	public static double TALON_DEFAULT_KD = 5.0;
 
+	public static double HOOD_DEFAULT_KP = 0.1;
+	public static double HOOD_DEFAULT_KI = 0.001;
+	public static double HOOD_DEFAULT_KD = 0;
+    public static double HOOD_DEFAULT_RPM = 20;
+	public static double HOOD_MAX_POSITION = 100;
+
 	public static double SHOOTER_GEAR_RATIO = 1.5;
 	public static int SHOOTER_MAX_RPM = 6000;
 	
