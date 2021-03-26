@@ -124,8 +124,8 @@ public class RobotContainer {
       new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new RunIntake(0.6, m_intake));
       
       new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(shootSequence);
-      new JoystickButton(m_driveController, Constants.BUTTON_X).whenPressed(new TestExtendShooterHood(m_shooter));
-      new JoystickButton(m_driveController, Constants.BUTTON_Y).whenPressed(new TestRetractHood(m_shooter));
+      new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestExtendShooterHood(m_shooter));
+      new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestRetractHood(m_shooter));
       
       
     }

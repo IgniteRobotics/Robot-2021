@@ -288,6 +288,10 @@ public class Shooter extends SubsystemBase {
     return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint 
     && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
   }
+
+  public void stopHood(){
+    hood_motor.stopMotor();
+  }
   
   public void runKickup(double effort) {
     kickUp.set(ControlMode.PercentOutput, effort); 
