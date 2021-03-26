@@ -36,8 +36,6 @@ public class TestExtendShooterHood extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double range = 50;
-    return m_shooter.getHoodTicks() - range <= Constants.HOOD_MAX_POSITION 
-    && m_shooter.getHoodTicks() + range >= Constants.HOOD_MAX_POSITION;
+    return m_shooter.isHoodReady();
   }
 }

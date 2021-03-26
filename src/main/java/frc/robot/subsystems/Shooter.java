@@ -45,7 +45,7 @@ public class Shooter extends SubsystemBase {
   private CANPIDController hoodPidController = hood_motor.getPIDController();
   
   private int maxDegrees = 60;
-  private double hoodPositionTicks = 0;
+  private double hoodPositionTicksSetPoint = 0;
   //TODO fix limit switch for hood reset
   private boolean hoodReset = true;
   private boolean extended; 
@@ -247,14 +247,15 @@ public class Shooter extends SubsystemBase {
   }
   
   public void retractHood(){
+    this.hoodPositionTicksSetPoint = 0;
     this.changeHoodTicks(0);
     
   }
   
   public void extendHood() {
+    this.hoodPositionTicksSetPoint = this.hood_max_position_value; 
     this.changeHoodTicks(this.hood_max_position_value);
   }
-
 
   public double getHoodTicks() {
     return hoodEncoder.getPosition();
@@ -280,6 +281,12 @@ public class Shooter extends SubsystemBase {
 
       hoodEncoder.setPosition(0);
     }
+  }
+
+  public boolean isHoodReady(){
+    double range = 10;
+    return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint 
+    && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
   }
   
   public void runKickup(double effort) {

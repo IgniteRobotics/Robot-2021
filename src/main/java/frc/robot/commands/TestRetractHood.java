@@ -35,8 +35,6 @@ public class TestRetractHood extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double range = 5;
-    return m_shooter.getHoodTicks() - range <= 0 
-    && m_shooter.getHoodTicks() + range >= 0;
+    return m_shooter.isHoodReady();
   }
 }
