@@ -51,7 +51,7 @@ public class ShootBall extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double targetVelocity = targetShooterVelocityEntry.getDouble(0);
+    double targetVelocity = targetShooterVelocityEntry.getDouble(1000);
     double intakeEffort = intakeEffortEntry.getDouble(0.4);
     double kickupEffort = kickupEffortEntry.getDouble(0.3);
     double shooterAngle = shooter.getHoodAngle();
@@ -59,10 +59,13 @@ public class ShootBall extends CommandBase {
     // get velocity from the Shuffleboard
     //setShooterVelocity(targetVelocity);
     setShooterRPM((int)targetVelocity);
-    shooter.changeHoodAngle(computedAngle);
+    // shooter.changeHoodAngle(computedAngle);
 
-    if((targetVelocity - RANGE < shooter.getShooterRPM() && targetVelocity + RANGE > shooter.getShooterRPM()) &&
-        (shooterAngle - ANGLE_RANGE < computedAngle && shooterAngle + ANGLE_RANGE > computedAngle)) {
+    double shooterRPM = shooter.getShooterRPM();
+
+    // if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM) &&
+    //     (shooterAngle - ANGLE_RANGE < computedAngle && shooterAngle + ANGLE_RANGE > computedAngle)) {
+    if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM)) {
       shooter.runKickup(kickupEffort);
       indexer.runIndexer(intakeEffort); 
     } else {
@@ -84,7 +87,7 @@ public class ShootBall extends CommandBase {
       shooter.setRPM(0);
     }
   }
-  
+
   private double computeAngleFromDistance() {
     // Implementation TODO
     return -1;

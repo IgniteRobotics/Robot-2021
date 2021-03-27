@@ -43,16 +43,17 @@ public class Shooter extends SubsystemBase {
   private CANSparkMax hood_motor = new CANSparkMax(Constants.kShooterSparkMotorHoodPort, MotorType.kBrushless);
   private CANEncoder hoodEncoder = hood_motor.getEncoder();
   private CANPIDController hoodPidController = hood_motor.getPIDController();
-  
-  private int maxDegrees = 80; //set this later
-  private double hoodPositionTicks = 0;
+  private CANDigitalInput hoodLimitSwitch = hood_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+
+
+  private int maxDegrees = 60;
+  private double hoodPositionTicksSetPoint = 0;
   //TODO fix limit switch for hood reset
-  private boolean hoodReset = true;
+  private boolean hoodReset = false;
   private boolean extended; 
   private double zeroPosition;
   
-  private CANDigitalInput hoodLimitSwitch = hood_motor.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
-
+  
   private ShuffleboardTab tab;
   private NetworkTableEntry flywheel_kP_entry;
   private NetworkTableEntry flywheel_kI_entry;
@@ -62,24 +63,20 @@ public class Shooter extends SubsystemBase {
   private double flywheel_kI_value;
   private double flywheel_kD_value;
   
-  
-  //m_pidController.setOutputRange(kMinOutput, kMaxOutput)
-  
-  
-  
-  //3:2 (.666)  from falcon shooter motor to shooter 
-  
-  // hooder motor 25:1 (25 reduction)
-  //2.91 counts per 1 degree
-  
-  //TODO set the device ID of the sparkmax controller!!!!! 
-  
-  //confirm with team for limit switch on hood
+  private NetworkTableEntry hood_kP_entry;
+  private NetworkTableEntry hood_kI_entry;
+  private NetworkTableEntry hood_kD_entry;
+  private NetworkTableEntry hood_max_vel_entry;
+  private NetworkTableEntry hood_max_position_entry;
+
+  private double hood_kP_value;
+  private double hood_kI_value;
+  private double hood_kD_value;
+  private double hood_max_vel_value;
+  private double hood_max_position_value;
   
   
-  /**
-  * Creates a new motor1.
-  */
+  
   public Shooter() {
 
     tab = Shuffleboard.getTab("Shooter");
@@ -91,16 +88,30 @@ public class Shooter extends SubsystemBase {
     flywheel_kI_value = flywheel_kI_entry.getDouble(Constants.TALON_DEFAULT_KI);
     flywheel_kD_value = flywheel_kD_entry.getDouble(Constants.TALON_DEFAULT_KD);
 
+    hood_kP_entry = tab.add("hood kP", Constants.HOOD_DEFAULT_KP).withProperties(Map.of("min", 0)).getEntry();
+    hood_kI_entry = tab.add("hood kI", Constants.HOOD_DEFAULT_KI).withProperties(Map.of("min", 0)).getEntry();
+    hood_kD_entry = tab.add("hood kD", Constants.HOOD_DEFAULT_KD).withProperties(Map.of("min", 0)).getEntry();
+    hood_max_vel_entry = tab.add("hood max V", Constants.HOOD_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
+    hood_max_position_entry = tab.add("hood max position", Constants.HOOD_MAX_POSITION).withProperties(Map.of("min", 0)).getEntry();
+
+    hood_kP_value = hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP);
+    hood_kI_value = hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI);
+    hood_kD_value = hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD);
+    hood_max_vel_value = hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM);
+    hood_max_position_value = hood_max_position_entry.getDouble(Constants.HOOD_MAX_POSITION);
+
+
     configureFlywheel(flywheel_kP_value,flywheel_kI_value,flywheel_kD_value);
 
     hood_motor.setIdleMode(IdleMode.kBrake);
     
     hoodEncoder.setPositionConversionFactor(42);
+    hoodEncoder.setVelocityConversionFactor(42);
     
     kickUp.setInverted(true);
     
     
-    configureHood();
+    configureHood(hood_kP_value,hood_kI_value,hood_kD_value, hood_max_vel_value);
     //shooterConfiguration(0,0,0,0); TODO set this later
   }
 
@@ -131,28 +142,58 @@ public class Shooter extends SubsystemBase {
     this.followMotor.setInverted(false);
   }
   
-  private void configureHood() {
+  private void configureHood(double kP, double kI, double kD, double maxV) {
     // Modify constants later
-    hoodPidController.setP(0);
-    hoodPidController.setI(0);
-    hoodPidController.setD(0);
+    hoodPidController.setP(kP);
+    hoodPidController.setI(kI);
+    hoodPidController.setD(kD);
     hoodPidController.setIZone(0);
-    hoodPidController.setFF(0);
+    //hoodPidController.setFF(0.000156);
+
+    hoodPidController.setOutputRange(-.5, .5);
+  
+
+    // hoodPidController.setSmartMotionMaxVelocity(maxV,0);
+    // hoodPidController.setSmartMotionMinOutputVelocity(0,0);
+    // hoodPidController.setSmartMotionMaxAccel(200, 0);
+
+    hood_motor.setIdleMode(IdleMode.kBrake);
+    
+    hoodEncoder.setPositionConversionFactor(42);
+    hoodEncoder.setVelocityConversionFactor(42);
+  
   }
   
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Shooter RPM", getShooterRPM());
+    SmartDashboard.putNumber("Shooter RPM", this.getShooterRPM());
+    SmartDashboard.putNumber("Hood Postiton Ticks", this.getHoodTicks());
+    SmartDashboard.putNumber("Hood Motor Output", this.hood_motor.getAppliedOutput());
+    SmartDashboard.putBoolean("Hood in Position", this.isHoodReady());
     
-    if (hoodLimitSwitch.get() == true){
-      hood_motor.set(0);
-    } 
+    //trust the limit switch?
+    // if (this.hoodLimitSwitch.get() == true){
+    //   this.hood_motor.set(0);
+    // } 
     
-    if(!hoodReset) {
-      //TODO undo this once it's tested.
-      //resetHood();
+    // if(!this.hoodReset) {
+    //   //TODO undo this once it's tested.
+    //   resetHood();
+    // }
+
+    //check if hood pid settings have changed
+    if ( hood_kP_value !=  hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP)  
+          || hood_kI_value != hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI)
+          || hood_kD_value != hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD)
+          || hood_max_vel_value != hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM)) {
+            hood_kP_value = hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP);
+            hood_kI_value = hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI);
+            hood_kD_value = hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD);
+            hood_max_vel_value = hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM);
+            configureHood(hood_kP_value, hood_kI_value, hood_kD_value, hood_max_vel_value);
     }
+
   }
   
   public void setVelocity(double velocity){
@@ -200,9 +241,10 @@ public class Shooter extends SubsystemBase {
   public double getShooterRPM(){ //need to convert this to RPM 
     // System.out.println(""+leftMotor.getSelectedSensorPosition());
     
-    double ticksPerWheelRevolution = Constants.ENCODER_TICKS_PER_REVOLUTION_TALON * Constants.SHOOTER_GEAR_RATIO;
-    double sensorVelocity = leftMotor.getSelectedSensorVelocity() * 600    / ticksPerWheelRevolution ;
-    return sensorVelocity;
+    // double ticksPerWheelRevolution = Constants.ENCODER_TICKS_PER_REVOLUTION_TALON * Constants.SHOOTER_GEAR_RATIO;
+    // double sensorVelocity = leftMotor.getSelectedSensorVelocity() * 600    / ticksPerWheelRevolution ;
+    double rpm = Util.RPMFromTicks(leftMotor.getSelectedSensorVelocity());
+    return rpm;
     
   }
   
@@ -211,13 +253,15 @@ public class Shooter extends SubsystemBase {
   }
   
   public void retractHood(){
+    this.hoodPositionTicksSetPoint = 0;
+    this.changeHoodTicks(0);
     
   }
   
   public void extendHood() {
-    
+    this.hoodPositionTicksSetPoint = this.hood_max_position_value; 
+    this.changeHoodTicks(this.hood_max_position_value);
   }
-
 
   public double getHoodTicks() {
     return hoodEncoder.getPosition();
@@ -235,7 +279,7 @@ public class Shooter extends SubsystemBase {
   
   public void resetHood() {
     if(!hoodLimitSwitch.get()) {
-      hood_motor.set(-0.3);
+      hood_motor.set(-0.05);
     } else {
       // reset encoders
       hood_motor.set(0);
@@ -243,6 +287,20 @@ public class Shooter extends SubsystemBase {
 
       hoodEncoder.setPosition(0);
     }
+  }
+
+  public boolean isHoodReady(){
+    double range = 10;
+    return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint 
+    && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
+  }
+
+  public boolean isHoodReset(){
+    return hoodReset;
+  }
+
+  public void stopHood(){
+    hood_motor.stopMotor();
   }
   
   public void runKickup(double effort) {

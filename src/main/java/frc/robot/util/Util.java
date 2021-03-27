@@ -96,4 +96,11 @@ public class Util {
 									/10); // seconds to 100ms
 		return ticksPer100Ms;
 	}
+
+	public static double RPMFromTicks (double ticksPer100ms) {
+		double rpm = ticksPer100ms * 600 * SHOOTER_GEAR_RATIO / ENCODER_TICKS_PER_REVOLUTION_TALON;
+		 
+		return rpm;
+
+	}
 }
