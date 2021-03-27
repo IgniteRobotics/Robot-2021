@@ -43,7 +43,9 @@ public class Shooter extends SubsystemBase {
   private CANSparkMax hood_motor = new CANSparkMax(Constants.kShooterSparkMotorHoodPort, MotorType.kBrushless);
   private CANEncoder hoodEncoder = hood_motor.getEncoder();
   private CANPIDController hoodPidController = hood_motor.getPIDController();
-  
+  private CANDigitalInput hoodLimitSwitch = hood_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+
+
   private int maxDegrees = 60;
   private double hoodPositionTicksSetPoint = 0;
   //TODO fix limit switch for hood reset
@@ -51,8 +53,7 @@ public class Shooter extends SubsystemBase {
   private boolean extended; 
   private double zeroPosition;
   
-  private CANDigitalInput hoodLimitSwitch = hood_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
-
+  
   private ShuffleboardTab tab;
   private NetworkTableEntry flywheel_kP_entry;
   private NetworkTableEntry flywheel_kI_entry;
@@ -74,23 +75,8 @@ public class Shooter extends SubsystemBase {
   private double hood_max_vel_value;
   private double hood_max_position_value;
   
-  //m_pidController.setOutputRange(kMinOutput, kMaxOutput)
   
   
-  
-  //3:2 (.666)  from falcon shooter motor to shooter 
-  
-  // hooder motor 25:1 (25 reduction)
-  //2.91 counts per 1 degree
-  
-  //TODO set the device ID of the sparkmax controller!!!!! 
-  
-  //confirm with team for limit switch on hood
-  
-  
-  /**
-  * Creates a new motor1.
-  */
   public Shooter() {
 
     tab = Shuffleboard.getTab("Shooter");
@@ -164,8 +150,12 @@ public class Shooter extends SubsystemBase {
     hoodPidController.setIZone(0);
     hoodPidController.setFF(0.000156);
 
+    hoodPidController.setOutputRange(-1, 1);
+  
+
     hoodPidController.setSmartMotionMaxVelocity(maxV,0);
     hoodPidController.setSmartMotionMinOutputVelocity(0,0);
+    hoodPidController.setSmartMotionMaxAccel(200, 0);
 
     hood_motor.setIdleMode(IdleMode.kBrake);
     
@@ -179,10 +169,12 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Shooter RPM", this.getShooterRPM());
     SmartDashboard.putNumber("Hood Postiton Ticks", this.getHoodTicks());
+    SmartDashboard.putNumber("Hood Motor Output", this.hood_motor.getAppliedOutput());
     
-    if (this.hoodLimitSwitch.get() == true){
-      this.hood_motor.set(0);
-    } 
+    //trust the limit switch?
+    // if (this.hoodLimitSwitch.get() == true){
+    //   this.hood_motor.set(0);
+    // } 
     
     if(!this.hoodReset) {
       //TODO undo this once it's tested.

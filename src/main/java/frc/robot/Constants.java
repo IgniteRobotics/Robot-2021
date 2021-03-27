@@ -131,8 +131,8 @@ public final class Constants {
 	public static double TALON_DEFAULT_KI = 0.001;
 	public static double TALON_DEFAULT_KD = 5.0;
 
-	public static double HOOD_DEFAULT_KP = 0.1;
-	public static double HOOD_DEFAULT_KI = 0.001;
+	public static double HOOD_DEFAULT_KP = 0.00005;
+	public static double HOOD_DEFAULT_KI = 0.000001;
 	public static double HOOD_DEFAULT_KD = 0;
     public static double HOOD_DEFAULT_RPM = 20;
 	public static double HOOD_MAX_POSITION = 100;
