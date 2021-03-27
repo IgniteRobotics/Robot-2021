@@ -180,6 +180,18 @@ public class Shooter extends SubsystemBase {
       //TODO undo this once it's tested.
       //resetHood();
     }
+
+    //check if hood pid settings have changed
+    if ( hood_kP_value !=  hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP)  
+          || hood_kI_value != hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI)
+          || hood_kD_value != hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD)
+          || hood_max_vel_value != hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM)) {
+            hood_kP_value = hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP);
+            hood_kI_value = hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI);
+            hood_kD_value = hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD);
+            hood_max_vel_value = hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM);
+            configureHood(hood_kP_value, hood_kI_value, hood_kD_value, hood_max_vel_value);
+          }
   }
   
   public void setVelocity(double velocity){
