@@ -43,7 +43,7 @@ public class Shooter extends SubsystemBase {
   private CANSparkMax hood_motor = new CANSparkMax(Constants.kShooterSparkMotorHoodPort, MotorType.kBrushless);
   private CANEncoder hoodEncoder = hood_motor.getEncoder();
   private CANPIDController hoodPidController = hood_motor.getPIDController();
-  private CANDigitalInput hoodLimitSwitch = hood_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
+  private CANDigitalInput hoodLimitSwitch = hood_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
 
 
   private int maxDegrees = 60;
@@ -289,8 +289,9 @@ public class Shooter extends SubsystemBase {
 
   public boolean isHoodReady(){
     double range = 10;
-    return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint 
-    && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
+    // return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint 
+    // && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
+    return false;
   }
 
   public void stopHood(){
