@@ -128,8 +128,8 @@ public final class Constants {
 	// 1023 is output in ?? at 100% power.  20660 is velocity at 100%
 	public static double TALON_DEFAULT_KF = 1023.0/20660.0;  // 0.0495ish
 	public static double TALON_DEFAULT_KP = 0.1;
-	public static double TALON_DEFAULT_KI = 0.001;
-	public static double TALON_DEFAULT_KD = 5.0;
+	public static double TALON_DEFAULT_KI = 0;
+	public static double TALON_DEFAULT_KD = 0;
 
 	public static double HOOD_DEFAULT_KP = 0.01;
 	public static double HOOD_DEFAULT_KI = 0.0;

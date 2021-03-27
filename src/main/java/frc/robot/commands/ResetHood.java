@@ -21,12 +21,13 @@ public class ResetHood extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.m_shooter.resetHood();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    this.m_shooter.resetHood();
+  }
 
   // Called once the command ends or is interrupted.
   @Override
