@@ -162,10 +162,10 @@ public class Shooter extends SubsystemBase {
     hoodPidController.setI(kI);
     hoodPidController.setD(kD);
     hoodPidController.setIZone(0);
-    hoodPidController.setFF(0);
+    hoodPidController.setFF(0.000156);
 
     hoodPidController.setSmartMotionMaxVelocity(maxV,0);
-    //hoodPidController.setSmartMotionMinOutputVelocity(0,0);
+    hoodPidController.setSmartMotionMinOutputVelocity(0,0);
 
     hood_motor.setIdleMode(IdleMode.kBrake);
     
