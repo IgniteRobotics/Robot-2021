@@ -94,7 +94,7 @@ public class ShootBall extends CommandBase {
   }
 
   private void stop() {
-    shooter.setVelocity(0);
+    shooter.setpower(0.0);
     shooter.stopKickup();
     indexer.stop();
   }
