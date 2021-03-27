@@ -49,7 +49,7 @@ public class Shooter extends SubsystemBase {
   private int maxDegrees = 60;
   private double hoodPositionTicksSetPoint = 0;
   //TODO fix limit switch for hood reset
-  private boolean hoodReset = true;
+  private boolean hoodReset = false;
   private boolean extended; 
   private double zeroPosition;
   
