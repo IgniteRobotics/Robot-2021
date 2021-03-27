@@ -73,7 +73,8 @@ public class TargetPositioning extends CommandBase {
 
 
     //m_driveTrain.arcadeDrive(-drivingAdjust,steeringAdjust,Constants.kDriveDeadband);
-    m_driveTrain.arcadeDrive(0,steeringAdjust,false);
+    //flip it since the shooter is on the back.
+    m_driveTrain.arcadeDrive(0,-steeringAdjust,false);
   }
 
   // Called once the command ends or is interrupted.
