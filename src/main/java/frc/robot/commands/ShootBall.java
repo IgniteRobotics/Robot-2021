@@ -24,7 +24,7 @@ public class ShootBall extends CommandBase {
 
   private Limelight limelight;
 
-  private static final int RANGE = 50;
+  private static final int RANGE = 150;
   private static final double ANGLE_RANGE = 5;
 
   public ShootBall(Shooter shooter, Indexer indexer, Limelight limelight) {
@@ -34,9 +34,9 @@ public class ShootBall extends CommandBase {
     addRequirements(shooter, indexer);
 
     tab = Shuffleboard.getTab("Shooter");
-    targetShooterVelocityEntry = tab.add("Target Shooter Velocity", 0).withProperties(Map.of("min", 0)).getEntry();
-    intakeEffortEntry = tab.add("Intake Effort Percentage", 0.4).withProperties(Map.of("min", -1, "max", 1)).getEntry();
-    kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.3).withProperties(Map.of("min", 0, "max", 1)).getEntry();
+    targetShooterVelocityEntry = tab.add("Target Shooter Velocity", 2000).withProperties(Map.of("min", 0)).getEntry();
+    intakeEffortEntry = tab.add("Intake Effort Percentage", 0.6).withProperties(Map.of("min", -1, "max", 1)).getEntry();
+    kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.5).withProperties(Map.of("min", 0, "max", 1)).getEntry();
   }
 
   // Called when the command is initially scheduled.
