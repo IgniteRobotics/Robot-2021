@@ -170,6 +170,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter RPM", this.getShooterRPM());
     SmartDashboard.putNumber("Hood Postiton Ticks", this.getHoodTicks());
     SmartDashboard.putNumber("Hood Motor Output", this.hood_motor.getAppliedOutput());
+    SmartDashboard.putBoolean("Hood in Position", this.isHoodReady());
     
     //trust the limit switch?
     // if (this.hoodLimitSwitch.get() == true){
@@ -178,7 +179,7 @@ public class Shooter extends SubsystemBase {
     
     if(!this.hoodReset) {
       //TODO undo this once it's tested.
-      //resetHood();
+      resetHood();
     }
 
     //check if hood pid settings have changed
@@ -191,7 +192,8 @@ public class Shooter extends SubsystemBase {
             hood_kD_value = hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD);
             hood_max_vel_value = hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM);
             configureHood(hood_kP_value, hood_kI_value, hood_kD_value, hood_max_vel_value);
-          }
+    }
+
   }
   
   public void setVelocity(double velocity){
@@ -289,9 +291,8 @@ public class Shooter extends SubsystemBase {
 
   public boolean isHoodReady(){
     double range = 10;
-    // return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint 
-    // && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
-    return false;
+    return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint 
+    && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
   }
 
   public void stopHood(){
