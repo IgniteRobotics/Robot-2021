@@ -78,7 +78,7 @@ public class RobotContainer {
   
   SendableChooser<Command> chooseAuton = new SendableChooser<>();
 
-  private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new TurnToAngle(m_driveTrain, m_limelight), shootCommand);
+  //private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new TurnToAngle(m_driveTrain, m_limelight), shootCommand);
   
   
   
@@ -122,13 +122,13 @@ public class RobotContainer {
       new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(new runIndexer(0.20, m_indexer)); //check if this works
       
       //adding driver control for intake and shooter
-      new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new RunIntake(0.6, m_intake));
+      //new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new RunIntake(0.6, m_intake));
       
       //new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(shootSequence);
       new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
-      new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestExtendShooterHood(m_shooter));
-      new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestRetractHood(m_shooter));
-      
+      //new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestExtendShooterHood(m_shooter));
+      //new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestRetractHood(m_shooter));
+      new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new TurnToAngle(m_driveTrain, m_limelight));
       
     }
     
