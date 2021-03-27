@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveToDistance;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ResetHood;
 import frc.robot.commands.ShootBall;
 import frc.robot.commands.TestExtendShooterHood;
 import frc.robot.commands.TestRetractHood;
@@ -123,7 +124,8 @@ public class RobotContainer {
       //adding driver control for intake and shooter
       new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new RunIntake(0.6, m_intake));
       
-      new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(shootSequence);
+      //new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(shootSequence);
+      new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
       new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestExtendShooterHood(m_shooter));
       new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestRetractHood(m_shooter));
       
@@ -180,6 +182,10 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
       System.out.println("Auto: " + chooseAuton.getSelected().getName());
       return chooseAuton.getSelected();
+    }
+
+    public Command getTeleopInitCommand() {
+      return new ResetHood(m_shooter);
     }
     
     protected Command loadTrajectory(String trajectoryName) {

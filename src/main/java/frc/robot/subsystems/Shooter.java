@@ -177,10 +177,10 @@ public class Shooter extends SubsystemBase {
     //   this.hood_motor.set(0);
     // } 
     
-    if(!this.hoodReset) {
-      //TODO undo this once it's tested.
-      resetHood();
-    }
+    // if(!this.hoodReset) {
+    //   //TODO undo this once it's tested.
+    //   resetHood();
+    // }
 
     //check if hood pid settings have changed
     if ( hood_kP_value !=  hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP)  
@@ -293,6 +293,10 @@ public class Shooter extends SubsystemBase {
     double range = 10;
     return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint 
     && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
+  }
+
+  public boolean isHoodReset(){
+    return hoodReset;
   }
 
   public void stopHood(){

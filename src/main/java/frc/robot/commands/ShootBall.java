@@ -59,12 +59,13 @@ public class ShootBall extends CommandBase {
     // get velocity from the Shuffleboard
     //setShooterVelocity(targetVelocity);
     setShooterRPM((int)targetVelocity);
-    shooter.changeHoodAngle(computedAngle);
+    // shooter.changeHoodAngle(computedAngle);
 
     double shooterRPM = shooter.getShooterRPM();
 
-    if((targetVelocity - RANGE < shooterRPM && targetVelocity + RANGE > shooterRPM) &&
-        (shooterAngle - ANGLE_RANGE < computedAngle && shooterAngle + ANGLE_RANGE > computedAngle)) {
+    // if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM) &&
+    //     (shooterAngle - ANGLE_RANGE < computedAngle && shooterAngle + ANGLE_RANGE > computedAngle)) {
+    if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM)) {
       shooter.runKickup(kickupEffort);
       indexer.runIndexer(intakeEffort); 
     } else {
