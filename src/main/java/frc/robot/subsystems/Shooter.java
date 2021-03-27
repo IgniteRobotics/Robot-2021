@@ -148,14 +148,14 @@ public class Shooter extends SubsystemBase {
     hoodPidController.setI(kI);
     hoodPidController.setD(kD);
     hoodPidController.setIZone(0);
-    hoodPidController.setFF(0.000156);
+    //hoodPidController.setFF(0.000156);
 
-    hoodPidController.setOutputRange(-1, 1);
+    hoodPidController.setOutputRange(-.5, .5);
   
 
-    hoodPidController.setSmartMotionMaxVelocity(maxV,0);
-    hoodPidController.setSmartMotionMinOutputVelocity(0,0);
-    hoodPidController.setSmartMotionMaxAccel(200, 0);
+    // hoodPidController.setSmartMotionMaxVelocity(maxV,0);
+    // hoodPidController.setSmartMotionMinOutputVelocity(0,0);
+    // hoodPidController.setSmartMotionMaxAccel(200, 0);
 
     hood_motor.setIdleMode(IdleMode.kBrake);
     
@@ -272,7 +272,7 @@ public class Shooter extends SubsystemBase {
   }
   
   public void changeHoodTicks(double targetTicks) {
-    hoodPidController.setReference(targetTicks, ControlType.kSmartMotion);
+    hoodPidController.setReference(targetTicks, ControlType.kPosition);
   }
   
   public void resetHood() {
