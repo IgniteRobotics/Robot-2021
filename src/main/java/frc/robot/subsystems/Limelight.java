@@ -19,13 +19,16 @@ public class Limelight extends SubsystemBase {
   /** Creates a new Limelight. */
   public Limelight() {}
 
-  
+
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
 
+  /**
+   * Returns the distance from the target as calculated by the Limelight, in meters.
+   */
   public double getDistancefromgoal() {
     //need height camera is from ground
     //need height of hole from piller

@@ -56,10 +56,11 @@ public class ShootBall extends CommandBase {
     double intakeEffort = intakeEffortEntry.getDouble(0.4);
     double kickupEffort = kickupEffortEntry.getDouble(0.3);
     double shooterAngle = shooter.getHoodAngle();
-    double computedAngle = computeAngleFromDistance();
+    double computedAngle = computeAngleFromDistance(limelight.getDistancefromgoal());
     // get velocity from the Shuffleboard
     //setShooterVelocity(targetVelocity);
-    setShooterRPM((int)targetVelocity);
+    setShooterRPM(computeRPMFromDistance(limelight.getDistancefromgoal()));
+    shooter.changeHoodAngle(computedAngle);
     // shooter.changeHoodAngle(computedAngle);
 
     double shooterRPM = shooter.getShooterRPM();
@@ -89,9 +90,22 @@ public class ShootBall extends CommandBase {
     }
   }
 
-  private double computeAngleFromDistance() {
-    // Implementation TODO
-    return -1;
+//this is a hack just to get what build wants. we will work on making it better
+
+  public int computeRPMFromDistance(double distance) {
+    if(distance >= 4.572) {
+      return 3700;
+    } else {
+      return 2150;
+    }
+  }
+
+  private double computeAngleFromDistance(double distance) {
+    if(distance <= 4.572) { //15 ft in meters, this is the mimimal thing build wants
+      return 61;
+    } else {
+      return 31;
+    }
   }
 
   private void stop() {
