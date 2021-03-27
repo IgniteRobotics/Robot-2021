@@ -14,9 +14,12 @@ public class Limelight extends SubsystemBase {
   private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   private NetworkTableEntry ty = table.getEntry("ty");
   private NetworkTableEntry tx = table.getEntry("tx");
+  private NetworkTableEntry ledMode = table.getEntry("ledMode");
   
   /** Creates a new Limelight. */
   public Limelight() {}
+
+  
 
   @Override
   public void periodic() {
@@ -33,6 +36,10 @@ public class Limelight extends SubsystemBase {
 
     //TODO confirm these values 
     return (Constants.TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(ty + Constants.LIMELIGHT_ANGLE));
+  }
+
+  public void setLed(boolean on) {
+    ledMode.setNumber(on ? 3 : 1);
   }
 
   public double getHorizontalOffset() {
