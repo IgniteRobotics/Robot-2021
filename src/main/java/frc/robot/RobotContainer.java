@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.commands.drivetrain.ToggleSlowMode;
 import frc.robot.commands.drivetrain.TurnToAngle;
 import frc.robot.commands.drivetrain.ArcadeDrive;
+import frc.robot.commands.drivetrain.ArcadeDrive1Stick;
 import frc.robot.commands.Intake.RunIntake;
 import frc.robot.commands.drivetrain.TargetPositioning;
 
@@ -144,14 +145,13 @@ public class RobotContainer {
     }
 
     else if ( driveChooser.getSelected() == 3 ){
+      teleDriveCommand =  new  ArcadeDrive1Stick(m_driveController,m_driveTrain );
 
     }
     else {
       teleDriveCommand = new RamseteDrive(m_driveController, m_driveTrain);
     }
    
-  
-      
     }
     
     private void configureSubsystemCommands() {
