@@ -27,7 +27,8 @@ public class TargetPositioning extends CommandBase {
   private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private static NetworkTable table = inst.getTable("limelight");
   private static double KpTurn = 0.035;
-  private static double min_command = 0.08;
+  private static double minCommand = 0.08;
+  private static double minInfPoint = 8;
   // the range you want.
   //allowed margin of errorit 
   private double marginOfErrorTurn = 2.0;
@@ -35,6 +36,7 @@ public class TargetPositioning extends CommandBase {
   private ShuffleboardTab tab;
   private NetworkTableEntry kpTurnEntry;
   private NetworkTableEntry minTurnEntry;
+  private NetworkTableEntry minInfEntry;
 
   boolean targetFound = false;
   
@@ -51,7 +53,8 @@ public class TargetPositioning extends CommandBase {
 
     tab = Shuffleboard.getTab("Limelight");
     kpTurnEntry = tab.add("kPTurn Limelight", KpTurn).withProperties(Map.of("min", 0)).getEntry();
-    minTurnEntry = tab.add("min turn Limelight", min_command).withProperties(Map.of("min", 0)).getEntry();
+    minTurnEntry = tab.add("min turn Limelight", minCommand).withProperties(Map.of("min", 0)).getEntry();
+    minInfEntry = tab.add("min inf pt Limelight", minInfPoint).withProperties(Map.of("min", 0)).getEntry();
 
   }
 
@@ -60,7 +63,8 @@ public class TargetPositioning extends CommandBase {
   public void initialize() {
     targetFound = false;
     KpTurn = kpTurnEntry.getDouble(KpTurn);
-    min_command = minTurnEntry.getDouble(min_command);
+    minCommand = minTurnEntry.getDouble(minCommand);
+    minInfPoint = minInfEntry.getDouble(minInfPoint);
     table.getEntry("camMode").setNumber(0);
     table.getEntry("ledMode").setNumber(3);
   }
@@ -85,13 +89,13 @@ public class TargetPositioning extends CommandBase {
       
       double headingError = -tx;
       double steeringAdjust = 0.0;
-      if (tx > 1.0)
+      if (tx >= minInfPoint)
       {
-              steeringAdjust =  KpTurn*headingError - min_command;
+              steeringAdjust =  KpTurn*headingError - minCommand;
       }
-      else if (tx < 1.0)
+      else if (tx < minInfPoint)
       {
-              steeringAdjust = KpTurn*headingError + min_command;
+              steeringAdjust = KpTurn*headingError + minCommand;
       }
 
 
