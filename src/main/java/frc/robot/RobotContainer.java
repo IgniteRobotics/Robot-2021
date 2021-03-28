@@ -48,6 +48,7 @@ import frc.robot.commands.drivetrain.TargetPositioning;
 
 import frc.robot.commands.drivetrain.DriveTrajectory;
 import frc.robot.commands.drivetrain.RamseteArcadeDrive;
+import frc.robot.commands.drivetrain.RamseteDrive;
 import frc.robot.subsystems.RamseteDriveSubsystem;
 /**
 * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -71,7 +72,7 @@ public class RobotContainer {
   
   
   //private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
-  private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
+  private Command teleDriveCommand;
   //rivate AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
   
   private ShootBall shootCommand = new ShootBall(m_shooter, m_indexer, m_limelight);
@@ -106,6 +107,7 @@ public class RobotContainer {
     //Just want to see how curve drive works
     driveChooser.setDefaultOption("Arcade Drive", 1);
     driveChooser.addOption("Curve Drive", 2);
+    driveChooser.addOption("Arcade Drive 1-Stick", 3);
     SmartDashboard.putData(driveChooser);
   
 
@@ -140,8 +142,12 @@ public class RobotContainer {
      if (driveChooser.getSelected() == 1 ) {
       teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
     }
+
+    else if ( driveChooser.getSelected() == 3 ){
+
+    }
     else {
-      teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
+      teleDriveCommand = new RamseteDrive(m_driveController, m_driveTrain);
     }
    
   
