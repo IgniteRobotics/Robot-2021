@@ -20,6 +20,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.util.StateMachine;
 import frc.robot.util.VisionUtils;
 
 
@@ -39,6 +40,8 @@ public class TargetPositioning extends CommandBase {
   private NetworkTableEntry minInfEntry;
 
   boolean targetFound = false;
+
+  private StateMachine state;
   
 
   
@@ -56,6 +59,7 @@ public class TargetPositioning extends CommandBase {
     minTurnEntry = tab.add("min turn Limelight", minCommand).withProperties(Map.of("min", 0)).getEntry();
     minInfEntry = tab.add("min inf pt Limelight", minInfPoint).withProperties(Map.of("min", 0)).getEntry();
 
+    state = StateMachine.getIntance();
   }
 
   // Called wen the command is initially scheduled.
@@ -84,8 +88,13 @@ public class TargetPositioning extends CommandBase {
       double tx = (double) table.getEntry("tx").getNumber(0);
       double ty = (double) table.getEntry("ty").getNumber(0);
 
+      double dist = VisionUtils.getDistanceToTarget(ty);
+
       SmartDashboard.putNumber("Limelight tx", tx);
       SmartDashboard.putNumber("Limelight ty", ty);
+      SmartDashboard.putNumber("Limelight dist", dist);
+
+      state.setShooterDistance(dist);
       
       double headingError = -tx;
       double steeringAdjust = 0.0;
@@ -121,4 +130,6 @@ public class TargetPositioning extends CommandBase {
     boolean yawOK = Math.abs(tx) <= marginOfErrorTurn;
     return yawOK && targetFound;
   }
+
+
 }
