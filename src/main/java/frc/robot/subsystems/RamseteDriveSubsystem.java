@@ -207,8 +207,16 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     m_odometry.resetPosition(startingPose , Rotation2d.fromDegrees(getAngle()));
   }
 
-public void arcadeDrive1Stick (double speed, double rotation ){
-  m_driveTrain.arcadeDrive(speed, rotation);
+public void arcadeDrive1Stick (double speed, double rotation, boolean useSquares ){
+  if (useSquares) {
+    // xSpeed *= Math.abs(xSpeed);
+    // zRotation *= Math.abs(zRotation);
+    speed = Util.applyLimiters(speed, velocityRampExponent, velocityLimitMultiplier);
+    rotation = Util.applyLimiters(rotation, turnRampExponent, turnLimitMultiplier);
+  }
+
+
+  m_driveTrain.arcadeDrive(speed, rotation, false);
 }
 
 
