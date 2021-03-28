@@ -50,7 +50,7 @@ public class RamseteDrive extends CommandBase { // TODO Figure out how to make a
   }
 
   private double getSpeed() {
-    double speed = -driverJoystick.getY();;
+    double speed = -driverJoystick.getY();
     // if(m_driveTrain.isSlowMode) {
     //   speed *= Constants.SLOW_MODE_SPEED_MODIFIER;
     // }
