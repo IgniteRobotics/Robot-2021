@@ -79,6 +79,8 @@ public class RobotContainer {
   SendableChooser<Command> chooseAuton = new SendableChooser<>();
 
   //private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new TurnToAngle(m_driveTrain, m_limelight), shootCommand);
+
+  //private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new TargetPositioning(m_driveTrain), shootCommand);
   
   
   
@@ -111,24 +113,13 @@ public class RobotContainer {
     * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
     */
     private void configureButtonBindings() {
-      //new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new ExampleCommand(m_driveTrain);
-      // new JoystickButton(m_driveController, Constants.BUTTON_LEFT_BUMPER).whileHeld(new ToggleSlowMode(m_driveTrain));
-      // new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(new TargetPositioning(m_driveTrain, 138));
-      // new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new TargetPositioning(m_driveTrain, 222));
       
-      //should this be manipulator or driver controller?
-      //if you want to increase the speed of the intake increase this number up to max of 1
-      new JoystickButton(m_manipController, Constants.BUTTON_LEFT_BUMPER).whileHeld(new RunIntake(0.6, m_intake));
-      new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(new runIndexer(0.20, m_indexer)); //check if this works
-      
-      //adding driver control for intake and shooter
-      //new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new RunIntake(0.6, m_intake));
-      
-      //new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(shootSequence);
-      new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
+      new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(new RunIntake(0.6, m_intake));
+      new JoystickButton(m_manipController, Constants.BUTTON_B).whileHeld(new TargetPositioning(m_driveTrain));
+      new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(shootCommand);
       //new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestExtendShooterHood(m_shooter));
       //new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestRetractHood(m_shooter));
-      new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new TargetPositioning(m_driveTrain));
+      //new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new TargetPositioning(m_driveTrain));
       
     }
     
