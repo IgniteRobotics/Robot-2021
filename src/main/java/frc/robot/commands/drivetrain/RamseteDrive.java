@@ -43,22 +43,9 @@ public class RamseteDrive extends CommandBase { // TODO Figure out how to make a
   //Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    ShuffleboardTab  tab = Shuffleboard.getTab("DriveTrain");
-    NetworkTableEntry driveMode = tab.add("Choose Control mode", "Arcade Drive").getEntry();
-
-    if (driveMode.getString("Arcade Drive") == "Arcade Drive") {
-      m_driveTrain.arcadeDrive(getSpeed(), getRotation(), true);
-      outputTelemetry(); 
-
-    }
-
-    else { 
       m_driveTrain.driveCurvature(getSpeed(), getRotation(), true);
       outputTelemetry();
-    }
-
-
+  
    
   }
 
@@ -92,7 +79,7 @@ public class RamseteDrive extends CommandBase { // TODO Figure out how to make a
   }
 
   public void outputTelemetry() {
-    SmartDashboard.putNumber("RamseteAD/Speed", this.getSpeed());
-    SmartDashboard.putNumber("RamseteAD/Rotation", this.getRotation());
+    SmartDashboard.putNumber("RamseteCD/Speed", this.getSpeed());
+    SmartDashboard.putNumber("RamseteCD/Rotation", this.getRotation());
   }
 }

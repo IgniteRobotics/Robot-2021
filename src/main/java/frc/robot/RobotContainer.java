@@ -81,7 +81,7 @@ public class RobotContainer {
   private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new TurnToAngle(m_driveTrain, m_limelight), shootCommand);
   
   
-  
+  SendableChooser<Integer> driveChooser= new SendableChooser<>();
   
   
   
@@ -102,6 +102,14 @@ public class RobotContainer {
     this.configureButtonBindings();
     this.configureSubsystemCommands();
     this.configureAutonChooser();
+    
+    //Just want to see how curve drive works
+    driveChooser.setDefaultOption("Arcade Drive", 1);
+    driveChooser.addOption("Curve Drive", 2);
+    SmartDashboard.putData(driveChooser);
+  
+
+
   }
   
   /**
@@ -129,6 +137,14 @@ public class RobotContainer {
       new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestExtendShooterHood(m_shooter));
       new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestRetractHood(m_shooter));
       
+     if (driveChooser.getSelected() == 1 ) {
+      teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
+    }
+    else {
+      teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
+    }
+   
+  
       
     }
     
