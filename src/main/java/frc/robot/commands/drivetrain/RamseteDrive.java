@@ -58,7 +58,7 @@ public class RamseteDrive extends CommandBase { // TODO Figure out how to make a
   }
 
   private double getRotation() {
-    double rotation = (driverJoystick.getX();
+    double rotation = (driverJoystick.getX());
     // if(m_driveTrain.isSlowMode) {
     //   rotation *= Constants.SLOW_MODE_SPEED_MODIFIER;
     // }
