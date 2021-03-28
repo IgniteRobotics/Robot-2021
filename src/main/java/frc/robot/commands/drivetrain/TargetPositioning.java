@@ -26,14 +26,15 @@ import frc.robot.util.VisionUtils;
 public class TargetPositioning extends CommandBase {
   private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
   private static NetworkTable table = inst.getTable("limelight");
-  private static double KpTurn = 0.02;
-  private static double min_command = 0.05;
+  private static double KpTurn = 0.035;
+  private static double min_command = 0.08;
   // the range you want.
   //allowed margin of errorit 
   private double marginOfErrorTurn = 2.0;
 
   private ShuffleboardTab tab;
   private NetworkTableEntry kpTurnEntry;
+  private NetworkTableEntry minTurnEntry;
 
   boolean targetFound = false;
   
@@ -50,6 +51,7 @@ public class TargetPositioning extends CommandBase {
 
     tab = Shuffleboard.getTab("Limelight");
     kpTurnEntry = tab.add("kPTurn Limelight", KpTurn).withProperties(Map.of("min", 0)).getEntry();
+    minTurnEntry = tab.add("min turn Limelight", min_command).withProperties(Map.of("min", 0)).getEntry();
 
   }
 
@@ -58,6 +60,7 @@ public class TargetPositioning extends CommandBase {
   public void initialize() {
     targetFound = false;
     KpTurn = kpTurnEntry.getDouble(KpTurn);
+    min_command = minTurnEntry.getDouble(min_command);
     table.getEntry("camMode").setNumber(0);
     table.getEntry("ledMode").setNumber(3);
   }
