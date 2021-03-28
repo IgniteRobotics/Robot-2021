@@ -75,7 +75,7 @@ public class RobotContainer {
   //rivate AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
   
   private ShootBall shootCommand = new ShootBall(m_shooter, m_indexer, m_limelight);
-  
+  private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain);
   SendableChooser<Command> chooseAuton = new SendableChooser<>();
 
   //private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new TurnToAngle(m_driveTrain, m_limelight), shootCommand);
@@ -115,12 +115,12 @@ public class RobotContainer {
     private void configureButtonBindings() {
       
       new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(new RunIntake(0.6, m_intake));
-      new JoystickButton(m_manipController, Constants.BUTTON_B).whileHeld(new TargetPositioning(m_driveTrain));
+      new JoystickButton(m_manipController, Constants.BUTTON_B).whileHeld(targetingCommand);
       new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(shootCommand);
       
       
       new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new RunIntake(0.6, m_intake));
-      new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(new TargetPositioning(m_driveTrain));
+      new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(targetingCommand);
       new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
       
     }
