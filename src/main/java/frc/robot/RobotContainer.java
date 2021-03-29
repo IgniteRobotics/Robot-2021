@@ -71,7 +71,8 @@ public class RobotContainer {
   
   
   //private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
-  private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
+  //private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
+  private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_manipController, m_driveTrain);
   //rivate AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
   
   private ShootBall shootCommand = new ShootBall(m_shooter, m_indexer, m_limelight);
@@ -116,7 +117,9 @@ public class RobotContainer {
       
       new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(new RunIntake(0.6, m_intake));
       new JoystickButton(m_manipController, Constants.BUTTON_B).whileHeld(targetingCommand);
-      new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(shootCommand);
+      new JoystickButton(m_manipController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
+      new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(new TestRetractHood(m_shooter));
+      new JoystickButton(m_manipController, Constants.BUTTON_RIGHT_BUMPER).whileHeld(shootCommand);
       
       
       new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new RunIntake(0.6, m_intake));

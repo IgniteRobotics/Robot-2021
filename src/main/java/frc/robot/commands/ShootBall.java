@@ -71,11 +71,11 @@ public class ShootBall extends CommandBase {
     distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
     double currentDistance = state.getShooterDistance();
 
-    if (currentDistance > distanceSetpoint){
-      shooter.extendHood();
-    } else {
-      shooter.retractHood();
-    }
+    // if (currentDistance > distanceSetpoint){
+    //   shooter.extendHood();
+    // } else {
+    //   shooter.retractHood();
+    // }
 
 
     // get velocity from the Shuffleboard
@@ -88,7 +88,7 @@ public class ShootBall extends CommandBase {
     // if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM) &&
     //     (shooterAngle - ANGLE_RANGE < computedAngle && shooterAngle + ANGLE_RANGE > computedAngle)) {
     if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM)
-        && shooter.isHoodReady()
+      //  && shooter.isHoodReady()
     ) {
       shooter.runKickup(kickupEffort);
       indexer.runIndexer(intakeEffort); 
