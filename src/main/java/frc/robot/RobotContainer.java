@@ -169,7 +169,7 @@ public class RobotContainer {
       };
       
       for (String s: paths){
-        this.chooseAuton.addOption(s, this.loadTrajectory(s));
+        this.chooseAuton.addOption(s, this.loadTrajectoryCommand(s));
       }
       
     }
@@ -188,15 +188,19 @@ public class RobotContainer {
       return new ResetHood(m_shooter);
     }
     
-    protected Command loadTrajectory(String trajectoryName) {
-      try{
-        Trajectory trajectory =  TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", "output", trajectoryName + ".wpilib.json")));
-        return new DriveTrajectory(m_driveTrain, trajectory).andThen(() -> m_driveTrain.tankDriveVolts(0.0, 0.0));
-        
-      } catch(IOException e) {
-        DriverStation.reportError("Failed to load auto trajectory: " + trajectoryName, false);
-        return null;
-      }
+    protected Command loadTrajectoryCommand(String trajectoryName) {
+      Trajectory t = loadTrajectory(trajectoryName);
+      //remember to change this to follow trajecotry
+      return new DriveTrajectory(m_driveTrain, t).andThen(() -> m_driveTrain.tankDriveVolts(0.0, 0.0));
+    }
+
+  public static Trajectory loadTrajectory(String trajectoryName) {
+    try{
+    return TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", "output", trajectoryName + ".wpilib.json")));
+    } catch(IOException e) {
+      DriverStation.reportError("Failed to load auto trajectory: " + trajectoryName, false);
+      return null;
     }
   }
+}
   
