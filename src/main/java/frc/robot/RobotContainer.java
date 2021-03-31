@@ -125,7 +125,7 @@ private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driv
     return new DriveTrajectory(ramsetedriveTrain, trajectory);
   }
 
-  protected static Trajectory loadTrajectory(String trajectoryName) {
+  public static Trajectory loadTrajectory(String trajectoryName) {
     try{
     return TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", "output", trajectoryName + ".wpilib.json")));
     } catch(IOException e) {

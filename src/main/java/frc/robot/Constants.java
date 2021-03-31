@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import frc.robot.util.PathData;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -113,4 +114,17 @@ public final class Constants {
 	public static final double OPEN_LOOP_RAMP = 0.25;
 
 	public static final SimpleMotorFeedforward FEED_FORWARD = new SimpleMotorFeedforward(ksVolts, kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
+
+
+
+
+	//Pathdata for galactic search. Units are in cm, pixel offset
+
+	public static PathData pathARed = new PathData(90, 0, null);
+	public static PathData pathBRed = new PathData(90, -200, null);
+
+	public static PathData pathABlue = new PathData(180, -200, null);
+	public static PathData pathBBlue = new PathData(180, -100, null);
+
+
 }
