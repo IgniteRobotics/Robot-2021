@@ -137,6 +137,7 @@ public final class Constants {
 	public static double HOOD_DEFAULT_KD = 0;
     public static double HOOD_DEFAULT_RPM = 100;
 	public static double HOOD_MAX_POSITION = 1500;
+	public static double HOOD_SET_POINT_DISTANCE = 4.572;
 
 	public static double SHOOTER_GEAR_RATIO = 1.5;
 	public static int SHOOTER_MAX_RPM = 6000;

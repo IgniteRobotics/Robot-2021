@@ -8,9 +8,12 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
+import frc.robot.util.StateMachine;
+
 import java.util.Map;
 
 public class ShootBall extends CommandBase {
@@ -21,11 +24,19 @@ public class ShootBall extends CommandBase {
   private NetworkTableEntry targetShooterVelocityEntry;
   private NetworkTableEntry intakeEffortEntry;
   private NetworkTableEntry kickupEffortEntry;
+  private NetworkTableEntry distanceSetPointEntry;
 
   private Limelight limelight;
 
-  private static final int RANGE = 50;
+  private StateMachine state;
+
+  private static final int RANGE = 150;
   private static final double ANGLE_RANGE = 5;
+
+  double targetVelocity = Constants.HOOD_DEFAULT_RPM;
+  double intakeEffort = 0.4;
+  double kickupEffort = 0.3;
+  double distanceSetpoint = Constants.HOOD_SET_POINT_DISTANCE;
 
   public ShootBall(Shooter shooter, Indexer indexer, Limelight limelight) {
     this.shooter = shooter;
@@ -34,9 +45,11 @@ public class ShootBall extends CommandBase {
     addRequirements(shooter, indexer);
 
     tab = Shuffleboard.getTab("Shooter");
-    targetShooterVelocityEntry = tab.add("Target Shooter Velocity", 0).withProperties(Map.of("min", 0)).getEntry();
-    intakeEffortEntry = tab.add("Intake Effort Percentage", 0.4).withProperties(Map.of("min", -1, "max", 1)).getEntry();
-    kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.3).withProperties(Map.of("min", 0, "max", 1)).getEntry();
+    targetShooterVelocityEntry = tab.add("Target Shooter Velocity", Constants.HOOD_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
+    distanceSetPointEntry = tab.add("Shooter Distance Setpoint", Constants.HOOD_SET_POINT_DISTANCE).withProperties(Map.of("min", 0)).getEntry();
+    intakeEffortEntry = tab.add("Intake Effort Percentage", 0.6).withProperties(Map.of("min", -1, "max", 1)).getEntry();
+    kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.5).withProperties(Map.of("min", 0, "max", 1)).getEntry();
+
   }
 
   // Called when the command is initially scheduled.
@@ -46,16 +59,25 @@ public class ShootBall extends CommandBase {
     // targetShooterVelocityEntry = tab.add("Target Shooter Velocity", 0).withProperties(Map.of("min", 0)).getEntry();
     // intakeEffortEntry = tab.add("Intake Effort Percentage", 0.4).withProperties(Map.of("min", -1, "max", 1)).getEntry();
     // kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.3).withProperties(Map.of("min", 0, "max", 1)).getEntry();
+    state = StateMachine.getIntance();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double targetVelocity = targetShooterVelocityEntry.getDouble(1000);
-    double intakeEffort = intakeEffortEntry.getDouble(0.4);
-    double kickupEffort = kickupEffortEntry.getDouble(0.3);
-    double shooterAngle = shooter.getHoodAngle();
-    double computedAngle = computeAngleFromDistance();
+    targetVelocity = targetShooterVelocityEntry.getDouble(Constants.HOOD_DEFAULT_RPM);
+    intakeEffort = intakeEffortEntry.getDouble(0.4);
+    kickupEffort = kickupEffortEntry.getDouble(0.3);
+    distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
+    double currentDistance = state.getShooterDistance();
+
+    // if (currentDistance > distanceSetpoint){
+    //   shooter.extendHood();
+    // } else {
+    //   shooter.retractHood();
+    // }
+
+
     // get velocity from the Shuffleboard
     //setShooterVelocity(targetVelocity);
     setShooterRPM((int)targetVelocity);
@@ -65,7 +87,9 @@ public class ShootBall extends CommandBase {
 
     // if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM) &&
     //     (shooterAngle - ANGLE_RANGE < computedAngle && shooterAngle + ANGLE_RANGE > computedAngle)) {
-    if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM)) {
+    if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM)
+      //  && shooter.isHoodReady()
+    ) {
       shooter.runKickup(kickupEffort);
       indexer.runIndexer(intakeEffort); 
     } else {
@@ -88,13 +112,9 @@ public class ShootBall extends CommandBase {
     }
   }
 
-  private double computeAngleFromDistance() {
-    // Implementation TODO
-    return -1;
-  }
 
   private void stop() {
-    shooter.setVelocity(0);
+    shooter.setpower(0.0);
     shooter.stopKickup();
     indexer.stop();
   }
@@ -110,4 +130,5 @@ public class ShootBall extends CommandBase {
   public boolean isFinished() {
     return false;
   }
+
 }

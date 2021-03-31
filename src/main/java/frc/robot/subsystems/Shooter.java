@@ -68,12 +68,14 @@ public class Shooter extends SubsystemBase {
   private NetworkTableEntry hood_kD_entry;
   private NetworkTableEntry hood_max_vel_entry;
   private NetworkTableEntry hood_max_position_entry;
+  private NetworkTableEntry hood_min_position_entry;
 
   private double hood_kP_value;
   private double hood_kI_value;
   private double hood_kD_value;
   private double hood_max_vel_value;
   private double hood_max_position_value;
+  private double hood_min_position_value;
   
   
   
@@ -93,12 +95,14 @@ public class Shooter extends SubsystemBase {
     hood_kD_entry = tab.add("hood kD", Constants.HOOD_DEFAULT_KD).withProperties(Map.of("min", 0)).getEntry();
     hood_max_vel_entry = tab.add("hood max V", Constants.HOOD_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
     hood_max_position_entry = tab.add("hood max position", Constants.HOOD_MAX_POSITION).withProperties(Map.of("min", 0)).getEntry();
+    hood_min_position_entry = tab.add("hood min position", 0).withProperties(Map.of("min", 0)).getEntry();
 
     hood_kP_value = hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP);
     hood_kI_value = hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI);
     hood_kD_value = hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD);
     hood_max_vel_value = hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM);
     hood_max_position_value = hood_max_position_entry.getDouble(Constants.HOOD_MAX_POSITION);
+    hood_min_position_value = hood_min_position_entry.getDouble(0);
 
 
     configureFlywheel(flywheel_kP_value,flywheel_kI_value,flywheel_kD_value);
@@ -194,6 +198,9 @@ public class Shooter extends SubsystemBase {
             configureHood(hood_kP_value, hood_kI_value, hood_kD_value, hood_max_vel_value);
     }
 
+    hood_max_position_value = hood_max_position_entry.getDouble(hood_max_position_value);
+    hood_min_position_value = hood_min_position_entry.getDouble(hood_min_position_value);
+
   }
   
   public void setVelocity(double velocity){
@@ -253,14 +260,14 @@ public class Shooter extends SubsystemBase {
   }
   
   public void retractHood(){
-    this.hoodPositionTicksSetPoint = 0;
-    this.changeHoodTicks(0);
+    this.hoodPositionTicksSetPoint = this.hood_min_position_value;
+    this.changeHoodTicks(this.hoodPositionTicksSetPoint);
     
   }
   
   public void extendHood() {
     this.hoodPositionTicksSetPoint = this.hood_max_position_value; 
-    this.changeHoodTicks(this.hood_max_position_value);
+    this.changeHoodTicks(this.hoodPositionTicksSetPoint);
   }
 
   public double getHoodTicks() {
@@ -290,7 +297,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean isHoodReady(){
-    double range = 10;
+    double range = 25;
     return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint 
     && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
   }
