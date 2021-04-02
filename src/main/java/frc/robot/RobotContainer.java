@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveToDistance;
+import frc.robot.commands.DrivegalacticRun;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.ResetHood;
 import frc.robot.commands.ShootBall;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
@@ -85,18 +87,14 @@ public class RobotContainer {
 
   //private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new TargetPositioning(m_driveTrain), shootCommand);
   
+
+  //The realsense camera is blocked by the intake. First, lower down the intake, then determine path, and run intake in parallel 
+
+  private ParallelCommandGroup runTrajectoryAndIntake = new ParallelCommandGroup(intakeCommand, new DriveTrajectory(m_driveTrain, Constants.robotDeterminedTrajectory) );
   
+  //TODO Will the intake run up before we can determine the path? 
+  private SequentialCommandGroup galacticSearch = new SequentialCommandGroup(intakeCommand, new DrivegalacticRun(), runTrajectoryAndIntake);
   
-  
-  
-  
-  
-  //Let's store our auton commands here and hope that this is a good place to store them
-  
-  //put name of challenge and then whatever it's used for 
-  //private final command autoNavPath1;
-  //private final command autoNavPath2;
-  //private final command autoNavPath3;
   
   
   /**
@@ -172,6 +170,8 @@ public class RobotContainer {
       for (String s: paths){
         this.chooseAuton.addOption(s, this.loadTrajectoryCommand(s));
       }
+
+      chooseAuton.addOption("Galactic Search-inator", galacticSearch);
       
     }
     

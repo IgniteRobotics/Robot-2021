@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -25,26 +26,26 @@ public class DrivegalacticRun extends CommandBase {
   
   
 
-
-
-
   private PathData[] paths = {Constants.pathARed, Constants.pathBRed, Constants.pathABlue, Constants.pathBBlue};
 
-  double distance = -1;
-  double offset = -1;
+  private double distance = -1;
+  private double offset = -1;
   
   /** Creates a new DrivegalacticRun. */
-  public DrivegalacticRun(double distance, double offset) {
+  public DrivegalacticRun() {
     // Use addRequirements() here to declare subsystem dependencies.
     // initialize shuffleboard parameters
-    this.distance = distance;
-    this.offset = offset;
+    this.distance = table.getEntry("dist").getDouble(-1.0);
+    this.offset = table.getEntry("offset").getDouble(-1.0);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if(distance == -1 || offset == -1) {
+
+    SmartDashboard.putString("Robot-Path-Determination-Inator", "Selecting Path...");
+
+    if(distance == -1.0 || offset == -1.0) {
       DriverStation.reportError("There was an error getting the ball distance!", false);
       return;
     }
@@ -61,8 +62,14 @@ public class DrivegalacticRun extends CommandBase {
         chosenPath = paths[i];
       }
     }
+    
+    //display chosen path
+    //TODO Jaehon update this to use shuffleboard.addString
+    SmartDashboard.putString("Robot-Path-Determination-Inator", chosenPath.getTrajectory());
 
     Trajectory chosenTrajectory = RobotContainer.loadTrajectory(chosenPath.getTrajectory());
+
+    Constants.robotDeterminedTrajectory = chosenTrajectory;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -70,7 +77,7 @@ public class DrivegalacticRun extends CommandBase {
   public void execute() {
     // follow the path and pick up the balls
     //check if ball has been picked up
-    
+
   }
 
   // Called once the command ends or is interrupted.
