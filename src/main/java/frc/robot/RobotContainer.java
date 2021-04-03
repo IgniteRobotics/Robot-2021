@@ -44,6 +44,7 @@ import frc.robot.commands.Intake.RunIntake;
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.commands.drivetrain.ToggleSlowMode;
 import frc.robot.commands.drivetrain.TurnToAngle;
+import frc.robot.commands.Intake.ToggleIntake;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.Intake.RunIntake;
 import frc.robot.commands.drivetrain.TargetPositioning;
@@ -126,7 +127,7 @@ public class RobotContainer {
       new JoystickButton(m_driveController, Constants.BUTTON_RIGHT_BUMPER).whileHeld(targetingCommand);
       new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestRetractHood(m_shooter));
-      new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(targetingCommand);
+      new JoystickButton(m_driveController, Constants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
       new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
       
     }
