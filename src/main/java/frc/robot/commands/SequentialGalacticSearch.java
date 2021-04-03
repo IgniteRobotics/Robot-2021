@@ -38,8 +38,8 @@ public class SequentialGalacticSearch extends SequentialCommandGroup {
 
      
   }
-
-  public void initalize(){
+  @Override
+  public void initialize(){
   
     //Initally toggle the intake 
    addCommands( new  ToggleIntake(m_intake));  
@@ -47,7 +47,7 @@ public class SequentialGalacticSearch extends SequentialCommandGroup {
     pathChosen = m_realsense.determinePath();
     
   }
-
+  @Override
   public void execute() {
 
 
@@ -63,6 +63,11 @@ public class SequentialGalacticSearch extends SequentialCommandGroup {
     }
 
 
+  }
+
+  @Override
+  public boolean isFinished() {
+    return false;
   }
 
 
