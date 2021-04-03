@@ -17,7 +17,7 @@ import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
   private final WPI_VictorSPX intakeMotor;
-  private final Solenoid intakePistonSolenoid;
+  private Solenoid intakePistonSolenoid;
 
   private boolean isExtended;
 
@@ -31,15 +31,18 @@ public class Intake extends SubsystemBase {
 
     isExtended = false;
 
-    intakePistonSolenoid = new Solenoid(Constants.kIntakeSolenoidPort);
+    //intakePistonSolenoid = null;
+    intakePistonSolenoid = new Solenoid(44, Constants.kIntakeSolenoidPort);
   }
 
   private void extendIntake() {
+    System.out.println("extending intake");
     isExtended = true;
     intakePistonSolenoid.set(true);
   }
 
   private void retractIntake() {
+    System.out.println("retracting intake");
     isExtended = false;
     intakePistonSolenoid.set(false);
   }

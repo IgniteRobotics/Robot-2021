@@ -12,6 +12,7 @@ import frc.robot.subsystems.Intake;
 
 public class ToggleIntake extends CommandBase {
   private final Intake m_intake;
+  private boolean finished = false; 
   /**
    * Creates a new RunIntake.
    */
@@ -25,13 +26,15 @@ public class ToggleIntake extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_intake.toggleIntake();
+    //m_intake.toggleIntake();
+    finished = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
+    m_intake.toggleIntake();
+    finished = true;
   }
 
   // Called once the command ends or is interrupted.
@@ -43,6 +46,6 @@ public class ToggleIntake extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return finished;
   }
 }
