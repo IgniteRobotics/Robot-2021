@@ -36,9 +36,9 @@ public class PathData {
     * and choose the path with the least error.
     */
     public double getPathError(PathData d) {
-        double distError = Math.abs(this.dist - d.getDist() / d.getDist()   );
-        double offsetError = Math.abs(this.ballOffset - d.getOffset() / d.getOffset());
-        
-        return (distError + offsetError);
+        //double distError = Math.abs(this.dist - d.getDist() / d.getDist()   );
+        // double offsetError = Math.abs(this.ballOffset - d.getOffset() / d.getOffset());
+        double offsetError = Math.abs(this.ballOffset - d.getOffset()); 
+        return (offsetError);
     }
 }

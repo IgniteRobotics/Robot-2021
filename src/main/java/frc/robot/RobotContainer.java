@@ -101,11 +101,11 @@ public class RobotContainer {
   //TODO Will the intake run up before we can determine the path? 
   //private SequentialCommandGroup galacticSearch = new SequentialCommandGroup(intakeCommand, new DrivegalacticRun(), runTrajectoryAndIntake);
   //private Command galacticSearch = new SequentialGalacticSearch(m_driveTrain, m_realsense, m_intake);
-  private GalacticSearch galacticSearchDrive = new GalacticSearch(m_driveTrain, m_realsense);
-  private ParallelCommandGroup intakeAndSearch = new ParallelCommandGroup(new RunIntake(0.7, m_intake), galacticSearchDrive);  
-  private SequentialCommandGroup autoGalaticSearch = new SequentialCommandGroup(new ToggleIntake(m_intake), intakeAndSearch);
+  private GalacticSearch galacticSearchDrive = new GalacticSearch(m_driveTrain, m_realsense, m_intake);
+  //private ParallelCommandGroup intakeAndSearch = new ParallelCommandGroup(new RunIntake(1.0, m_intake), galacticSearchDrive);  
+  private SequentialCommandGroup autoGalaticSearch = new SequentialCommandGroup(new ToggleIntake(m_intake), galacticSearchDrive);
   private ParallelCommandGroup intakeAndDrive = new ParallelCommandGroup(new RunIntake(1.0, m_intake), 
-  this.loadTrajectoryCommand("28-GS-A-Red"));
+  this.loadTrajectoryCommand("28-GS-B-Red"));
   private SequentialCommandGroup manualGS = new SequentialCommandGroup(new ToggleIntake(m_intake), intakeAndDrive);
   
   /**

@@ -6,6 +6,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.commands.Intake.RunIntake;
 import frc.robot.commands.Intake.ToggleIntake;
 import frc.robot.commands.drivetrain.DriveTrajectory;
 import frc.robot.subsystems.Intake;
@@ -15,15 +17,17 @@ import frc.robot.subsystems.Realsense;
 public class GalacticSearch extends CommandBase {
   private RamseteDriveSubsystem m_driveTrain;
   private Realsense m_realsense;
+  private Intake m_intake;
 
   
   
   /** Creates a new GalacticSearchRunBetter. */
-  public GalacticSearch(RamseteDriveSubsystem drivetrain, Realsense realsense ) {
+  public GalacticSearch(RamseteDriveSubsystem drivetrain, Realsense realsense, Intake intake ) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.m_driveTrain = drivetrain;
     this.m_realsense = realsense;
-    addRequirements(drivetrain);
+    this.m_intake = intake;
+    addRequirements(drivetrain, intake);
   }
 
 
@@ -38,7 +42,9 @@ public class GalacticSearch extends CommandBase {
   public void execute() {
     Trajectory t = this.m_realsense.determinePath();
     if (t != null){
-      new DriveTrajectory(this.m_driveTrain, t).schedule();
+      ParallelCommandGroup pcg = new ParallelCommandGroup(new RunIntake(1.0, m_intake),
+        new DriveTrajectory(this.m_driveTrain, t));
+        pcg.schedule();
       end(false);
     }
   }

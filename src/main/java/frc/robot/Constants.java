@@ -167,11 +167,11 @@ public final class Constants {
 
 	//Pathdata for galactic search. Units are in cm, pixel offset
 
-	public static PathData pathARed = new PathData(90, 0, "28-GS-A-Red");
-	public static PathData pathBRed = new PathData(90, -200, "28-GS-B-Red");
+	public static PathData pathARed = new PathData(0, 14.0, "28-GS-A-Red");
+	public static PathData pathBRed = new PathData(0, -29, "28-GS-B-Red");
 
-	public static PathData pathABlue = new PathData(180, -200, "28-GS-A-Blue");
-	public static PathData pathBBlue = new PathData(180, -100, "28-GS-B-Blue");
+	public static PathData pathABlue = new PathData(0, 37, "28-GS-A-Blue");
+	public static PathData pathBBlue = new PathData(0, 25, "28-GS-B-Blue");
 	public static Trajectory robotDeterminedTrajectory; 
 
 
