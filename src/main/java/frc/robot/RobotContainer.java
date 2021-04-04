@@ -104,6 +104,9 @@ public class RobotContainer {
   private GalacticSearch galacticSearchDrive = new GalacticSearch(m_driveTrain, m_realsense);
   private ParallelCommandGroup intakeAndSearch = new ParallelCommandGroup(new RunIntake(0.7, m_intake), galacticSearchDrive);  
   private SequentialCommandGroup autoGalaticSearch = new SequentialCommandGroup(new ToggleIntake(m_intake), intakeAndSearch);
+  private ParallelCommandGroup intakeAndDrive = new ParallelCommandGroup(new RunIntake(1.0, m_intake), 
+  this.loadTrajectoryCommand("28-GS-A-Red"));
+  private SequentialCommandGroup manualGS = new SequentialCommandGroup(new ToggleIntake(m_intake), intakeAndDrive);
   
   /**
   * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -180,6 +183,7 @@ public class RobotContainer {
       }
 
       chooseAuton.addOption("Galactic Search-inator", autoGalaticSearch);
+      chooseAuton.addOption("Manual GS", manualGS);
       
     }
     

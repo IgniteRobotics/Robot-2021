@@ -67,7 +67,7 @@ public class Realsense extends SubsystemBase {
       }
     
     //display chosen path
-    this.shuffleboardTab.add("Robot-Path-Determination-Inator", chosenPath.getTrajectory());
+    this.shuffleboardTab.add("Chosen Path", chosenPath.getTrajectory());
 
     Trajectory chosenTrajectory = RobotContainer.loadTrajectory(chosenPath.getTrajectory());
 
@@ -81,7 +81,5 @@ public class Realsense extends SubsystemBase {
     // This method will be called once per scheduler run
     this.distance = table.getEntry("dist").getDouble(-1.0);
     this.offset = table.getEntry("offset").getDouble(-1.0);
-    this.shuffleboardTab.add("RS dX", this.offset);
-    this.shuffleboardTab.add("RS dist", this.distance);
   }
 }
