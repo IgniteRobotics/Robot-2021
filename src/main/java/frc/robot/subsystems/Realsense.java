@@ -31,13 +31,15 @@ public class Realsense extends SubsystemBase {
   /** Creates a new Realsense. */
   public Realsense() {
 
-    this.distance = table.getEntry("dist").getDouble(-1.0);
-    this.offset = table.getEntry("offset").getDouble(-1.0);
 
     this.networkTableInst = NetworkTableInstance.getDefault();
     this.table = networkTableInst.getTable("galacticsearch");
     this.shuffleboardTab = Shuffleboard.getTab("Galactic Search");
     this.shuffleboardTab.add("Robot-Path-Determination-Inator", "Selecting Path...");
+
+    this.distance = table.getEntry("dist").getDouble(-1.0);
+    this.offset = table.getEntry("offset").getDouble(-1.0);
+
 
   }
 
