@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveToDistance;
 import frc.robot.commands.DrivegalacticRun;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.GalacticSearch;
 import frc.robot.commands.ResetHood;
 import frc.robot.commands.SequentialGalacticSearch;
 import frc.robot.commands.ShootBall;
@@ -78,11 +79,13 @@ public class RobotContainer {
   //private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
   //private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
   private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
-  //rivate AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
+  //private AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
   
   private ShootBall shootCommand = new ShootBall(m_shooter, m_indexer, m_limelight);
   private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
+ 
+
 
   SendableChooser<Command> chooseAuton = new SendableChooser<>();
 
@@ -97,8 +100,10 @@ public class RobotContainer {
   
   //TODO Will the intake run up before we can determine the path? 
   //private SequentialCommandGroup galacticSearch = new SequentialCommandGroup(intakeCommand, new DrivegalacticRun(), runTrajectoryAndIntake);
-  private Command galacticSearch = new SequentialGalacticSearch(m_driveTrain, m_realsense, m_intake);
-  
+  //private Command galacticSearch = new SequentialGalacticSearch(m_driveTrain, m_realsense, m_intake);
+  private GalacticSearch galacticSearchDrive = new GalacticSearch(m_driveTrain, m_realsense);
+  private ParallelCommandGroup intakeAndSearch = new ParallelCommandGroup(new RunIntake(0.7, m_intake), galacticSearchDrive);  
+  private SequentialCommandGroup autoGalaticSearch = new SequentialCommandGroup(new ToggleIntake(m_intake), intakeAndSearch);
   
   /**
   * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -174,7 +179,7 @@ public class RobotContainer {
         this.chooseAuton.addOption(s, this.loadTrajectoryCommand(s));
       }
 
-      chooseAuton.addOption("Galactic Search-inator", galacticSearch);
+      chooseAuton.addOption("Galactic Search-inator", autoGalaticSearch);
       
     }
     
