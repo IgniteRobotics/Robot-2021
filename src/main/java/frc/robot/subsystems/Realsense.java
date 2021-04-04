@@ -31,13 +31,13 @@ public class Realsense extends SubsystemBase {
   /** Creates a new Realsense. */
   public Realsense() {
 
-    distance = table.getEntry("dist").getDouble(-1.0);
-    offset = table.getEntry("offset").getDouble(-1.0);
+    this.distance = table.getEntry("dist").getDouble(-1.0);
+    this.offset = table.getEntry("offset").getDouble(-1.0);
 
-    networkTableInst = NetworkTableInstance.getDefault();
-    table = networkTableInst.getTable("galacticsearch");
-    shuffleboardTab = Shuffleboard.getTab("Galactic Search");
-    SmartDashboard.putString("Robot-Path-Determination-Inator", "Selecting Path...");
+    this.networkTableInst = NetworkTableInstance.getDefault();
+    this.table = networkTableInst.getTable("galacticsearch");
+    this.shuffleboardTab = Shuffleboard.getTab("Galactic Search");
+    this.shuffleboardTab.add("Robot-Path-Determination-Inator", "Selecting Path...");
 
   }
 
@@ -65,11 +65,11 @@ public class Realsense extends SubsystemBase {
       }
     
     //display chosen path
-    SmartDashboard.putString("Robot-Path-Determination-Inator", chosenPath.getTrajectory());
+    this.shuffleboardTab.add("Robot-Path-Determination-Inator", chosenPath.getTrajectory());
 
     Trajectory chosenTrajectory = RobotContainer.loadTrajectory(chosenPath.getTrajectory());
 
-    hasTarget = true;
+    this.hasTarget = true;
     return chosenTrajectory; 
 
   }
@@ -77,7 +77,9 @@ public class Realsense extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    distance = table.getEntry("dist").getDouble(-1.0);
-    offset = table.getEntry("offset").getDouble(-1.0);
+    this.distance = table.getEntry("dist").getDouble(-1.0);
+    this.offset = table.getEntry("offset").getDouble(-1.0);
+    this.shuffleboardTab.add("RS dX", this.offset);
+    this.shuffleboardTab.add("RS dist", this.distance);
   }
 }
