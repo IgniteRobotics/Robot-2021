@@ -17,8 +17,10 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveToDistance;
+import frc.robot.commands.DrivegalacticRun;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.ResetHood;
+import frc.robot.commands.SequentialGalacticSearch;
 import frc.robot.commands.ShootBall;
 import frc.robot.commands.TestExtendShooterHood;
 import frc.robot.commands.TestRetractHood;
@@ -27,6 +29,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
@@ -50,6 +53,7 @@ import frc.robot.commands.drivetrain.TargetPositioning;
 import frc.robot.commands.drivetrain.DriveTrajectory;
 import frc.robot.commands.drivetrain.RamseteArcadeDrive;
 import frc.robot.subsystems.RamseteDriveSubsystem;
+import frc.robot.subsystems.Realsense;
 /**
 * This class is where the bulk of the robot should be declared.  Since Command-based is a
 * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -64,7 +68,7 @@ public class RobotContainer {
   private Shooter m_shooter = new Shooter();
   private Indexer m_indexer = new Indexer();
   private Limelight m_limelight = new Limelight();
-  
+  private Realsense m_realsense = new Realsense();
   private Joystick m_driveController = new Joystick(Constants.kDriveControllerPort);
   private Joystick m_manipController = new Joystick(Constants.kManipControllerPort);
   
@@ -86,18 +90,14 @@ public class RobotContainer {
 
   //private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new TargetPositioning(m_driveTrain), shootCommand);
   
+
+  //The realsense camera is blocked by the intake. First, lower down the intake, then determine path, then move down intake. Then, in  parallel, run the intake and drive the trajectory 
+
+  //private ParallelCommandGroup runTrajectoryAndIntake = new ParallelCommandGroup(intakeCommand, new DriveTrajectory(m_driveTrain, Constants.robotDeterminedTrajectory) );
   
-  
-  
-  
-  
-  
-  //Let's store our auton commands here and hope that this is a good place to store them
-  
-  //put name of challenge and then whatever it's used for 
-  //private final command autoNavPath1;
-  //private final command autoNavPath2;
-  //private final command autoNavPath3;
+  //TODO Will the intake run up before we can determine the path? 
+  //private SequentialCommandGroup galacticSearch = new SequentialCommandGroup(intakeCommand, new DrivegalacticRun(), runTrajectoryAndIntake);
+  private Command galacticSearch = new SequentialGalacticSearch(m_driveTrain, m_realsense, m_intake);
   
   
   /**
@@ -173,6 +173,8 @@ public class RobotContainer {
       for (String s: paths){
         this.chooseAuton.addOption(s, this.loadTrajectoryCommand(s));
       }
+
+      chooseAuton.addOption("Galactic Search-inator", galacticSearch);
       
     }
     

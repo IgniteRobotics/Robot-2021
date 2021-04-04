@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import frc.robot.util.PathData;
 
 /**
@@ -166,11 +167,12 @@ public final class Constants {
 
 	//Pathdata for galactic search. Units are in cm, pixel offset
 
-	public static PathData pathARed = new PathData(90, 0, null);
-	public static PathData pathBRed = new PathData(90, -200, null);
+	public static PathData pathARed = new PathData(90, 0, "28-GS-A-Red");
+	public static PathData pathBRed = new PathData(90, -200, "28-GS-B-Red");
 
-	public static PathData pathABlue = new PathData(180, -200, null);
-	public static PathData pathBBlue = new PathData(180, -100, null);
+	public static PathData pathABlue = new PathData(180, -200, "28-GS-A-Blue");
+	public static PathData pathBBlue = new PathData(180, -100, "28-GS-B-Blue");
+	public static Trajectory robotDeterminedTrajectory; 
 
 
 }
