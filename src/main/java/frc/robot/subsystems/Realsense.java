@@ -20,34 +20,32 @@ public class Realsense extends SubsystemBase {
 
   public boolean hasTarget = false;
 
+  double distance = -1;
+  double offset = -1;
+
+  NetworkTableInstance networkTableInst;
+  NetworkTable table;
+  ShuffleboardTab shuffleboardTab;
+  
 
   /** Creates a new Realsense. */
   public Realsense() {
 
+    distance = table.getEntry("dist").getDouble(-1.0);
+    offset = table.getEntry("offset").getDouble(-1.0);
 
-
+    networkTableInst = NetworkTableInstance.getDefault();
+    table = networkTableInst.getTable("galacticsearch");
+    shuffleboardTab = Shuffleboard.getTab("Galactic Search");
+    SmartDashboard.putString("Robot-Path-Determination-Inator", "Selecting Path...");
 
   }
 
   public Trajectory determinePath() {
 
-     NetworkTableInstance networkTableInst = NetworkTableInstance.getDefault();
-     NetworkTable table = networkTableInst.getTable("galacticsearch");
-     ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Galactic Search");
-
-
-
     PathData[] paths = {Constants.pathARed, Constants.pathBRed, Constants.pathABlue, Constants.pathBBlue};
 
-    double distance = -1;
-    double offset = -1;
-
-    distance = table.getEntry("dist").getDouble(-1.0);
-    offset = table.getEntry("offset").getDouble(-1.0);
-
-    SmartDashboard.putString("Robot-Path-Determination-Inator", "Selecting Path...");
-
-    if(distance == -1.0 || offset == -1.0) {
+    if(distance == -1.0) {
       DriverStation.reportError("There was an error getting the ball distance!", false);
       return null;
     }
@@ -62,28 +60,24 @@ public class Realsense extends SubsystemBase {
       if(error < minError) {
         minError = error;
         chosenPath = paths[i];
-        SmartDashboard.putString("Error of Chosen Path", chosenPath.getTrajectory());
+        //SmartDashboard.putString("Error of Chosen Path", chosenPath.getTrajectory());
         }
       }
-
-    
     
     //display chosen path
-    SmartDashboard.putString("Path Chosen : ", chosenPath.getTrajectory());
+    SmartDashboard.putString("Robot-Path-Determination-Inator", chosenPath.getTrajectory());
 
     Trajectory chosenTrajectory = RobotContainer.loadTrajectory(chosenPath.getTrajectory());
 
     hasTarget = true;
-    return chosenTrajectory;
-    
-    
+    return chosenTrajectory; 
 
   }
-
-
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    distance = table.getEntry("dist").getDouble(-1.0);
+    offset = table.getEntry("offset").getDouble(-1.0);
   }
 }
