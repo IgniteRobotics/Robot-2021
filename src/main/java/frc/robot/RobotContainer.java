@@ -17,8 +17,11 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveToDistance;
+import frc.robot.commands.DrivegalacticRun;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.GalacticSearch;
 import frc.robot.commands.ResetHood;
+import frc.robot.commands.SequentialGalacticSearch;
 import frc.robot.commands.ShootBall;
 import frc.robot.commands.TestExtendShooterHood;
 import frc.robot.commands.TestRetractHood;
@@ -27,6 +30,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
@@ -42,6 +46,7 @@ import frc.robot.commands.Intake.RunIntake;
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.commands.drivetrain.ToggleSlowMode;
 import frc.robot.commands.drivetrain.TurnToAngle;
+import frc.robot.commands.Intake.ToggleIntake;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.Intake.RunIntake;
 import frc.robot.commands.drivetrain.TargetPositioning;
@@ -49,6 +54,7 @@ import frc.robot.commands.drivetrain.TargetPositioning;
 import frc.robot.commands.drivetrain.DriveTrajectory;
 import frc.robot.commands.drivetrain.RamseteArcadeDrive;
 import frc.robot.subsystems.RamseteDriveSubsystem;
+import frc.robot.subsystems.Realsense;
 /**
 * This class is where the bulk of the robot should be declared.  Since Command-based is a
 * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -63,9 +69,9 @@ public class RobotContainer {
   private Shooter m_shooter = new Shooter();
   private Indexer m_indexer = new Indexer();
   private Limelight m_limelight = new Limelight();
-  
+  private Realsense m_realsense = new Realsense();
   private Joystick m_driveController = new Joystick(Constants.kDriveControllerPort);
-  //private Joystick m_manipController = new Joystick(Constants.kManipControllerPort);
+  private Joystick m_manipController = new Joystick(Constants.kManipControllerPort);
   
   
   
@@ -73,11 +79,13 @@ public class RobotContainer {
   //private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
   //private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
   private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
-  //rivate AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
+  //private AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
   
   private ShootBall shootCommand = new ShootBall(m_shooter, m_indexer, m_limelight);
   private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
+ 
+
 
   SendableChooser<Command> chooseAuton = new SendableChooser<>();
 
@@ -85,19 +93,20 @@ public class RobotContainer {
 
   //private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new TargetPositioning(m_driveTrain), shootCommand);
   
+
+  //The realsense camera is blocked by the intake. First, lower down the intake, then determine path, then move down intake. Then, in  parallel, run the intake and drive the trajectory 
+
+  //private ParallelCommandGroup runTrajectoryAndIntake = new ParallelCommandGroup(intakeCommand, new DriveTrajectory(m_driveTrain, Constants.robotDeterminedTrajectory) );
   
-  
-  
-  
-  
-  
-  //Let's store our auton commands here and hope that this is a good place to store them
-  
-  //put name of challenge and then whatever it's used for 
-  //private final command autoNavPath1;
-  //private final command autoNavPath2;
-  //private final command autoNavPath3;
-  
+  //TODO Will the intake run up before we can determine the path? 
+  //private SequentialCommandGroup galacticSearch = new SequentialCommandGroup(intakeCommand, new DrivegalacticRun(), runTrajectoryAndIntake);
+  //private Command galacticSearch = new SequentialGalacticSearch(m_driveTrain, m_realsense, m_intake);
+  private GalacticSearch galacticSearchDrive = new GalacticSearch(m_driveTrain, m_realsense, m_intake);
+  //private ParallelCommandGroup intakeAndSearch = new ParallelCommandGroup(new RunIntake(1.0, m_intake), galacticSearchDrive);  
+  private SequentialCommandGroup autoGalaticSearch = new SequentialCommandGroup(new ToggleIntake(m_intake), galacticSearchDrive);
+  private ParallelCommandGroup intakeAndDrive = new ParallelCommandGroup(new RunIntake(1.0, m_intake), 
+  this.loadTrajectoryCommand("28-GS-B-Red"));
+  private SequentialCommandGroup manualGS = new SequentialCommandGroup(new ToggleIntake(m_intake), intakeAndDrive);
   
   /**
   * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -117,19 +126,19 @@ public class RobotContainer {
     */
     private void configureButtonBindings() {
       
-      // new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(intakeCommand);
-      // new JoystickButton(m_manipController, Constants.BUTTON_B).whileHeld(targetingCommand);
-      // new JoystickButton(m_manipController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
-      // new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(new TestRetractHood(m_shooter));
-      // new JoystickButton(m_manipController, Constants.BUTTON_RIGHT_BUMPER).whileHeld(shootCommand);
+      new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(intakeCommand);
+      new JoystickButton(m_manipController, Constants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
+      new JoystickButton(m_manipController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
+      new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(new TestRetractHood(m_shooter));
+      new JoystickButton(m_manipController, Constants.BUTTON_RIGHT_BUMPER).whileHeld(shootCommand);
       
       
-      //new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
+      // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
       new JoystickButton(m_driveController, Constants.BUTTON_RIGHT_BUMPER).whileHeld(targetingCommand);
-      new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
-      new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestRetractHood(m_shooter));
-      new JoystickButton(m_driveController, Constants.BUTTON_B).whileHeld(targetingCommand);
-      new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
+      // new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
+      // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestRetractHood(m_shooter));
+      // new JoystickButton(m_driveController, Constants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
+      // new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
       
     }
     
@@ -172,6 +181,9 @@ public class RobotContainer {
       for (String s: paths){
         this.chooseAuton.addOption(s, this.loadTrajectoryCommand(s));
       }
+
+      chooseAuton.addOption("Galactic Search-inator", autoGalaticSearch);
+      chooseAuton.addOption("Manual GS", manualGS);
       
     }
     

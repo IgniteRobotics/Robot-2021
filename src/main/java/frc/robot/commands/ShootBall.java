@@ -45,7 +45,7 @@ public class ShootBall extends CommandBase {
     addRequirements(shooter, indexer);
 
     tab = Shuffleboard.getTab("Shooter");
-    targetShooterVelocityEntry = tab.add("Target Shooter Velocity", Constants.HOOD_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
+    targetShooterVelocityEntry = tab.add("Target Shooter Velocity", Constants.SHOOTER_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
     distanceSetPointEntry = tab.add("Shooter Distance Setpoint", Constants.HOOD_SET_POINT_DISTANCE).withProperties(Map.of("min", 0)).getEntry();
     intakeEffortEntry = tab.add("Intake Effort Percentage", 0.6).withProperties(Map.of("min", -1, "max", 1)).getEntry();
     kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.5).withProperties(Map.of("min", 0, "max", 1)).getEntry();

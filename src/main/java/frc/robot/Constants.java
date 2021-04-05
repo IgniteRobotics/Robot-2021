@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import frc.robot.util.PathData;
 
 /**
@@ -136,11 +137,12 @@ public final class Constants {
 	public static double HOOD_DEFAULT_KI = 0.0;
 	public static double HOOD_DEFAULT_KD = 0;
     public static double HOOD_DEFAULT_RPM = 100;
-	public static double HOOD_MAX_POSITION = 1500;
+	public static double HOOD_MAX_POSITION = 1600;
 	public static double HOOD_SET_POINT_DISTANCE = 4.572;
 
 	public static double SHOOTER_GEAR_RATIO = 1.5;
 	public static int SHOOTER_MAX_RPM = 6000;
+	public static double SHOOTER_DEFAULT_RPM = 1250;
 	
 	public static int WHEEL_DIAMETER = 6; //in inches
 	public static double WHEEL_DIAMETER_METERS = 0.1524;
@@ -165,11 +167,12 @@ public final class Constants {
 
 	//Pathdata for galactic search. Units are in cm, pixel offset
 
-	public static PathData pathARed = new PathData(90, 0, null);
-	public static PathData pathBRed = new PathData(90, -200, null);
+	public static PathData pathARed = new PathData(0, 14.0, "28-GS-A-Red");
+	public static PathData pathBRed = new PathData(0, -29, "28-GS-B-Red");
 
-	public static PathData pathABlue = new PathData(180, -200, null);
-	public static PathData pathBBlue = new PathData(180, -100, null);
+	public static PathData pathABlue = new PathData(0, 37, "28-GS-A-Blue");
+	public static PathData pathBBlue = new PathData(0, 25, "28-GS-B-Blue");
+	public static Trajectory robotDeterminedTrajectory; 
 
 
 }
