@@ -11,31 +11,34 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
 public class Limelight extends SubsystemBase {
-  private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-  private NetworkTableEntry ty = table.getEntry("ty");
-  private NetworkTableEntry tx = table.getEntry("tx");
-  
-  /** Creates a new Limelight. */
-  public Limelight() {}
+    private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    private NetworkTableEntry ty = table.getEntry("ty");
+    private NetworkTableEntry tx = table.getEntry("tx");
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    /**
+     * Creates a new Limelight.
+     */
+    public Limelight() {
+    }
 
-  public double getDistancefromgoal() {
-    //need height camera is from ground
-    //need height of hole from piller
-    //need angle that limelight is from ground
-    
-    //a2, the difference in goal and camera is ty 
-    double ty = this.ty.getDouble(0.0);
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
 
-    //TODO confirm these values 
-    return (Constants.TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(ty + Constants.LIMELIGHT_ANGLE));
-  }
+    public double getDistancefromgoal() {
+        //need height camera is from ground
+        //need height of hole from piller
+        //need angle that limelight is from ground
 
-  public double getHorizontalOffset() {
-    return tx.getDouble(0.0);
-  }
+        //a2, the difference in goal and camera is ty
+        double ty = this.ty.getDouble(0.0);
+
+        //TODO confirm these values
+        return (Constants.TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(ty + Constants.LIMELIGHT_ANGLE));
+    }
+
+    public double getHorizontalOffset() {
+        return tx.getDouble(0.0);
+    }
 }

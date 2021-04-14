@@ -32,11 +32,11 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.Intake.RunIntake;
+import frc.robot.commands.intake.RunIntake;
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.MotorConstants;
-import frc.robot.commands.Intake.ToggleIntake;
+import frc.robot.commands.intake.ToggleIntake;
 import frc.robot.commands.drivetrain.TargetPositioning;
 
 import frc.robot.commands.drivetrain.DriveTrajectory;

@@ -15,66 +15,66 @@ import frc.robot.constants.ControllerConstants;
 import frc.robot.subsystems.RamseteDriveSubsystem;
 
 public class RamseteArcadeDrive extends CommandBase { //TODO Figure out how to make a button trigger slow mode
-  
-  private final RamseteDriveSubsystem m_driveTrain;
-  private final Joystick driverJoystick;
 
-  private boolean isSlowMode = false; //Figure out a button for this. 
-  private boolean isReversed = false;
+    private final RamseteDriveSubsystem m_driveTrain;
+    private final Joystick driverJoystick;
 
-  /**
-   * Creates a new ArcadeDrive.
-   */
-  public RamseteArcadeDrive(Joystick driveController, RamseteDriveSubsystem driveTrain) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    this.driverJoystick = driveController;
-    this.m_driveTrain = driveTrain;
-    addRequirements(driveTrain);
-  }
+    private boolean isSlowMode = false; //Figure out a button for this.
+    private boolean isReversed = false;
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-  }
+    /**
+     * Creates a new ArcadeDrive.
+     */
+    public RamseteArcadeDrive(Joystick driveController, RamseteDriveSubsystem driveTrain) {
+        // Use addRequirements() here to declare subsystem dependencies.
+        this.driverJoystick = driveController;
+        this.m_driveTrain = driveTrain;
+        addRequirements(driveTrain);
+    }
 
-  //Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    m_driveTrain.arcadeDrive(getSpeed(), getRotation(), true);
-    outputTelemetry();
-  }
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+    }
 
-  private double getSpeed() {
-    double speed = -driverJoystick.getRawAxis(ControllerConstants.AXIS_LEFT_STICK_Y);
-    // if(m_driveTrain.isSlowMode) {
-    //   speed *= Constants.SLOW_MODE_SPEED_MODIFIER;
-    // }
-    return speed;
-  }
+    //Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+        m_driveTrain.arcadeDrive(getSpeed(), getRotation(), true);
+        outputTelemetry();
+    }
 
-  private double getRotation() {
-    double rotation = (driverJoystick.getRawAxis(ControllerConstants.AXIS_RIGHT_STICK_X));
-    // if(m_driveTrain.isSlowMode) {
-    //   rotation *= Constants.SLOW_MODE_SPEED_MODIFIER;
-    // }
-    return rotation;
-  }
+    private double getSpeed() {
+        double speed = -driverJoystick.getRawAxis(ControllerConstants.AXIS_LEFT_STICK_Y);
+        // if(m_driveTrain.isSlowMode) {
+        //   speed *= Constants.SLOW_MODE_SPEED_MODIFIER;
+        // }
+        return speed;
+    }
+
+    private double getRotation() {
+        double rotation = (driverJoystick.getRawAxis(ControllerConstants.AXIS_RIGHT_STICK_X));
+        // if(m_driveTrain.isSlowMode) {
+        //   rotation *= Constants.SLOW_MODE_SPEED_MODIFIER;
+        // }
+        return rotation;
+    }
 
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    m_driveTrain.stop();
-  }
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        m_driveTrain.stop();
+    }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 
-  public void outputTelemetry() {
-    SmartDashboard.putNumber("RamseteAD/Speed", this.getSpeed());
-    SmartDashboard.putNumber("RamseteAD/Rotation", this.getRotation());
-  }
+    public void outputTelemetry() {
+        SmartDashboard.putNumber("RamseteAD/Speed", this.getSpeed());
+        SmartDashboard.putNumber("RamseteAD/Rotation", this.getRotation());
+    }
 }

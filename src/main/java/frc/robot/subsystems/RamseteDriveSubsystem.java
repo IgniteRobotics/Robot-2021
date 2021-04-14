@@ -52,371 +52,367 @@ import frc.robot.constants.MotorConstants;
 import frc.robot.util.Util;
 
 public class RamseteDriveSubsystem extends SubsystemBase {
-  
-  private final WPI_TalonSRX leftMaster = new WPI_TalonSRX(MotorConstants.kLeftMasterPort);
-  private final WPI_VictorSPX leftFollower = new WPI_VictorSPX(MotorConstants.kLeftFollowerPort);
-  private final WPI_VictorSPX leftFollower2 = new WPI_VictorSPX(MotorConstants.kLeftFollowerPort2);
-  
-  private final WPI_TalonSRX rightMaster = new WPI_TalonSRX(MotorConstants.kRightMasterPort);
-  private final WPI_VictorSPX rightFollower = new WPI_VictorSPX(MotorConstants.kRightFollowerPort);
-  private final WPI_VictorSPX rightFollower2 = new WPI_VictorSPX(MotorConstants.kRightFollowerPort2);
-  
-  private DifferentialDrive m_driveTrain;
-  
-  private final AHRS navX = new AHRS(SPI.Port.kMXP);
-  
-  private final DifferentialDriveOdometry m_odometry;
-  
-  private Pose2d savedPose;
-  
-  private boolean useEncoders = true;
-  private boolean encodersAvailable;
-  
-  private final SlewRateLimiter speedRateLimiter = new SlewRateLimiter(Constants.SPEED_RATE_LIMIT_ARCADE);
-  private final SlewRateLimiter rotationRateLimiter = new SlewRateLimiter(Constants.ROTATION_RATE_LIMIT_ARCADE);
-  
-  // create a field to send odometry data to.
-  private Field2d m_field = new Field2d();
 
-  private ShuffleboardTab tab;
-  private NetworkTableEntry velocityRampExponentEntry;
-  private NetworkTableEntry velocityLimitMultiplierEntry;
-  private NetworkTableEntry turnRampExponentEntry;
-  private NetworkTableEntry turnLimitMultiplierEntry;
+    private final WPI_TalonSRX leftMaster = new WPI_TalonSRX(MotorConstants.kLeftMasterPort);
+    private final WPI_VictorSPX leftFollower = new WPI_VictorSPX(MotorConstants.kLeftFollowerPort);
+    private final WPI_VictorSPX leftFollower2 = new WPI_VictorSPX(MotorConstants.kLeftFollowerPort2);
 
-  private double velocityRampExponent;
-  private double velocityLimitMultiplier;
-  private double turnRampExponent;
-  private double turnLimitMultiplier;
+    private final WPI_TalonSRX rightMaster = new WPI_TalonSRX(MotorConstants.kRightMasterPort);
+    private final WPI_VictorSPX rightFollower = new WPI_VictorSPX(MotorConstants.kRightFollowerPort);
+    private final WPI_VictorSPX rightFollower2 = new WPI_VictorSPX(MotorConstants.kRightFollowerPort2);
+
+    private DifferentialDrive m_driveTrain;
+
+    private final AHRS navX = new AHRS(SPI.Port.kMXP);
+
+    private final DifferentialDriveOdometry m_odometry;
+
+    private Pose2d savedPose;
+
+    private boolean useEncoders = true;
+    private boolean encodersAvailable;
+
+    private final SlewRateLimiter speedRateLimiter = new SlewRateLimiter(Constants.SPEED_RATE_LIMIT_ARCADE);
+    private final SlewRateLimiter rotationRateLimiter = new SlewRateLimiter(Constants.ROTATION_RATE_LIMIT_ARCADE);
+
+    // create a field to send odometry data to.
+    private Field2d m_field = new Field2d();
+
+    private ShuffleboardTab tab;
+    private NetworkTableEntry velocityRampExponentEntry;
+    private NetworkTableEntry velocityLimitMultiplierEntry;
+    private NetworkTableEntry turnRampExponentEntry;
+    private NetworkTableEntry turnLimitMultiplierEntry;
+
+    private double velocityRampExponent;
+    private double velocityLimitMultiplier;
+    private double turnRampExponent;
+    private double turnLimitMultiplier;
 
 
-  public RamseteDriveSubsystem() {
-    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); //assume robot starts at x =0, y=0, theta = 0
-    resetEncoders();
-    navX.zeroYaw();
-    
-    TalonSRXConfiguration talonConfig = new TalonSRXConfiguration();
-    talonConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.QuadEncoder;
-    talonConfig.slot0.kP = Constants.kPDriveVel;
-    talonConfig.slot0.kI = 0.0;
-    talonConfig.slot0.kD = 0.0;
-    talonConfig.slot0.integralZone = 400;
-    talonConfig.slot0.closedLoopPeakOutput = 1.0;
-    talonConfig.openloopRamp = Constants.OPEN_LOOP_RAMP;
-    
-    leftMaster.configAllSettings(talonConfig);
-    leftMaster.enableVoltageCompensation(true);
-    leftFollower.configFactoryDefault();
-    leftFollower2.configFactoryDefault();
-    
-    rightMaster.configAllSettings(talonConfig);
-    rightMaster.enableVoltageCompensation(true);
-    rightFollower.configFactoryDefault();
-    rightFollower2.configFactoryDefault();
-    
-    enableEncoders();
-    
-    setNeutralMode(NeutralMode.Brake);
-    //uninvert right
-    rightMaster.setSensorPhase(false);
-    rightMaster.setInverted(false);
-    rightFollower.setInverted(false);
-    rightFollower2.setInverted(false);
-    
-    leftMaster.setSensorPhase(true);
-    leftMaster.setInverted(false);
-    leftFollower.setInverted(false);
-    leftFollower2.setInverted(false);
-    
-    rightMaster.overrideLimitSwitchesEnable(false);
-    leftMaster.overrideLimitSwitchesEnable(false);
-    
-    leftFollower.follow(leftMaster);
-    leftFollower2.follow(leftMaster);
-    rightFollower.follow(rightMaster);
-    rightFollower2.follow(rightMaster);
-    
-    //inversion etc has to happen BEFORE this statement!
-    m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
-    SmartDashboard.putData("Field", m_field);
+    public RamseteDriveSubsystem() {
+        m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); //assume robot starts at x =0, y=0, theta = 0
+        resetEncoders();
+        navX.zeroYaw();
 
-    tab = Shuffleboard.getTab("Drivetrain");
-    velocityRampExponentEntry = tab.add("DT Vel Ramp Exp", Constants.VELOCITY_RAMP_EXPONENT).withProperties(Map.of("min", 1)).getEntry();
-    velocityLimitMultiplierEntry = tab.add("DT Vel Lim Mult", Constants.VELOCITY_LIMIT_MULTIPLIER).withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
-    turnRampExponentEntry = tab.add("DT Turn Ramp Exp", Constants.TURN_RAMP_EXPONENT).withProperties(Map.of("min", 1)).getEntry();
-    turnLimitMultiplierEntry = tab.add("DT Trun Lim Mult", Constants.TURN_LIMIT_MULTIPLIER).withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
+        TalonSRXConfiguration talonConfig = new TalonSRXConfiguration();
+        talonConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.QuadEncoder;
+        talonConfig.slot0.kP = Constants.kPDriveVel;
+        talonConfig.slot0.kI = 0.0;
+        talonConfig.slot0.kD = 0.0;
+        talonConfig.slot0.integralZone = 400;
+        talonConfig.slot0.closedLoopPeakOutput = 1.0;
+        talonConfig.openloopRamp = Constants.OPEN_LOOP_RAMP;
 
-    velocityLimitMultiplier = velocityLimitMultiplierEntry.getDouble(Constants.VELOCITY_LIMIT_MULTIPLIER);
-    velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);
-    turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
-    turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
+        leftMaster.configAllSettings(talonConfig);
+        leftMaster.enableVoltageCompensation(true);
+        leftFollower.configFactoryDefault();
+        leftFollower2.configFactoryDefault();
 
-  }
-  
-  private void enableEncoders() {
-    encodersAvailable = 
-    leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10) == ErrorCode.OK &
-    rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10) == ErrorCode.OK;
-    if(!encodersAvailable) {
-      DriverStation.reportError("Failed to configure drivetrain encoders!", false);
-      useEncoders = false;
+        rightMaster.configAllSettings(talonConfig);
+        rightMaster.enableVoltageCompensation(true);
+        rightFollower.configFactoryDefault();
+        rightFollower2.configFactoryDefault();
+
+        enableEncoders();
+
+        setNeutralMode(NeutralMode.Brake);
+        //uninvert right
+        rightMaster.setSensorPhase(false);
+        rightMaster.setInverted(false);
+        rightFollower.setInverted(false);
+        rightFollower2.setInverted(false);
+
+        leftMaster.setSensorPhase(true);
+        leftMaster.setInverted(false);
+        leftFollower.setInverted(false);
+        leftFollower2.setInverted(false);
+
+        rightMaster.overrideLimitSwitchesEnable(false);
+        leftMaster.overrideLimitSwitchesEnable(false);
+
+        leftFollower.follow(leftMaster);
+        leftFollower2.follow(leftMaster);
+        rightFollower.follow(rightMaster);
+        rightFollower2.follow(rightMaster);
+
+        //inversion etc has to happen BEFORE this statement!
+        m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
+        SmartDashboard.putData("Field", m_field);
+
+        tab = Shuffleboard.getTab("Drivetrain");
+        velocityRampExponentEntry = tab.add("DT Vel Ramp Exp", Constants.VELOCITY_RAMP_EXPONENT).withProperties(Map.of("min", 1)).getEntry();
+        velocityLimitMultiplierEntry = tab.add("DT Vel Lim Mult", Constants.VELOCITY_LIMIT_MULTIPLIER).withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
+        turnRampExponentEntry = tab.add("DT Turn Ramp Exp", Constants.TURN_RAMP_EXPONENT).withProperties(Map.of("min", 1)).getEntry();
+        turnLimitMultiplierEntry = tab.add("DT Trun Lim Mult", Constants.TURN_LIMIT_MULTIPLIER).withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
+
+        velocityLimitMultiplier = velocityLimitMultiplierEntry.getDouble(Constants.VELOCITY_LIMIT_MULTIPLIER);
+        velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);
+        turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
+        turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
+
     }
-  }
-  
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    m_odometry.update(Rotation2d.fromDegrees(getHeading()), Util.getMetersFromEncoderTicks(getLeftEncoderPosition()),
-    Util.getMetersFromEncoderTicks(getRightEncoderPosition()));
-    m_field.setRobotPose(m_odometry.getPoseMeters());
 
-    velocityLimitMultiplier = velocityLimitMultiplierEntry.getDouble(Constants.VELOCITY_LIMIT_MULTIPLIER);
-    velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);
-    turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
-    turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
-    
-    outputTelemetry();
-  }
-  
-  public Pose2d getCurrentPose() {
-    return m_odometry.getPoseMeters();
-  }
-  
-  public void saveCurrentPose() {
-    savedPose = getCurrentPose();
-  }
-  
-  public Pose2d getSavedPose() {
-    return savedPose;
-  }
-  
-  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(leftMaster.getSelectedSensorVelocity(),
-    rightMaster.getSelectedSensorVelocity());
-  }
-  
-  public void resetOdometry() {
-    resetEncoders();
-    this.zeroHeading();
-    savedPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0)); 
-    m_odometry.resetPosition(savedPose, Rotation2d.fromDegrees(getAngle()));
-  }
-  
-  public void resetOdometry(Pose2d startingPose) {
-    resetEncoders();
-    this.zeroHeading();
-    m_odometry.resetPosition(startingPose , Rotation2d.fromDegrees(getAngle()));
-  }
-
-  public void arcadeDrive(final double speed, final double rotation, final boolean useSquares) {
-      var xSpeed = speedRateLimiter.calculate(safeClamp(speed));
-      var zRotation = rotationRateLimiter.calculate(safeClamp(rotation));
-      if (useSquares) {
-        // xSpeed *= Math.abs(xSpeed);
-        // zRotation *= Math.abs(zRotation);
-        xSpeed = Util.applyLimiters(xSpeed, velocityRampExponent, velocityLimitMultiplier);
-        zRotation = Util.applyLimiters(zRotation, turnRampExponent, turnLimitMultiplier);
-      }
-      // xSpeed *= Constants.kMaxSpeedMetersPerSecond;
-      // zRotation *= Constants.kMaxAngularVelocity;
-      m_driveTrain.arcadeDrive(xSpeed, zRotation, false);
-  }
-
-  public void tankDrivePower(double leftPower, double rightPower) {
-    double leftPowerLimited = safeClamp(leftPower);
-    double rightPowerLimited = safeClamp(rightPower);
-
-    m_driveTrain.tankDrive(leftPowerLimited, rightPowerLimited, false);
-  }
-  
-  public void tankDrive(final double leftSpeed, final double rightSpeed, final boolean useSquares) {
-    var xLeftSpeed = safeClamp(leftSpeed) * Constants.kMaxSpeedMetersPerSecond;
-    var xRightSpeed = safeClamp(rightSpeed) * Constants.kMaxSpeedMetersPerSecond;
-    if (useSquares) {
-      xLeftSpeed *= Math.abs(xLeftSpeed);
-      xRightSpeed *= Math.abs(xRightSpeed);
+    private void enableEncoders() {
+        encodersAvailable =
+                leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10) == ErrorCode.OK &
+                        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10) == ErrorCode.OK;
+        if (!encodersAvailable) {
+            DriverStation.reportError("Failed to configure drivetrain encoders!", false);
+            useEncoders = false;
+        }
     }
-    if(useEncoders){
-      tankDriveVelocity(xLeftSpeed, xRightSpeed);
+
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        m_odometry.update(Rotation2d.fromDegrees(getHeading()), Util.getMetersFromEncoderTicks(getLeftEncoderPosition()),
+                Util.getMetersFromEncoderTicks(getRightEncoderPosition()));
+        m_field.setRobotPose(m_odometry.getPoseMeters());
+
+        velocityLimitMultiplier = velocityLimitMultiplierEntry.getDouble(Constants.VELOCITY_LIMIT_MULTIPLIER);
+        velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);
+        turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
+        turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
+
+        outputTelemetry();
     }
-    else {
-      m_driveTrain.tankDrive(leftSpeed, rightSpeed, useSquares);
+
+    public Pose2d getCurrentPose() {
+        return m_odometry.getPoseMeters();
     }
-  }
-  
-  public void tankDriveVelocity(double leftVelocity, double rightVelocity) {
-    //TODO - remove later.  liting velocity to 1 m/s
-    leftVelocity = Util.limit(leftVelocity, 1.0);
-    rightVelocity = Util.limit(rightVelocity, 1.0);
-    final double leftAccel = (leftVelocity - Util.stepsPerDecisecToMetersPerSec(leftMaster.getSelectedSensorVelocity()))
-    / .20;
-    final double rightAccel = (rightVelocity
-    - Util.stepsPerDecisecToMetersPerSec(rightMaster.getSelectedSensorVelocity())) / .20;
-    
-    final double leftFeedForwardVolts = Constants.FEED_FORWARD.calculate(leftVelocity, leftAccel);
-    final double rightFeedForwardVolts = Constants.FEED_FORWARD.calculate(rightVelocity, rightAccel);
-    
-    leftMaster.set(ControlMode.Velocity, Util.metersPerSecToStepsPerDecisec(leftVelocity),
-    DemandType.ArbitraryFeedForward, leftFeedForwardVolts / 12);
-    rightMaster.set(ControlMode.Velocity, Util.metersPerSecToStepsPerDecisec(rightVelocity),
-    DemandType.ArbitraryFeedForward, rightFeedForwardVolts / 12);
-    m_driveTrain.feed();
-  }
-  
-  public void tankDriveVolts(double leftVolts, double rightVolts){
-    this.leftMaster.setVoltage(leftVolts);
-    this.leftFollower.setVoltage(leftVolts);
-    this.leftFollower2.setVoltage(leftVolts);
-    
-    //if you're raw setting volts, you need to flip the right side.
-    this.rightMaster.setVoltage(-rightVolts);
-    this.rightFollower.setVoltage(-rightVolts);
-    this.rightFollower2.setVoltage(-rightVolts);
-  }
-  
-  
-  private double safeClamp(final double input) {
-    if (Double.isNaN(input)) {
-      return 0;
+
+    public void saveCurrentPose() {
+        savedPose = getCurrentPose();
     }
-    return MathUtil.clamp(input, -1, 1);
-  }
-  
-  public void driveCurvature( double xSpeed, double zRotation, boolean isQuickTurn ) {
-    m_driveTrain.curvatureDrive(xSpeed, zRotation, isQuickTurn);
-  }
-  
-  
-  
-  
-  public void resetEncoders() {
-    leftMaster.setSelectedSensorPosition(0);
-    rightMaster.setSelectedSensorPosition(0);
-  }
-  
-  public double getAverageEncoderDistance() {
-    return (leftMaster.getSelectedSensorPosition(0) + rightMaster.getSelectedSensorPosition(0)) / 2.0;
-  }
-  
-  public double getLeftEncoderPosition() {
-    return leftMaster.getSelectedSensorPosition(0);
-  }
-  
-  public double getRightEncoderPosition() {
-    return rightMaster.getSelectedSensorPosition(0);
-  }
-  
-  public void setMaxOutput(final double maxOutput) {
-    m_driveTrain.setMaxOutput(maxOutput);
-  }
-  
-  public void zeroHeading() {
-    navX.reset();
-  }
-  
-  public double getHeading() {
-    return Math.IEEEremainder(-navX.getAngle(), 360.0) * (1.0);
-  }
-  
-  public void setNeutralMode(final NeutralMode neutralMode) {
-    leftMaster.setNeutralMode(neutralMode);
-    rightMaster.setNeutralMode(neutralMode);
-    leftFollower.setNeutralMode(neutralMode);
-    rightFollower.setNeutralMode(neutralMode);
-    leftFollower2.setNeutralMode(neutralMode);
-    rightFollower2.setNeutralMode(neutralMode);
-  }
-  
-  public void stop() {
-    tankDriveVelocity(0, 0);
-  }
-  
-  public Command createCommandForTrajectory(final Trajectory trajectory) {
-    return new RamseteCommand(
-    trajectory,
-    this::getCurrentPose,
-    new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
-    Constants.kDriveKinematics,
-    this::tankDriveVelocity,
-    this)
-    .andThen(this::stop, this);
-  }
-  
-  public double getLeftEncoderVel() {
-    return leftMaster.getSelectedSensorVelocity();
-  }
-  
-  public double getRightEncoderVel() {
-    return rightMaster.getSelectedSensorVelocity();
-  }
-  
-  public double getLeftMasterVoltage() {
-    return leftMaster.getMotorOutputVoltage();
-  }
-  
-  public double getRightMasterVoltage() {
-    return rightMaster.getMotorOutputVoltage();
-  }
-  
-  
-  public double getLeftPercentOutput() {
-    return leftMaster.getMotorOutputPercent();
-  }
-  
-  public double getRightPercentOutput() {
-    return rightMaster.getMotorOutputPercent();
-  }
-  
-  public double getLeftMasterCurrent() {
-    return leftMaster.getStatorCurrent();
-  }
-  
-  public double getRightMasterCurrent() {
-    return rightMaster.getStatorCurrent();
-  }
-  
-  public boolean isConnected() {
-    return navX.isConnected();
-  }
-  
-  public double getAngle() {
-    return -navX.getAngle();
-  }
-  
-  public double getYaw() {
-    return -navX.getYaw();
-  }
-  
-  public double getClosedLoopTarget() {
-    return leftMaster.getClosedLoopTarget();
-  }
+
+    public Pose2d getSavedPose() {
+        return savedPose;
+    }
+
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(leftMaster.getSelectedSensorVelocity(),
+                rightMaster.getSelectedSensorVelocity());
+    }
+
+    public void resetOdometry() {
+        resetEncoders();
+        this.zeroHeading();
+        savedPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        m_odometry.resetPosition(savedPose, Rotation2d.fromDegrees(getAngle()));
+    }
+
+    public void resetOdometry(Pose2d startingPose) {
+        resetEncoders();
+        this.zeroHeading();
+        m_odometry.resetPosition(startingPose, Rotation2d.fromDegrees(getAngle()));
+    }
+
+    public void arcadeDrive(final double speed, final double rotation, final boolean useSquares) {
+        var xSpeed = speedRateLimiter.calculate(safeClamp(speed));
+        var zRotation = rotationRateLimiter.calculate(safeClamp(rotation));
+        if (useSquares) {
+            // xSpeed *= Math.abs(xSpeed);
+            // zRotation *= Math.abs(zRotation);
+            xSpeed = Util.applyLimiters(xSpeed, velocityRampExponent, velocityLimitMultiplier);
+            zRotation = Util.applyLimiters(zRotation, turnRampExponent, turnLimitMultiplier);
+        }
+        // xSpeed *= Constants.kMaxSpeedMetersPerSecond;
+        // zRotation *= Constants.kMaxAngularVelocity;
+        m_driveTrain.arcadeDrive(xSpeed, zRotation, false);
+    }
+
+    public void tankDrivePower(double leftPower, double rightPower) {
+        double leftPowerLimited = safeClamp(leftPower);
+        double rightPowerLimited = safeClamp(rightPower);
+
+        m_driveTrain.tankDrive(leftPowerLimited, rightPowerLimited, false);
+    }
+
+    public void tankDrive(final double leftSpeed, final double rightSpeed, final boolean useSquares) {
+        var xLeftSpeed = safeClamp(leftSpeed) * Constants.kMaxSpeedMetersPerSecond;
+        var xRightSpeed = safeClamp(rightSpeed) * Constants.kMaxSpeedMetersPerSecond;
+        if (useSquares) {
+            xLeftSpeed *= Math.abs(xLeftSpeed);
+            xRightSpeed *= Math.abs(xRightSpeed);
+        }
+        if (useEncoders) {
+            tankDriveVelocity(xLeftSpeed, xRightSpeed);
+        } else {
+            m_driveTrain.tankDrive(leftSpeed, rightSpeed, useSquares);
+        }
+    }
+
+    public void tankDriveVelocity(double leftVelocity, double rightVelocity) {
+        //TODO - remove later.  liting velocity to 1 m/s
+        leftVelocity = Util.limit(leftVelocity, 1.0);
+        rightVelocity = Util.limit(rightVelocity, 1.0);
+        final double leftAccel = (leftVelocity - Util.stepsPerDecisecToMetersPerSec(leftMaster.getSelectedSensorVelocity()))
+                / .20;
+        final double rightAccel = (rightVelocity
+                - Util.stepsPerDecisecToMetersPerSec(rightMaster.getSelectedSensorVelocity())) / .20;
+
+        final double leftFeedForwardVolts = Constants.FEED_FORWARD.calculate(leftVelocity, leftAccel);
+        final double rightFeedForwardVolts = Constants.FEED_FORWARD.calculate(rightVelocity, rightAccel);
+
+        leftMaster.set(ControlMode.Velocity, Util.metersPerSecToStepsPerDecisec(leftVelocity),
+                DemandType.ArbitraryFeedForward, leftFeedForwardVolts / 12);
+        rightMaster.set(ControlMode.Velocity, Util.metersPerSecToStepsPerDecisec(rightVelocity),
+                DemandType.ArbitraryFeedForward, rightFeedForwardVolts / 12);
+        m_driveTrain.feed();
+    }
+
+    public void tankDriveVolts(double leftVolts, double rightVolts) {
+        this.leftMaster.setVoltage(leftVolts);
+        this.leftFollower.setVoltage(leftVolts);
+        this.leftFollower2.setVoltage(leftVolts);
+
+        //if you're raw setting volts, you need to flip the right side.
+        this.rightMaster.setVoltage(-rightVolts);
+        this.rightFollower.setVoltage(-rightVolts);
+        this.rightFollower2.setVoltage(-rightVolts);
+    }
 
 
-  
-  public void outputTelemetry() {
-    SmartDashboard.putNumber("Drivetrain/Left enc pos", this.getLeftEncoderPosition());
-    SmartDashboard.putNumber("Drivetrain/Right enc pos", this.getRightEncoderPosition());
-    SmartDashboard.putNumber("Drivetrain/Left enc vel", this.getLeftEncoderVel());
-    SmartDashboard.putNumber("Drivetrain/Right enc vel", this.getRightEncoderVel());
-    SmartDashboard.putNumber("Drivetrain/Left master voltage", this.getLeftMasterVoltage());
-    SmartDashboard.putNumber("Drivetrain/Right master voltage", this.getRightMasterVoltage());
-    SmartDashboard.putNumber("Drivetrain/Left master current", this.getLeftMasterCurrent());
-    SmartDashboard.putNumber("Drivetrain/Right master current", this.getRightMasterCurrent());
-    SmartDashboard.putNumber("Drivetrain/Left percent out", this.getLeftPercentOutput());
-    SmartDashboard.putNumber("Drivetrain/Right percent out", this.getRightPercentOutput());
-    SmartDashboard.putBoolean("Drivetrain/Is navX connected?", this.isConnected());
-    SmartDashboard.putNumber("Drivetrain/Angle", this.getAngle());
-    SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
-    SmartDashboard.putNumber("Drivetrain/Closed loop target", this.getClosedLoopTarget());
-    SmartDashboard.putBoolean("Drivetrain/Using Encoders?", this.useEncoders);
-    SmartDashboard.putNumber("Drivetrain/Current VRamp Exp", this.velocityRampExponent);
-    SmartDashboard.putNumber("Drivetrain/Current VRamp Lim", this.velocityLimitMultiplier);
-    SmartDashboard.putNumber("Drivetrain/Current TRamp Exp", this.turnRampExponent);
-    SmartDashboard.putNumber("Drivetrain/Current TRamp Lim", this.turnLimitMultiplier);
+    private double safeClamp(final double input) {
+        if (Double.isNaN(input)) {
+            return 0;
+        }
+        return MathUtil.clamp(input, -1, 1);
+    }
 
-    SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
-    
-    // SmartDashboard.putNumber("Drivetrain/Turn error", this.getTurnError());
-    // SmartDashboard.putNumber("Drivetrain/Turn setpoint", this.getTurnSetpoint());
-  }
+    public void driveCurvature(double xSpeed, double zRotation, boolean isQuickTurn) {
+        m_driveTrain.curvatureDrive(xSpeed, zRotation, isQuickTurn);
+    }
+
+
+    public void resetEncoders() {
+        leftMaster.setSelectedSensorPosition(0);
+        rightMaster.setSelectedSensorPosition(0);
+    }
+
+    public double getAverageEncoderDistance() {
+        return (leftMaster.getSelectedSensorPosition(0) + rightMaster.getSelectedSensorPosition(0)) / 2.0;
+    }
+
+    public double getLeftEncoderPosition() {
+        return leftMaster.getSelectedSensorPosition(0);
+    }
+
+    public double getRightEncoderPosition() {
+        return rightMaster.getSelectedSensorPosition(0);
+    }
+
+    public void setMaxOutput(final double maxOutput) {
+        m_driveTrain.setMaxOutput(maxOutput);
+    }
+
+    public void zeroHeading() {
+        navX.reset();
+    }
+
+    public double getHeading() {
+        return Math.IEEEremainder(-navX.getAngle(), 360.0) * (1.0);
+    }
+
+    public void setNeutralMode(final NeutralMode neutralMode) {
+        leftMaster.setNeutralMode(neutralMode);
+        rightMaster.setNeutralMode(neutralMode);
+        leftFollower.setNeutralMode(neutralMode);
+        rightFollower.setNeutralMode(neutralMode);
+        leftFollower2.setNeutralMode(neutralMode);
+        rightFollower2.setNeutralMode(neutralMode);
+    }
+
+    public void stop() {
+        tankDriveVelocity(0, 0);
+    }
+
+    public Command createCommandForTrajectory(final Trajectory trajectory) {
+        return new RamseteCommand(
+                trajectory,
+                this::getCurrentPose,
+                new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
+                Constants.kDriveKinematics,
+                this::tankDriveVelocity,
+                this)
+                .andThen(this::stop, this);
+    }
+
+    public double getLeftEncoderVel() {
+        return leftMaster.getSelectedSensorVelocity();
+    }
+
+    public double getRightEncoderVel() {
+        return rightMaster.getSelectedSensorVelocity();
+    }
+
+    public double getLeftMasterVoltage() {
+        return leftMaster.getMotorOutputVoltage();
+    }
+
+    public double getRightMasterVoltage() {
+        return rightMaster.getMotorOutputVoltage();
+    }
+
+
+    public double getLeftPercentOutput() {
+        return leftMaster.getMotorOutputPercent();
+    }
+
+    public double getRightPercentOutput() {
+        return rightMaster.getMotorOutputPercent();
+    }
+
+    public double getLeftMasterCurrent() {
+        return leftMaster.getStatorCurrent();
+    }
+
+    public double getRightMasterCurrent() {
+        return rightMaster.getStatorCurrent();
+    }
+
+    public boolean isConnected() {
+        return navX.isConnected();
+    }
+
+    public double getAngle() {
+        return -navX.getAngle();
+    }
+
+    public double getYaw() {
+        return -navX.getYaw();
+    }
+
+    public double getClosedLoopTarget() {
+        return leftMaster.getClosedLoopTarget();
+    }
+
+
+    public void outputTelemetry() {
+        SmartDashboard.putNumber("Drivetrain/Left enc pos", this.getLeftEncoderPosition());
+        SmartDashboard.putNumber("Drivetrain/Right enc pos", this.getRightEncoderPosition());
+        SmartDashboard.putNumber("Drivetrain/Left enc vel", this.getLeftEncoderVel());
+        SmartDashboard.putNumber("Drivetrain/Right enc vel", this.getRightEncoderVel());
+        SmartDashboard.putNumber("Drivetrain/Left master voltage", this.getLeftMasterVoltage());
+        SmartDashboard.putNumber("Drivetrain/Right master voltage", this.getRightMasterVoltage());
+        SmartDashboard.putNumber("Drivetrain/Left master current", this.getLeftMasterCurrent());
+        SmartDashboard.putNumber("Drivetrain/Right master current", this.getRightMasterCurrent());
+        SmartDashboard.putNumber("Drivetrain/Left percent out", this.getLeftPercentOutput());
+        SmartDashboard.putNumber("Drivetrain/Right percent out", this.getRightPercentOutput());
+        SmartDashboard.putBoolean("Drivetrain/Is navX connected?", this.isConnected());
+        SmartDashboard.putNumber("Drivetrain/Angle", this.getAngle());
+        SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
+        SmartDashboard.putNumber("Drivetrain/Closed loop target", this.getClosedLoopTarget());
+        SmartDashboard.putBoolean("Drivetrain/Using Encoders?", this.useEncoders);
+        SmartDashboard.putNumber("Drivetrain/Current VRamp Exp", this.velocityRampExponent);
+        SmartDashboard.putNumber("Drivetrain/Current VRamp Lim", this.velocityLimitMultiplier);
+        SmartDashboard.putNumber("Drivetrain/Current TRamp Exp", this.turnRampExponent);
+        SmartDashboard.putNumber("Drivetrain/Current TRamp Lim", this.turnLimitMultiplier);
+
+        SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
+
+        // SmartDashboard.putNumber("Drivetrain/Turn error", this.getTurnError());
+        // SmartDashboard.putNumber("Drivetrain/Turn setpoint", this.getTurnSetpoint());
+    }
 }

@@ -18,68 +18,64 @@ import frc.robot.util.PathData;
 
 public class Realsense extends SubsystemBase {
 
-  public boolean hasTarget = false;
+    public boolean hasTarget = false;
 
-  double distance = -1;
-  double offset = -1;
+    double distance = -1;
+    double offset = -1;
 
-  NetworkTableInstance networkTableInst;
-  NetworkTable table;
-  ShuffleboardTab shuffleboardTab;
-  
-
-  /** Creates a new Realsense. */
-  public Realsense() {
+    NetworkTableInstance networkTableInst;
+    NetworkTable table;
+    ShuffleboardTab shuffleboardTab;
 
 
-    this.networkTableInst = NetworkTableInstance.getDefault();
-    this.table = networkTableInst.getTable("galacticsearch");
-    this.shuffleboardTab = Shuffleboard.getTab("Galactic Search");
-    this.shuffleboardTab.add("Robot-Path-Determination-Inator", "Selecting Path...");
+    /**
+     * Creates a new Realsense.
+     */
+    public Realsense() {
+        this.networkTableInst = NetworkTableInstance.getDefault();
+        this.table = networkTableInst.getTable("galacticsearch");
+        this.shuffleboardTab = Shuffleboard.getTab("Galactic Search");
+        this.shuffleboardTab.add("Robot-Path-Determination-Inator", "Selecting Path...");
 
-    this.distance = table.getEntry("dist").getDouble(-1.0);
-    this.offset = table.getEntry("offset").getDouble(-1.0);
-
-
-  }
-
-  public Trajectory determinePath() {
-
-    PathData[] paths = {Constants.pathARed, Constants.pathBRed, Constants.pathABlue, Constants.pathBBlue};
-
-    if(distance == -1.0) {
-      DriverStation.reportError("There was an error getting the ball distance!", false);
-      return null;
+        this.distance = table.getEntry("dist").getDouble(-1.0);
+        this.offset = table.getEntry("offset").getDouble(-1.0);
     }
 
-    //TODO replace this null or maybe refactor?
-    PathData sensedData = new PathData(distance, offset, null);
-    PathData chosenPath = paths[0];
+    public Trajectory determinePath() {
+        PathData[] paths = {Constants.pathARed, Constants.pathBRed, Constants.pathABlue, Constants.pathBBlue};
 
-    double minError = paths[0].getPathError(sensedData);
-    for(int i = 1; i < paths.length; i++) {
-      double error = paths[i].getPathError(sensedData);
-      if(error < minError) {
-        minError = error;
-        chosenPath = paths[i];
-        //SmartDashboard.putString("Error of Chosen Path", chosenPath.getTrajectory());
+        if (distance == -1.0) {
+            DriverStation.reportError("There was an error getting the ball distance!", false);
+            return null;
         }
-      }
-    
-    //display chosen path
-    this.shuffleboardTab.add("Chosen Path", chosenPath.getTrajectory());
 
-    Trajectory chosenTrajectory = RobotContainer.loadTrajectory(chosenPath.getTrajectory());
+        //TODO replace this null or maybe refactor?
+        PathData sensedData = new PathData(distance, offset, null);
+        PathData chosenPath = paths[0];
 
-    this.hasTarget = true;
-    return chosenTrajectory; 
+        double minError = paths[0].getPathError(sensedData);
+        for (int i = 1; i < paths.length; i++) {
+            double error = paths[i].getPathError(sensedData);
+            if (error < minError) {
+                minError = error;
+                chosenPath = paths[i];
+                //SmartDashboard.putString("Error of Chosen Path", chosenPath.getTrajectory());
+            }
+        }
 
-  }
+        //display chosen path
+        this.shuffleboardTab.add("Chosen Path", chosenPath.getTrajectory());
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    this.distance = table.getEntry("dist").getDouble(-1.0);
-    this.offset = table.getEntry("offset").getDouble(-1.0);
-  }
+        Trajectory chosenTrajectory = RobotContainer.loadTrajectory(chosenPath.getTrajectory());
+
+        this.hasTarget = true;
+        return chosenTrajectory;
+    }
+
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        this.distance = table.getEntry("dist").getDouble(-1.0);
+        this.offset = table.getEntry("offset").getDouble(-1.0);
+    }
 }

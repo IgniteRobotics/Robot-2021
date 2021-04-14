@@ -21,117 +21,113 @@ import frc.robot.constants.Constants;
 import frc.robot.util.Util;
 
 public class Climber extends SubsystemBase {
-  /**
-   * Creates a new Climber.
-   */
-  private WPI_TalonFX climberLeader;
-  private WPI_TalonFX climberFollower;
+    /**
+     * Creates a new Climber.
+     */
+    private WPI_TalonFX climberLeader;
+    private WPI_TalonFX climberFollower;
 
-  private Command defaultCommand;
+    private Command defaultCommand;
 
-  private final double kF = 0;
-  private final double kP = 1;
-  private final double kI = 0;
-  private final double kD = 0;
+    private final double kF = 0;
+    private final double kP = 1;
+    private final double kI = 0;
+    private final double kD = 0;
 
-  private final int MAX_ACCELERATION = 8000 / 2;
-  private final int CRUISE_VELOCITY = 6000;
+    private final int MAX_ACCELERATION = 8000 / 2;
+    private final int CRUISE_VELOCITY = 6000;
 
-  private final int TOLERANCE = 200;
+    private final int TOLERANCE = 200;
 
+    public Climber(int climberLeaderID, int climberFollowerID) {
+        climberLeader = new WPI_TalonFX(climberLeaderID);
+        climberFollower = new WPI_TalonFX(climberFollowerID);
 
-  public Climber(int climberLeaderID, int climberFollowerID) {
-    climberLeader = new WPI_TalonFX(climberLeaderID);
-    climberFollower = new WPI_TalonFX(climberFollowerID);
+        climberLeader.setNeutralMode(NeutralMode.Brake);
+        climberFollower.setNeutralMode(NeutralMode.Brake);
 
-    climberLeader.setNeutralMode(NeutralMode.Brake);
-    climberFollower.setNeutralMode(NeutralMode.Brake);
+        climberFollower.follow(climberLeader);
 
-    climberFollower.follow(climberLeader);
+        climberLeader.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
 
-    climberLeader.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+        climberLeader.setSensorPhase(true);
+        climberLeader.setInverted(false);
 
-    climberLeader.setSensorPhase(true);
-    climberLeader.setInverted(false);
+        climberFollower.setInverted(InvertType.FollowMaster);
 
-    climberFollower.setInverted(InvertType.FollowMaster);
+        climberLeader.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 20);
+        climberLeader.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 10, 20);
 
-    climberLeader.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 20);
-    climberLeader.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 10, 20);
+        climberLeader.selectProfileSlot(0, 0);
+        climberLeader.config_kF(0, kF, 10);
+        climberLeader.config_kP(0, kP, 10);
+        climberLeader.config_kI(0, kI, 10);
+        climberLeader.config_kD(0, kD, 10);
 
-    climberLeader.selectProfileSlot(0, 0);
-    climberLeader.config_kF(0, kF, 10);
-    climberLeader.config_kP(0, kP, 10);
-    climberLeader.config_kI(0, kI, 10);
-    climberLeader.config_kD(0, kD, 10);
-
-    climberLeader.configMotionCruiseVelocity(CRUISE_VELOCITY, 10);
-    climberLeader.configMotionAcceleration(MAX_ACCELERATION, 10);
-
-
-  }
+        climberLeader.configMotionCruiseVelocity(CRUISE_VELOCITY, 10);
+        climberLeader.configMotionAcceleration(MAX_ACCELERATION, 10);
+    }
 
 
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    public void setOpenLoop(double percentage) {
+        climberLeader.set(ControlMode.PercentOutput, percentage);
+    }
 
-  public void setOpenLoop(double percentage) {
-    climberLeader.set(ControlMode.PercentOutput, percentage);
-  }
+    public void setOpenLoop(double percentage, double deadband) {
+        percentage = Util.applyDeadband(percentage, Constants.CLIMBER_JOG_DEADBAND);
+        setOpenLoop(percentage);
+    }
 
-  public void setOpenLoop(double percentage, double deadband) {
-    percentage = Util.applyDeadband(percentage, Constants.CLIMBER_JOG_DEADBAND);
-    setOpenLoop(percentage);
-  }
+    public void setMotionMagicPosition(double position) {
+        climberLeader.set(ControlMode.MotionMagic, position);
+    }
 
-  public void setMotionMagicPosition(double position) {
-    climberLeader.set(ControlMode.MotionMagic, position);
-  }
+    public boolean isMotionMagicDone() {
+        return Math.abs(climberLeader.getClosedLoopTarget() - this.getEncoderPos()) <= TOLERANCE;
+    }
 
-  public boolean isMotionMagicDone() {
-    return Math.abs(climberLeader.getClosedLoopTarget() - this.getEncoderPos()) <= TOLERANCE;
-  }
+    public int getEncoderPos() {
+        return (int) climberLeader.getSelectedSensorPosition();
+    }
 
-  public int getEncoderPos() {
-    return (int) climberLeader.getSelectedSensorPosition();
-  }
+    public double getEncoderVel() {
+        return climberLeader.getSelectedSensorVelocity();
+    }
 
-  public double getEncoderVel() {
-    return climberLeader.getSelectedSensorVelocity();
-  }
+    public double getMasterVoltage() {
+        return climberLeader.getMotorOutputVoltage();
+    }
 
-  public double getMasterVoltage() {
-    return climberLeader.getMotorOutputVoltage();
-  }
+    public double getFollowerVoltage() {
+        return climberFollower.getMotorOutputVoltage();
+    }
 
-  public double getFollowerVoltage() {
-    return climberFollower.getMotorOutputVoltage();
-  }
+    public double getPercentOutput() {
+        return climberLeader.getMotorOutputPercent();
+    }
 
-  public double getPercentOutput() {
-    return climberLeader.getMotorOutputPercent();
-  }
+    public double getMasterCurrent() {
+        return climberLeader.getOutputCurrent();
+    }
 
-  public double getMasterCurrent() {
-    return climberLeader.getOutputCurrent();
-  }
+    public void zeroSensors() {
+        climberLeader.setSelectedSensorPosition(0);
+    }
 
-  public void zeroSensors() {
-    climberLeader.setSelectedSensorPosition(0);
-  }
+    public boolean isFwdLimitTripped() {
+        return climberLeader.getSensorCollection().isFwdLimitSwitchClosed() != 0;
+    }
 
-  public boolean isFwdLimitTripped() {
-    return climberLeader.getSensorCollection().isFwdLimitSwitchClosed() != 0;
-  }
+    public boolean isRevLimitTripped() {
+        return climberLeader.getSensorCollection().isRevLimitSwitchClosed() != 0;
+    }
 
-  public boolean isRevLimitTripped() {
-    return climberLeader.getSensorCollection().isRevLimitSwitchClosed() != 0;
-  }
-
-  public void stop() {
-    climberLeader.stopMotor();
-  }
+    public void stop() {
+        climberLeader.stopMotor();
+    }
 }

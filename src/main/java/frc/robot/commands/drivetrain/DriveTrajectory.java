@@ -45,7 +45,6 @@ public class DriveTrajectory extends RamseteCommand {
             ramsetedriveTrain);        
         this.ramseteDriveTrain = ramsetedriveTrain;
         this.trajectory = trajectory;
-
     }
 
 

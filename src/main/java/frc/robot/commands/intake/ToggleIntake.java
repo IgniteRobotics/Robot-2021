@@ -1,51 +1,52 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
+/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.drivetrain;
+package frc.robot.commands.intake;
 
-import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-//TODO test if this works
+import frc.robot.subsystems.Intake;
 
+public class ToggleIntake extends CommandBase {
+    private final Intake m_intake;
+    private boolean finished = false;
 
-/**
- * An example command that uses an example subsystem.
- */
-public class ToggleSlowMode extends CommandBase {
-    @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    DriveTrain m_driveTrain;
-    
-    public ToggleSlowMode(DriveTrain drivetrain) {
-        m_driveTrain = drivetrain;
+    /**
+     * Creates a new RunIntake.
+     */
+    public ToggleIntake(Intake i) {
+        m_intake = i;
+
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(drivetrain);
+        addRequirements(m_intake);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_driveTrain.toggleSlowMode();
+        //m_intake.toggleIntake();
+        finished = false;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        m_intake.toggleIntake();
+        finished = true;
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_driveTrain.toggleSlowMode(); //Should this go in isFinished?
+        //m_intake.toggleIntake();
     }
 
     // Returns true when the command should end.
     @Override
-    public boolean isFinished() { //Not sure about this. TODO test if slow mode works
-        return true;
+    public boolean isFinished() {
+        return finished;
     }
 }
-

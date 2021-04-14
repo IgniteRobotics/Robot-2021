@@ -6,7 +6,6 @@ package frc.robot.constants;
 
 /** Add your docs here. */
 public final class ControllerConstants {
-
     public static final int BUTTON_A = 1;
 	public static final int BUTTON_B = 2;
 	public static final int BUTTON_X = 3;
@@ -29,5 +28,4 @@ public final class ControllerConstants {
 	public static final int BUTTON_DPAD_LEFT = 270;
 	public static final int BUTTON_DPAD_RIGHT = 90;
 	public static final int BUTTON_DPAD_DOWN = 180;
-
 }

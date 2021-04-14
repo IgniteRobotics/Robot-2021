@@ -17,56 +17,55 @@ import frc.robot.constants.Constants;
 import frc.robot.constants.MotorConstants;
 
 public class Intake extends SubsystemBase {
-  private final WPI_VictorSPX intakeMotor;
-  private Solenoid intakePistonSolenoid;
+    private final WPI_VictorSPX intakeMotor;
+    private Solenoid intakePistonSolenoid;
 
-  private boolean isExtended;
+    private boolean isExtended;
 
-  /**
-   * Creates a new Intake.
-   */
-  public Intake() {
-    intakeMotor = new WPI_VictorSPX(MotorConstants.kIntakeMotorPort);
-    intakeMotor.setInverted(false);
-    intakeMotor.setNeutralMode(NeutralMode.Brake);
+    /**
+     * Creates a new Intake.
+     */
+    public Intake() {
+        intakeMotor = new WPI_VictorSPX(MotorConstants.kIntakeMotorPort);
+        intakeMotor.setInverted(false);
+        intakeMotor.setNeutralMode(NeutralMode.Brake);
 
-    isExtended = false;
+        isExtended = false;
 
-    //intakePistonSolenoid = null;
-    intakePistonSolenoid = new Solenoid(44, MotorConstants.kIntakeSolenoidPort);
-  }
-
-  private void extendIntake() {
-    System.out.println("extending intake");
-    isExtended = true;
-    intakePistonSolenoid.set(true);
-  }
-
-  private void retractIntake() {
-    System.out.println("retracting intake");
-    isExtended = false;
-    intakePistonSolenoid.set(false);
-  }
-
-  public void toggleIntake() {
-    if(isExtended) {
-      retractIntake();
+        //intakePistonSolenoid = null;
+        intakePistonSolenoid = new Solenoid(44, MotorConstants.kIntakeSolenoidPort);
     }
-    else {
-      extendIntake();
+
+    private void extendIntake() {
+        System.out.println("extending intake");
+        isExtended = true;
+        intakePistonSolenoid.set(true);
     }
-  }
 
-  public void spin(double speed) {
-    intakeMotor.set(ControlMode.PercentOutput, speed); 
-  }
+    private void retractIntake() {
+        System.out.println("retracting intake");
+        isExtended = false;
+        intakePistonSolenoid.set(false);
+    }
 
-  public void stop() {
-    intakeMotor.set(ControlMode.PercentOutput, 0);
-  }
+    public void toggleIntake() {
+        if (isExtended) {
+            retractIntake();
+        } else {
+            extendIntake();
+        }
+    }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    public void spin(double speed) {
+        intakeMotor.set(ControlMode.PercentOutput, speed);
+    }
+
+    public void stop() {
+        intakeMotor.set(ControlMode.PercentOutput, 0);
+    }
+
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
 }

@@ -8,39 +8,42 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Indexer;
 
 public class runIndexer extends CommandBase {
-  /** Creates a new runIndexer. */
-  private double percent_output;
-  private Indexer indexer;
-  public runIndexer(double percent_output, Indexer m_indexer) { 
-    // Use addRequirements() here to declare subsystem dependencies.
-    this.percent_output = percent_output;
-    indexer = m_indexer;
-    
-  }
+    /**
+     * Creates a new runIndexer.
+     */
+    private double percent_output;
+    private Indexer indexer;
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    indexer.runIndexer(this.percent_output); 
+    public runIndexer(double percent_output, Indexer m_indexer) {
+        // Use addRequirements() here to declare subsystem dependencies.
+        this.percent_output = percent_output;
+        indexer = m_indexer;
 
-  }
+    }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        indexer.runIndexer(this.percent_output);
 
-    indexer.runIndexer(this.percent_output);
-  }
+    }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    indexer.stop();
-  }
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+        indexer.runIndexer(this.percent_output);
+    }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        indexer.stop();
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }
