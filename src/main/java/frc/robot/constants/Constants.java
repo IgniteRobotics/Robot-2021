@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot;
+package frc.robot.constants;
 
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
@@ -21,67 +21,11 @@ import frc.robot.util.PathData;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final int kLeftMasterPort = 2;
-    public static final int kLeftFollowerPort = 4;
-	public static final int kLeftFollowerPort2 = 6;
-	
-    public static final int kRightMasterPort = 1;
-    public static final int kRightFollowerPort = 3;
-    public static final int kRightFollowerPort2 = 5;
-
-    public static final int kDriveControllerPort = 0;
-    public static final int kManipControllerPort = 1;
-
 	public static final double kDriveDeadband = 0.03;
-	
-	public static final int kIntakeMotorPort = 10; //TODO find out what these actually are.
-	public static final int kSorterMotorPort = 11;
-	public static final int kIndexerMotorPortLeft = 7;
-	public static final int kIndexerMotorPortRight = 8;
-	
-
-	//shooter ports
-	public static final int kShooterTalonMotorPort = 14;
-	public static final int kShooterTalonMotorKickUpPort = 12; 
-	public static final int kShooterSparkMotorHoodPort = 15;
-	public static final int kShooterTalonMotorFollowerPort = 13;
-
-
-
-
-
-	public static final int kKickerMotorPort = 9;
-	public static final int kClimberMotorPort = 7;
-	public static final int kTurretMotorPort = 12;
-
-	public static final int kIntakeSolenoidPort = 0;
-	public static final int kKickerSolenoidPort = 1;
 
 	public static final int kSpindexerHallEffectPort = 0;
 	public static final int kSorterSensorPort = 1;
 
-    public static final int BUTTON_A = 1;
-	public static final int BUTTON_B = 2;
-	public static final int BUTTON_X = 3;
-	public static final int BUTTON_Y = 4;
-	public static final int BUTTON_LEFT_BUMPER = 5;
-	public static final int BUTTON_RIGHT_BUMPER = 6;
-	public static final int BUTTON_BACK = 7;
-	public static final int BUTTON_START = 8;
-	public static final int BUTTON_LEFT_STICK = 9;
-	public static final int BUTTON_RIGHT_STICK = 10;
-
-	public static final int AXIS_LEFT_STICK_X = 0;
-	public static final int AXIS_LEFT_STICK_Y = 1;
-	public static final int AXIS_LEFT_TRIGGER = 2;
-	public static final int AXIS_RIGHT_TRIGGER = 3;
-	public static final int AXIS_RIGHT_STICK_X = 4;
-	public static final int AXIS_RIGHT_STICK_Y = 5;
-
-	public static final int BUTTON_DPAD_UP = 0;
-	public static final int BUTTON_DPAD_LEFT = 270;
-	public static final int BUTTON_DPAD_RIGHT = 90;
-	public static final int BUTTON_DPAD_DOWN = 180;
 
 	public static final double SPEED_RATE_LIMIT_ARCADE = 1.5;
 	public static final double ROTATION_RATE_LIMIT_ARCADE = 3.0;
@@ -172,7 +116,6 @@ public final class Constants {
 
 	public static PathData pathABlue = new PathData(0, 37, "28-GS-A-Blue");
 	public static PathData pathBBlue = new PathData(0, 25, "28-GS-B-Blue");
-	public static Trajectory robotDeterminedTrajectory; 
 
 
 }

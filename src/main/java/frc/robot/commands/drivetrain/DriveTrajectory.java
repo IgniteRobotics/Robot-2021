@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
 public class DriveTrajectory extends RamseteCommand {
 
     private RamseteDriveSubsystem ramseteDriveTrain;

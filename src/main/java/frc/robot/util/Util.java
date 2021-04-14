@@ -1,6 +1,6 @@
 package frc.robot.util;
 
-import static frc.robot.Constants.*;
+import static frc.robot.constants.Constants.*;
 
 public class Util {
 	public static double applyDeadband(double value, double deadband) {

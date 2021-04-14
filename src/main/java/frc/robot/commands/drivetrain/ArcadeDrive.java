@@ -9,7 +9,8 @@ package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
+import frc.robot.constants.ControllerConstants;
 import frc.robot.subsystems.DriveTrain;
 
 public class ArcadeDrive extends CommandBase { //TODO Figure out how to make a button trigger slow mode
@@ -44,7 +45,7 @@ public class ArcadeDrive extends CommandBase { //TODO Figure out how to make a b
   }
 
   private double getSpeed() {
-    double speed = -driverJoystick.getRawAxis(Constants.AXIS_LEFT_STICK_Y);
+    double speed = -driverJoystick.getRawAxis(ControllerConstants.AXIS_LEFT_STICK_Y);
     if(m_driveTrain.isSlowMode) {
       speed *= Constants.SLOW_MODE_SPEED_MODIFIER;
     }
@@ -52,7 +53,7 @@ public class ArcadeDrive extends CommandBase { //TODO Figure out how to make a b
   }
 
   private double getRotation() {
-    double rotation = -(driverJoystick.getRawAxis(Constants.AXIS_RIGHT_STICK_X));
+    double rotation = -(driverJoystick.getRawAxis(ControllerConstants.AXIS_RIGHT_STICK_X));
     if(m_driveTrain.isSlowMode) {
       rotation *= Constants.SLOW_MODE_SPEED_MODIFIER;
     }

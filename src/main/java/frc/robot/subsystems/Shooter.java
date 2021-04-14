@@ -24,7 +24,7 @@ import frc.robot.RobotContainer;
 import frc.robot.util.Util;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
 
 import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANEncoder;
@@ -33,14 +33,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
+import frc.robot.constants.MotorConstants;
 
 public class Shooter extends SubsystemBase {
-  private WPI_TalonFX leftMotor =  new WPI_TalonFX(Constants.kShooterTalonMotorPort); //shooter
-  private WPI_TalonFX followMotor =  new WPI_TalonFX(Constants.kShooterTalonMotorFollowerPort);
-  private WPI_TalonSRX kickUp = new WPI_TalonSRX(  Constants.kShooterTalonMotorKickUpPort); //TODO confirm this
+  private WPI_TalonFX leftMotor =  new WPI_TalonFX(MotorConstants.kShooterTalonMotorPort); //shooter
+  private WPI_TalonFX followMotor =  new WPI_TalonFX(MotorConstants.kShooterTalonMotorFollowerPort);
+  private WPI_TalonSRX kickUp = new WPI_TalonSRX(MotorConstants.kShooterTalonMotorKickUpPort); //TODO confirm this
   
-  private CANSparkMax hood_motor = new CANSparkMax(Constants.kShooterSparkMotorHoodPort, MotorType.kBrushless);
+  private CANSparkMax hood_motor = new CANSparkMax(MotorConstants.kShooterSparkMotorHoodPort, MotorType.kBrushless);
   private CANEncoder hoodEncoder = hood_motor.getEncoder();
   private CANPIDController hoodPidController = hood_motor.getPIDController();
   private CANDigitalInput hoodLimitSwitch = hood_motor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);

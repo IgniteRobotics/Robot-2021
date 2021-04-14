@@ -46,6 +46,8 @@ import frc.robot.commands.Intake.RunIntake;
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.commands.drivetrain.ToggleSlowMode;
 import frc.robot.commands.drivetrain.TurnToAngle;
+import frc.robot.constants.ControllerConstants;
+import frc.robot.constants.MotorConstants;
 import frc.robot.commands.Intake.ToggleIntake;
 import frc.robot.commands.drivetrain.ArcadeDrive;
 import frc.robot.commands.Intake.RunIntake;
@@ -70,8 +72,8 @@ public class RobotContainer {
   private Indexer m_indexer = new Indexer();
   private Limelight m_limelight = new Limelight();
   private Realsense m_realsense = new Realsense();
-  private Joystick m_driveController = new Joystick(Constants.kDriveControllerPort);
-  private Joystick m_manipController = new Joystick(Constants.kManipControllerPort);
+  private Joystick m_driveController = new Joystick(MotorConstants.kDriveControllerPort);
+  private Joystick m_manipController = new Joystick(MotorConstants.kManipControllerPort);
   
   
   
@@ -126,15 +128,15 @@ public class RobotContainer {
     */
     private void configureButtonBindings() {
       
-      new JoystickButton(m_manipController, Constants.BUTTON_X).whileHeld(intakeCommand);
-      new JoystickButton(m_manipController, Constants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
-      new JoystickButton(m_manipController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
-      new JoystickButton(m_manipController, Constants.BUTTON_A).whileHeld(new TestRetractHood(m_shooter));
-      new JoystickButton(m_manipController, Constants.BUTTON_RIGHT_BUMPER).whileHeld(shootCommand);
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_X).whileHeld(intakeCommand);
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_A).whileHeld(new TestRetractHood(m_shooter));
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(shootCommand);
       
       
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
-      new JoystickButton(m_driveController, Constants.BUTTON_RIGHT_BUMPER).whileHeld(targetingCommand);
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(targetingCommand);
       // new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestRetractHood(m_shooter));
       // new JoystickButton(m_driveController, Constants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));

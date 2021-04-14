@@ -46,19 +46,20 @@ import edu.wpi.first.wpiutil.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
+import frc.robot.constants.MotorConstants;
 
 import frc.robot.util.Util;
 
 public class RamseteDriveSubsystem extends SubsystemBase {
   
-  private final WPI_TalonSRX leftMaster = new WPI_TalonSRX(Constants.kLeftMasterPort);
-  private final WPI_VictorSPX leftFollower = new WPI_VictorSPX(Constants.kLeftFollowerPort);
-  private final WPI_VictorSPX leftFollower2 = new WPI_VictorSPX(Constants.kLeftFollowerPort2);
+  private final WPI_TalonSRX leftMaster = new WPI_TalonSRX(MotorConstants.kLeftMasterPort);
+  private final WPI_VictorSPX leftFollower = new WPI_VictorSPX(MotorConstants.kLeftFollowerPort);
+  private final WPI_VictorSPX leftFollower2 = new WPI_VictorSPX(MotorConstants.kLeftFollowerPort2);
   
-  private final WPI_TalonSRX rightMaster = new WPI_TalonSRX(Constants.kRightMasterPort);
-  private final WPI_VictorSPX rightFollower = new WPI_VictorSPX(Constants.kRightFollowerPort);
-  private final WPI_VictorSPX rightFollower2 = new WPI_VictorSPX(Constants.kRightFollowerPort2);
+  private final WPI_TalonSRX rightMaster = new WPI_TalonSRX(MotorConstants.kRightMasterPort);
+  private final WPI_VictorSPX rightFollower = new WPI_VictorSPX(MotorConstants.kRightFollowerPort);
+  private final WPI_VictorSPX rightFollower2 = new WPI_VictorSPX(MotorConstants.kRightFollowerPort2);
   
   private DifferentialDrive m_driveTrain;
   

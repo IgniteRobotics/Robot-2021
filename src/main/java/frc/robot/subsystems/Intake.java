@@ -13,7 +13,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
+import frc.robot.constants.MotorConstants;
 
 public class Intake extends SubsystemBase {
   private final WPI_VictorSPX intakeMotor;
@@ -25,14 +26,14 @@ public class Intake extends SubsystemBase {
    * Creates a new Intake.
    */
   public Intake() {
-    intakeMotor = new WPI_VictorSPX(Constants.kIntakeMotorPort);
+    intakeMotor = new WPI_VictorSPX(MotorConstants.kIntakeMotorPort);
     intakeMotor.setInverted(false);
     intakeMotor.setNeutralMode(NeutralMode.Brake);
 
     isExtended = false;
 
     //intakePistonSolenoid = null;
-    intakePistonSolenoid = new Solenoid(44, Constants.kIntakeSolenoidPort);
+    intakePistonSolenoid = new Solenoid(44, MotorConstants.kIntakeSolenoidPort);
   }
 
   private void extendIntake() {

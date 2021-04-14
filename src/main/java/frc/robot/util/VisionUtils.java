@@ -7,7 +7,7 @@
 
 package frc.robot.util;
 
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
 
 /**
  * Add your docs here.

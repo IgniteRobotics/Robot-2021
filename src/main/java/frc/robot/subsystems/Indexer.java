@@ -8,14 +8,15 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
+import frc.robot.constants.MotorConstants;
 
 public class Indexer extends SubsystemBase {
   /** Creates a new Indexer. */
 
   //TODO confirm motor controllers
-  private WPI_VictorSPX indexerMaster = new WPI_VictorSPX(Constants.kIndexerMotorPortLeft); 
-  private WPI_VictorSPX indexerFollower = new WPI_VictorSPX(Constants.kIndexerMotorPortRight);
+  private WPI_VictorSPX indexerMaster = new WPI_VictorSPX(MotorConstants.kIndexerMotorPortLeft); 
+  private WPI_VictorSPX indexerFollower = new WPI_VictorSPX(MotorConstants.kIndexerMotorPortRight);
 
 
 
