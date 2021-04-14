@@ -13,11 +13,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.constants.Constants;
 import frc.robot.constants.ControllerConstants;
-import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.RamseteDriveSubsystem;
-import frc.robot.constants.MotorConstants;
 
 public class RamseteDrive extends CommandBase { // TODO Figure out how to make a button trigger slow mode
 
