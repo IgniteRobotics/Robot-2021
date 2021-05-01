@@ -88,7 +88,7 @@ public final class Constants {
     public static int SHOOTER_MAX_RPM = 6000;
     public static double SHOOTER_DEFAULT_RPM = 1250;
 
-    public static int WHEEL_DIAMETER = 6; //in inches
+    public static int WHEEL_DIAMETER = 4; //in inches
     public static double WHEEL_DIAMETER_METERS = 0.1524;
 
     public static double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_METERS * Math.PI;
