@@ -43,7 +43,7 @@ public class ShootBall extends CommandBase {
         this.indexer = indexer;
         this.limelight = limelight;
         addRequirements(shooter, indexer);
-
+  
         tab = Shuffleboard.getTab("Shooter");
         targetShooterVelocityEntry = tab.add("Target Shooter Velocity", Constants.SHOOTER_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
         distanceSetPointEntry = tab.add("Shooter Distance Setpoint", Constants.HOOD_SET_POINT_DISTANCE).withProperties(Map.of("min", 0)).getEntry();

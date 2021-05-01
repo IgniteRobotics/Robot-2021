@@ -30,19 +30,16 @@ public class Util {
 		double inchesPerRevolution = Math.PI * wheel_diameter;
 		
 		double revolutions = inches / inchesPerRevolution;
-		double ticks = revolutions * ENCODER_TICKS_PER_REVOLUTION;
+		double ticks = revolutions * QUADRATURE_ENCODER_TICKS_PER_REVOLUTION;
 		
 		return ticks;
 	}
 	
-	public static double getInchesFromEncoderTicks(double encoder_ticks) {
-		return getInchesFromEncoderTicks(WHEEL_DIAMETER, encoder_ticks);
-	}
 	
 	private static double getInchesFromEncoderTicks(int wheel_diameter, double encoder_ticks) {
 		
 		double inchesPerRevolution = Math.PI * wheel_diameter;
-		double revolutions = encoder_ticks * ENCODER_TICKS_PER_REVOLUTION;
+		double revolutions = encoder_ticks * QUADRATURE_ENCODER_TICKS_PER_REVOLUTION;
 		
 		double inches = (revolutions) / (inchesPerRevolution);
 		
@@ -50,7 +47,7 @@ public class Util {
 	}
 	
 	public static double getMetersFromEncoderTicks(double ticks) {
-		return (WHEEL_CIRCUMFERENCE_METERS / ENCODER_TICKS_PER_REVOLUTION) * ticks;
+		return (WHEEL_CIRCUMFERENCE_METERS / QUADRATURE_ENCODER_TICKS_PER_REVOLUTION) * ticks;
 	}
 	public static double stepsPerDecisecToMetersPerSec(double d) {
 		return getMetersFromEncoderTicks(d * 10);
@@ -61,11 +58,11 @@ public class Util {
 	}
 	
 	public static double getEncoderTicksFromMeters(double meters) {
-		return (meters / WHEEL_CIRCUMFERENCE_METERS) * ENCODER_TICKS_PER_REVOLUTION;
+		return (meters / WHEEL_CIRCUMFERENCE_METERS) * QUADRATURE_ENCODER_TICKS_PER_REVOLUTION;
 	}
 	
 	public static double getRevolutionsFromTicks(double encoder_ticks) {
-		double revolutions =  encoder_ticks / ENCODER_TICKS_PER_REVOLUTION;
+		double revolutions =  encoder_ticks / QUADRATURE_ENCODER_TICKS_PER_REVOLUTION;
 		return revolutions;
 	}
 	
@@ -90,7 +87,7 @@ public class Util {
 	}
 
 	public static double ticksFromRPM(int rpm){
-		double ticksPer100Ms = ((((rpm * ENCODER_TICKS_PER_REVOLUTION_TALON)
+		double ticksPer100Ms = ((((rpm * ENCODER_TICKS_PER_REVOLUTION_FALCON)
 									/SHOOTER_GEAR_RATIO)
 									/60)  //mintues to seconds
 									/10); // seconds to 100ms
@@ -98,7 +95,8 @@ public class Util {
 	}
 
 	public static double RPMFromTicks (double ticksPer100ms) {
-		double rpm = ticksPer100ms * 600 * SHOOTER_GEAR_RATIO / ENCODER_TICKS_PER_REVOLUTION_TALON;
+		double rpm = ticksPer100ms * 600 * SHOOTER_GEAR_RATIO / ENCODER_TICKS_PER_REVOLUTION_FALCON;
+		 //I think we are calculating ticks per minute, not the actual RPM
 		 
 		return rpm;
 
