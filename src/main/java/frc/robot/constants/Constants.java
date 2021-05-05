@@ -65,10 +65,10 @@ public final class Constants {
 
     public static final SimpleMotorFeedforward FEED_FORWARD = new SimpleMotorFeedforward(ksVolts, kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter);
 
-    public static int ENCODER_TICKS_PER_REVOLUTION = 8192;
+    public static int QUADRATURE_ENCODER_TICKS_PER_REVOLUTION = 8192;
 
     //Talon bits.
-    public static int ENCODER_TICKS_PER_REVOLUTION_TALON = 8192;
+    public static int ENCODER_TICKS_PER_REVOLUTION_FALCON = 2048; //used to be 8192. Change this to current valye for dalcon motors!!!
     public static int TALON_PID_LOOP_IDX = 0;
     public static int TALON_CONFIG_TIMOUT_MS = 30;
     // 1023 is output in ?? at 100% power.  20660 is velocity at 100%
@@ -88,7 +88,7 @@ public final class Constants {
     public static int SHOOTER_MAX_RPM = 6000;
     public static double SHOOTER_DEFAULT_RPM = 1250;
 
-    public static int WHEEL_DIAMETER = 6; //in inches
+    public static int WHEEL_DIAMETER = 4; //in inches
     public static double WHEEL_DIAMETER_METERS = 0.1524;
 
     public static double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_METERS * Math.PI;

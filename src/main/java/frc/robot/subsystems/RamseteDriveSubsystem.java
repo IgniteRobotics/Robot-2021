@@ -13,11 +13,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.networktables.EntryListenerFlags;
@@ -45,21 +41,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import frc.robot.constants.Constants;
 import frc.robot.constants.MotorConstants;
 
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.robot.util.Util;
 
 public class RamseteDriveSubsystem extends SubsystemBase {
 
-    private final WPI_TalonSRX leftMaster = new WPI_TalonSRX(MotorConstants.kLeftMasterPort);
-    private final WPI_VictorSPX leftFollower = new WPI_VictorSPX(MotorConstants.kLeftFollowerPort);
-    private final WPI_VictorSPX leftFollower2 = new WPI_VictorSPX(MotorConstants.kLeftFollowerPort2);
+    private final WPI_TalonFX leftMaster = new WPI_TalonFX(MotorConstants.kLeftMasterPort);
+    private final WPI_TalonFX leftFollower = new WPI_TalonFX(MotorConstants.kLeftFollowerPort);
+   
 
-    private final WPI_TalonSRX rightMaster = new WPI_TalonSRX(MotorConstants.kRightMasterPort);
-    private final WPI_VictorSPX rightFollower = new WPI_VictorSPX(MotorConstants.kRightFollowerPort);
-    private final WPI_VictorSPX rightFollower2 = new WPI_VictorSPX(MotorConstants.kRightFollowerPort2);
+    private final WPI_TalonFX rightMaster = new WPI_TalonFX(MotorConstants.kRightMasterPort);
+    private final WPI_TalonFX rightFollower = new WPI_TalonFX(MotorConstants.kRightFollowerPort);
+  
 
     private DifferentialDrive m_driveTrain;
 
@@ -95,8 +94,14 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         resetEncoders();
         navX.zeroYaw();
 
-        TalonSRXConfiguration talonConfig = new TalonSRXConfiguration();
-        talonConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.QuadEncoder;
+        leftMaster.configFactoryDefault();
+        rightMaster.configFactoryDefault();
+
+
+
+
+        TalonFXConfiguration talonConfig = new TalonFXConfiguration();
+        talonConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
         talonConfig.slot0.kP = Constants.kPDriveVel;
         talonConfig.slot0.kI = 0.0;
         talonConfig.slot0.kD = 0.0;
@@ -107,34 +112,31 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         leftMaster.configAllSettings(talonConfig);
         leftMaster.enableVoltageCompensation(true);
         leftFollower.configFactoryDefault();
-        leftFollower2.configFactoryDefault();
+      
 
         rightMaster.configAllSettings(talonConfig);
         rightMaster.enableVoltageCompensation(true);
         rightFollower.configFactoryDefault();
-        rightFollower2.configFactoryDefault();
-
+  
         enableEncoders();
 
         setNeutralMode(NeutralMode.Brake);
-        //uninvert right
-        rightMaster.setSensorPhase(false);
-        rightMaster.setInverted(false);
-        rightFollower.setInverted(false);
-        rightFollower2.setInverted(false);
+        
+        //Falcons don't need to set sensor phase
+        //rightMaster.setSensorPhase(false);
+        //rightMaster.setInverted(false);
+        //rightFollower.setInverted(false);
+       // leftMaster.setSensorPhase(true);
 
-        leftMaster.setSensorPhase(true);
+//uninvert right
         leftMaster.setInverted(false);
         leftFollower.setInverted(false);
-        leftFollower2.setInverted(false);
 
         rightMaster.overrideLimitSwitchesEnable(false);
         leftMaster.overrideLimitSwitchesEnable(false);
 
         leftFollower.follow(leftMaster);
-        leftFollower2.follow(leftMaster);
         rightFollower.follow(rightMaster);
-        rightFollower2.follow(rightMaster);
 
         //inversion etc has to happen BEFORE this statement!
         m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
@@ -265,12 +267,10 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     public void tankDriveVolts(double leftVolts, double rightVolts) {
         this.leftMaster.setVoltage(leftVolts);
         this.leftFollower.setVoltage(leftVolts);
-        this.leftFollower2.setVoltage(leftVolts);
 
         //if you're raw setting volts, you need to flip the right side.
         this.rightMaster.setVoltage(-rightVolts);
         this.rightFollower.setVoltage(-rightVolts);
-        this.rightFollower2.setVoltage(-rightVolts);
     }
 
 
@@ -320,8 +320,6 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         rightMaster.setNeutralMode(neutralMode);
         leftFollower.setNeutralMode(neutralMode);
         rightFollower.setNeutralMode(neutralMode);
-        leftFollower2.setNeutralMode(neutralMode);
-        rightFollower2.setNeutralMode(neutralMode);
     }
 
     public void stop() {
