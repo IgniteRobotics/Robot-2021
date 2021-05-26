@@ -16,7 +16,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commands.ClimbUp;
 import frc.robot.commands.autonomous.GalacticSearch;
+import frc.robot.commands.shooter.ClimbDown;
 import frc.robot.commands.shooter.ResetHood;
 import frc.robot.commands.shooter.ShootBall;
 import frc.robot.commands.shooter.TestExtendShooterHood;
@@ -127,7 +129,8 @@ public class RobotContainer {
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestRetractHood(m_shooter));
       // new JoystickButton(m_driveController, Constants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
       // new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
-      
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_DPAD_UP).whileHeld(new ClimbUp());
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_DPAD_DOWN).whileHeld(new ClimbDown());
     }
     
     private void configureSubsystemCommands() {

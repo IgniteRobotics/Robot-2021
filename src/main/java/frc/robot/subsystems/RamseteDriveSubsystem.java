@@ -157,8 +157,8 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
     private void enableEncoders() {
         encodersAvailable =
-                leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10) == ErrorCode.OK &
-                        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10) == ErrorCode.OK;
+                leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10) == ErrorCode.OK &
+                        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10) == ErrorCode.OK;
         if (!encodersAvailable) {
             DriverStation.reportError("Failed to configure drivetrain encoders!", false);
             useEncoders = false;
@@ -193,6 +193,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     }
 
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        //TODO Convert this to wheel speeds later
         return new DifferentialDriveWheelSpeeds(leftMaster.getSelectedSensorVelocity(),
                 rightMaster.getSelectedSensorVelocity());
     }
@@ -244,6 +245,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
             m_driveTrain.tankDrive(leftSpeed, rightSpeed, useSquares);
         }
     }
+ 
 
     public void tankDriveVelocity(double leftVelocity, double rightVelocity) {
         //TODO - remove later.  liting velocity to 1 m/s
@@ -263,7 +265,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
                 DemandType.ArbitraryFeedForward, rightFeedForwardVolts / 12);
         m_driveTrain.feed();
     }
-
+   //used to drive trajectories
     public void tankDriveVolts(double leftVolts, double rightVolts) {
         this.leftMaster.setVoltage(leftVolts);
         this.leftFollower.setVoltage(leftVolts);
