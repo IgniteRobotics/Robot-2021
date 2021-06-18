@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.autonomous.GalacticSearch;
+import frc.robot.commands.shooter.AdjustHoodAngle;
 import frc.robot.commands.shooter.ResetHood;
 import frc.robot.commands.shooter.ShootBall;
 import frc.robot.commands.shooter.TestExtendShooterHood;
@@ -66,12 +67,13 @@ public class RobotContainer {
   
   //private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
   //private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
-  private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
+  private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_manipController, m_driveTrain);
   //private AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
   
   private ShootBall shootCommand = new ShootBall(m_shooter, m_indexer, m_limelight);
   private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
+  private AdjustHoodAngle adjustHoodCommand = new AdjustHoodAngle(m_shooter);
 //  private DriveDistance drivetoDistance = new DriveDistance (.5, m_driveTrain);
  
 
@@ -120,6 +122,7 @@ public class RobotContainer {
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_A).whileHeld(new TestRetractHood(m_shooter));
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(shootCommand);
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_X).whileHeld(adjustHoodCommand);
       
       
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
