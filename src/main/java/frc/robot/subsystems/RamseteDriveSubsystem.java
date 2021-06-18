@@ -14,6 +14,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.networktables.EntryListenerFlags;
@@ -91,7 +93,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
     public RamseteDriveSubsystem() {
         m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); //assume robot starts at x =0, y=0, theta = 0
-        resetEncoders();
+       
         navX.zeroYaw();
 
         leftMaster.configFactoryDefault();
@@ -100,25 +102,31 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
 
 
-        TalonFXConfiguration talonConfig = new TalonFXConfiguration();
+         TalonFXConfiguration talonConfig = new TalonFXConfiguration();
         talonConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
-        talonConfig.slot0.kP = Constants.kPDriveVel;
+      //  talonConfig.slot0.kP = Constants.kPDriveVel;
+      talonConfig.slot0.kP = .01;
         talonConfig.slot0.kI = 0.0;
         talonConfig.slot0.kD = 0.0;
         talonConfig.slot0.integralZone = 400;
         talonConfig.slot0.closedLoopPeakOutput = 1.0;
-        talonConfig.openloopRamp = Constants.OPEN_LOOP_RAMP;
+        
+       talonConfig.openloopRamp = Constants.OPEN_LOOP_RAMP;
+
+//    leftMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+  //      rightMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
 
         leftMaster.configAllSettings(talonConfig);
         leftMaster.enableVoltageCompensation(true);
         leftFollower.configFactoryDefault();
       
 
-        rightMaster.configAllSettings(talonConfig);
+       rightMaster.configAllSettings(talonConfig);
         rightMaster.enableVoltageCompensation(true);
         rightFollower.configFactoryDefault();
-  
-        enableEncoders();
+      
+        resetEncoders();
+     //   enableEncoders();
 
         setNeutralMode(NeutralMode.Brake);
         
@@ -177,7 +185,9 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
         turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
 
+        
         outputTelemetry();
+
     }
 
     public Pose2d getCurrentPose() {
@@ -386,6 +396,17 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         return leftMaster.getClosedLoopTarget();
     }
 
+   
+    //TODO: Fix this to be more consistent with inverted and negative voltages. 
+    //Right now it's sort of a hack 
+    public void driveDistance(double setpointTicks){
+     //I don't think the arbitary feed forward is really that helpful here
+      leftMaster.set(TalonFXControlMode.Position, setpointTicks, DemandType.ArbitraryFeedForward,  0.0007);
+      rightMaster.set(TalonFXControlMode.Position, -setpointTicks, DemandType.ArbitraryFeedForward,  0.0007);
+    }
+    public double getLeftMasterPositionTicks(){
+        return leftMaster.getSelectedSensorPosition();
+    }
 
     public void outputTelemetry() {
         SmartDashboard.putNumber("Drivetrain/Left enc pos", this.getLeftEncoderPosition());
