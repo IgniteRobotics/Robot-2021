@@ -13,6 +13,8 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.util.StateMachine;
+import frc.robot.util.shooter.InterpolationCalculator;
+import frc.robot.util.shooter.ShooterParameter;
 
 import java.util.Map;
 
@@ -37,6 +39,8 @@ public class ShootBall extends CommandBase {
     private double intakeEffort = 0.4;
     private double kickupEffort = 0.3;
     private double distanceSetpoint = Constants.HOOD_SET_POINT_DISTANCE;
+
+    private InterpolationCalculator calculator = new InterpolationCalculator();
 
     public ShootBall(Shooter shooter, Indexer indexer, Limelight limelight) {
         this.shooter = shooter;
@@ -65,11 +69,16 @@ public class ShootBall extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        targetVelocity = targetShooterVelocityEntry.getDouble(Constants.HOOD_DEFAULT_RPM);
         intakeEffort = intakeEffortEntry.getDouble(0.4);
         kickupEffort = kickupEffortEntry.getDouble(0.3);
         distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
-        double currentDistance = state.getShooterDistance();
+        //double currentDistance = state.getShooterDistance(); State machine is not currently being used
+        double currentDistance = limelight.getDistancefromgoal();
+
+        ShooterParameter calculatedParameters = calculator.calculateParameter(currentDistance);
+
+        targetVelocity = calculatedParameters.rpm;
+        targetShooterVelocityEntry.setDouble(targetVelocity);
 
         // if (currentDistance > distanceSetpoint){
         //   shooter.extendHood();
@@ -80,8 +89,8 @@ public class ShootBall extends CommandBase {
 
         // get velocity from the Shuffleboard
         //setShooterVelocity(targetVelocity);
-        setShooterRPM((int) targetVelocity);
-        // shooter.changeHoodAngle(computedAngle);
+        setShooterRPM((int) targetVelocity); // use rpm from interpolation
+        shooter.changeHoodAngle(calculatedParameters.angle);
 
         double shooterRPM = shooter.getShooterRPM();
 

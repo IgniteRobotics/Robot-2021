@@ -87,7 +87,8 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     private double velocityLimitMultiplier;
     private double turnRampExponent;
     private double turnLimitMultiplier;
-
+    //7.8 is gear ratio
+    private double ticksPerMeter =  (2048.0 * 7.8) / Constants.WHEEL_CIRCUMFERENCE_METERS;
 
     public RamseteDriveSubsystem() {
         m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); //assume robot starts at x =0, y=0, theta = 0
@@ -153,12 +154,15 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
         turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
 
+        //Testing
+        m_driveTrain.setMaxOutput(.5);
+
     }
 
     private void enableEncoders() {
         encodersAvailable =
-                leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10) == ErrorCode.OK &
-                        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10) == ErrorCode.OK;
+                leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10) == ErrorCode.OK &
+                        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10) == ErrorCode.OK;
         if (!encodersAvailable) {
             DriverStation.reportError("Failed to configure drivetrain encoders!", false);
             useEncoders = false;
@@ -192,8 +196,19 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         return savedPose;
     }
 
+    public double getWheelSpeedsMetersPerSecond(double ticksPer100ms) {
+      //CTRE encoders return raw sensor units per 100 miliseconds
+
+      //Ticks / 100second 
+      //Wheel circumference / 2048 
+      return ticksPer100ms * 10 * (1 / ticksPerMeter);
+    }
+
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        //DifferentialDriveWHeelSpeeds expects meters per second
         return new DifferentialDriveWheelSpeeds(leftMaster.getSelectedSensorVelocity(),
+
+
                 rightMaster.getSelectedSensorVelocity());
     }
 
@@ -413,4 +428,9 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber("Drivetrain/Turn error", this.getTurnError());
         // SmartDashboard.putNumber("Drivetrain/Turn setpoint", this.getTurnSetpoint());
     }
+
+
+
+
+
 }

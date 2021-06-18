@@ -13,7 +13,10 @@ public class InterpolationCalculator implements ShooterCalculator {
     private static SortedMap<Double, ShooterParameter> distanceMap = new TreeMap<>();
 
     static {
-        distanceMap.put(0.0, new ShooterParameter(0, 2000, 50));
+        distanceMap.put(6.0, new ShooterParameter(6, 5000, 1633));
+        distanceMap.put(8.0, new ShooterParameter(8, 6000, 1587));
+        distanceMap.put(3.0, new ShooterParameter(3, 4000, 1091));
+        distanceMap.put(1.0, new ShooterParameter(1, 3500, 484));
     }
 
     // https://theeducationlife.com/interpolation-formula/
