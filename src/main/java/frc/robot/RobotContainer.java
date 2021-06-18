@@ -38,7 +38,7 @@ import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.MotorConstants;
 import frc.robot.commands.intake.ToggleIntake;
 import frc.robot.commands.drivetrain.TargetPositioning;
-
+import frc.robot.commands.drivetrain.DriveDistance;
 import frc.robot.commands.drivetrain.DriveTrajectory;
 import frc.robot.commands.drivetrain.RamseteArcadeDrive;
 import frc.robot.subsystems.RamseteDriveSubsystem;
@@ -70,8 +70,9 @@ public class RobotContainer {
   //private AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
   
   private ShootBall shootCommand = new ShootBall(m_shooter, m_indexer, m_limelight);
-  private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain);
+  private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
+//  private DriveDistance drivetoDistance = new DriveDistance (.5, m_driveTrain);
  
 
 
@@ -114,7 +115,7 @@ public class RobotContainer {
     */
     private void configureButtonBindings() {
       
-      new JoystickButton(m_manipController, ControllerConstants.BUTTON_X).whileHeld(intakeCommand);
+     // new JoystickButton(m_manipController, ControllerConstants.BUTTON_X).whileHeld(intakeCommand);
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_A).whileHeld(new TestRetractHood(m_shooter));
@@ -122,7 +123,9 @@ public class RobotContainer {
       
       
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
-      new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(targetingCommand);
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(targetingCommand );
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_B).whileHeld( new DriveDistance (2, m_driveTrain));
+      
       // new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestRetractHood(m_shooter));
       // new JoystickButton(m_driveController, Constants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
@@ -131,7 +134,7 @@ public class RobotContainer {
     }
     
     private void configureSubsystemCommands() {
-      m_driveTrain.setDefaultCommand(teleDriveCommand);
+    m_driveTrain.setDefaultCommand(teleDriveCommand);
     }
     
     private void configureAutonChooser() {

@@ -89,7 +89,7 @@ public final class Constants {
     public static double SHOOTER_DEFAULT_RPM = 1250;
 
     public static int WHEEL_DIAMETER = 4; //in inches
-    public static double WHEEL_DIAMETER_METERS = 0.1524;
+    public static double WHEEL_DIAMETER_METERS = 0.1016;
 
     public static double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_METERS * Math.PI;
 

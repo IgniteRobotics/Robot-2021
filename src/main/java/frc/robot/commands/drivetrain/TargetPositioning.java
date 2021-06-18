@@ -8,6 +8,7 @@
 package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.constants.ControllerConstants;
 import frc.robot.subsystems.RamseteDriveSubsystem;
 
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,9 +27,10 @@ import frc.robot.util.VisionUtils;
 public class TargetPositioning extends CommandBase {
     private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private static NetworkTable table = inst.getTable("limelight");
-    private static double KpTurn = 0.035;
-    private static double minCommand = 0.08;
-    private static double minInfPoint = 8;
+    private static double KpTurn = 0.025;// or 0.035
+    //private static double minCommand = 0.08;
+    private static double minCommand = 0.04;
+    private static double minInfPoint = 8; // or 4
     // the range you want.
     //allowed margin of errorit
     private double marginOfErrorTurn = 2.0;
@@ -42,13 +45,16 @@ public class TargetPositioning extends CommandBase {
     private StateMachine state;
 
     private final RamseteDriveSubsystem m_driveTrain;
+    private final Joystick driverJoystick;
+
 
     /**
      * Creates a new TargetRange.
      */
-    public TargetPositioning(RamseteDriveSubsystem driveTrain) {
+    public TargetPositioning(RamseteDriveSubsystem driveTrain, Joystick driveController ) {
         addRequirements(driveTrain);
         this.m_driveTrain = driveTrain;
+        this.driverJoystick = driveController;
         // Use addRequirements() here to declare subsystem dependencies.
 
         tab = Shuffleboard.getTab("Limelight");
@@ -105,6 +111,9 @@ public class TargetPositioning extends CommandBase {
             m_driveTrain.arcadeDrive(0, -steeringAdjust, true);
         } else {
             targetFound = false;
+            m_driveTrain.arcadeDrive(getSpeed(), getRotation(), true);
+            System.out.println(getRotation() + "DASDDA");
+
         }
     }
 
@@ -113,6 +122,7 @@ public class TargetPositioning extends CommandBase {
     public void end(boolean interrupted) {
         table.getEntry("camMode").setNumber(1);
         table.getEntry("ledMode").setNumber(1);
+     //   m_driveTrain.stop();
     }
 
     // Returns true when the command should end.
@@ -121,5 +131,26 @@ public class TargetPositioning extends CommandBase {
         double tx = (double) table.getEntry("tx").getNumber(0);
         boolean yawOK = Math.abs(tx) <= marginOfErrorTurn;
         return yawOK && targetFound;
+
     }
+
+    
+    private double getRotation() {
+        double rotation = (driverJoystick.getRawAxis(ControllerConstants.AXIS_RIGHT_STICK_X));
+        // if(m_driveTrain.isSlowMode) {
+        //   rotation *= Constants.SLOW_MODE_SPEED_MODIFIER;
+        // }
+        return rotation;
+    }
+
+    
+    private double getSpeed() {
+        double speed = -driverJoystick.getRawAxis(ControllerConstants.AXIS_LEFT_STICK_Y);
+        // if(m_driveTrain.isSlowMode) {
+        //   speed *= Constants.SLOW_MODE_SPEED_MODIFIER;
+        // }
+        return speed;
+    }
+
+
 }
