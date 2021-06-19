@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commands.LimelightSnapshot;
 import frc.robot.commands.autonomous.GalacticSearch;
 import frc.robot.commands.shooter.ResetHood;
 import frc.robot.commands.shooter.ShootBall;
@@ -120,6 +121,7 @@ public class RobotContainer {
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_A).whileHeld(new TestRetractHood(m_shooter));
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(shootCommand);
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_LEFT_BUMPER).whileHeld(new LimelightSnapshot());
       
       
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
