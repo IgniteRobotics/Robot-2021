@@ -38,6 +38,7 @@ import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.MotorConstants;
 import frc.robot.commands.intake.ToggleIntake;
 import frc.robot.commands.drivetrain.TargetPositioning;
+import frc.robot.commands.drivetrain.TurnAngle;
 import frc.robot.commands.drivetrain.DriveDistance;
 import frc.robot.commands.drivetrain.DriveTrajectory;
 import frc.robot.commands.drivetrain.RamseteArcadeDrive;
@@ -125,6 +126,7 @@ public class RobotContainer {
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(targetingCommand );
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_B).whileHeld( new DriveDistance (2, m_driveTrain));
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_DPAD_LEFT).whileHeld( new TurnAngle (m_driveTrain, 90));
       
       // new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestRetractHood(m_shooter));

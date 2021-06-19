@@ -79,6 +79,7 @@ public class ShootBall extends CommandBase {
 
         targetVelocity = calculatedParameters.rpm;
         targetShooterVelocityEntry.setDouble(targetVelocity);
+        System.out.println(targetVelocity);
 
         // if (currentDistance > distanceSetpoint){
         //   shooter.extendHood();
