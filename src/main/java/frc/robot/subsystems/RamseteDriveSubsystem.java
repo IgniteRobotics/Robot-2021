@@ -18,6 +18,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.kauailabs.navx.frc.AHRS;
 
+import badlog.lib.BadLog;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.EntryNotification;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -45,6 +46,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import frc.robot.Main;
 import frc.robot.constants.Constants;
 import frc.robot.constants.MotorConstants;
 
@@ -192,6 +195,13 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         
         outputTelemetry();
 
+        BadLog.publish("LeftMasterSupply", leftMaster.getSupplyCurrent());
+        BadLog.publish("LeftFollowSupply", leftFollower.getSupplyCurrent());
+        BadLog.publish("RightMasterSupply", rightMaster.getSupplyCurrent());
+        BadLog.publish("RightFollowSupply", rightFollower.getSupplyCurrent());
+
+        Main.log.updateTopics();
+        Main.log.log();
     }
 
     public Pose2d getCurrentPose() {
