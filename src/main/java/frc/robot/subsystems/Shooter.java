@@ -221,7 +221,7 @@ public class Shooter extends SubsystemBase {
 
     public void shooterConfiguration(int kSlotIdx, int kPIDLoopIdx, int kTimeoutMs, double kP, double kI, double kD, double kF) {
         /* Config sensor used for Primary PID [Velocity] */
-        leftMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, kPIDLoopIdx, kTimeoutMs);
+        leftMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, kPIDLoopIdx, kTimeoutMs);
         leftMotor.setSensorPhase(true);
 
         /* Config the peak and nominal outputs */
