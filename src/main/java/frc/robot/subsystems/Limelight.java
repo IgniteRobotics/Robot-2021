@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
 public class Limelight extends SubsystemBase {
+    private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    private static NetworkTable table2 = inst.getTable("limelight");
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     private NetworkTableEntry ty = table.getEntry("ty");
     private NetworkTableEntry tx = table.getEntry("tx");
@@ -27,6 +29,8 @@ public class Limelight extends SubsystemBase {
     }
 
     public double getDistancefromgoal() {
+        table2.getEntry("camMode").setNumber(0);
+        table2.getEntry("ledMode").setNumber(3);
         //need height camera is from ground
         //need height of hole from piller
         //need angle that limelight is from ground

@@ -69,9 +69,10 @@ public class ShootBall extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        targetVelocity = targetShooterVelocityEntry.getDouble(Constants.HOOD_DEFAULT_RPM);
         intakeEffort = intakeEffortEntry.getDouble(0.4);
         kickupEffort = kickupEffortEntry.getDouble(0.3);
-        distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
+      //unused for now  distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
         //double currentDistance = state.getShooterDistance(); State machine is not currently being used
         double currentDistance = limelight.getDistancefromgoal();
 
@@ -79,8 +80,10 @@ public class ShootBall extends CommandBase {
 
         targetVelocity = calculatedParameters.rpm;
         targetShooterVelocityEntry.setDouble(targetVelocity);
-        System.out.println(targetVelocity);
+       System.out.println(currentDistance);
 
+        //error: 75 in -> 1.905m
+        //
         // if (currentDistance > distanceSetpoint){
         //   shooter.extendHood();
         // } else {
@@ -89,7 +92,7 @@ public class ShootBall extends CommandBase {
 
 
         // get velocity from the Shuffleboard
-        //setShooterVelocity(targetVelocity);
+     //   setShooterVelocity(targetVelocity);
         setShooterRPM((int) targetVelocity); // use rpm from interpolation
         shooter.changeHoodAngle(calculatedParameters.angle);
 

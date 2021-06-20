@@ -105,6 +105,8 @@ public class Shooter extends SubsystemBase {
 
         hoodEncoder.setPositionConversionFactor(42);
         hoodEncoder.setVelocityConversionFactor(42);
+        leftMotor.enableVoltageCompensation(true);
+        followMotor.enableVoltageCompensation(true);
 
         kickUp.setInverted(true);
 
