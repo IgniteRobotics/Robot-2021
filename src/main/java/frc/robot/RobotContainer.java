@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commands.LimelightSnapshot;
 import frc.robot.commands.autonomous.GalacticSearch;
 import frc.robot.commands.shooter.ResetHood;
 import frc.robot.commands.shooter.ShootBall;
@@ -53,7 +54,7 @@ import frc.robot.subsystems.Realsense;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   
-  private RamseteDriveSubsystem m_driveTrain = new RamseteDriveSubsystem();
+  private static RamseteDriveSubsystem m_driveTrain = new RamseteDriveSubsystem();
   private Intake m_intake = new Intake();
   private Shooter m_shooter = new Shooter();
   private Indexer m_indexer = new Indexer();
@@ -121,6 +122,7 @@ public class RobotContainer {
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_A).whileHeld(new TestRetractHood(m_shooter));
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(shootCommand);
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_LEFT_BUMPER).whileHeld(new LimelightSnapshot());
       
       
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
@@ -202,7 +204,9 @@ public class RobotContainer {
 
   public static Trajectory loadTrajectory(String trajectoryName) {
     try{
-    return TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", "output", trajectoryName + ".wpilib.json")));
+        Trajectory trajectory =  TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", "output", trajectoryName + ".wpilib.json")));
+        m_driveTrain.resetOdometry(trajectory.getInitialPose());
+        return trajectory;
     } catch(IOException e) {
       DriverStation.reportError("Failed to load auto trajectory: " + trajectoryName, false);
       return null;
