@@ -86,8 +86,8 @@ public class ShootBall extends CommandBase {
         //setShooterVelocity(targetVelocity);
         setShooterRPM((int) targetVelocity); // use rpm from interpolation
 
-        //TODO look at this
-        shooter.changeHoodAngle(calculatedParameters.angle);
+        //TODO look at this. Find specific angle to shoot from
+        shooter.changeHoodAngle(60);
 
         double shooterRPM = shooter.getShooterRPM();
 

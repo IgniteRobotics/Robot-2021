@@ -53,7 +53,7 @@ import frc.robot.subsystems.Realsense;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   
-  private static RamseteDriveSubsystem m_driveTrain = new RamseteDriveSubsystem();
+  private RamseteDriveSubsystem m_driveTrain = new RamseteDriveSubsystem();
   private Intake m_intake = new Intake();
   private Shooter m_shooter = new Shooter();
   private Indexer m_indexer = new Indexer();
@@ -203,7 +203,6 @@ public class RobotContainer {
   public static Trajectory loadTrajectory(String trajectoryName) {
     try{
         Trajectory trajectory =  TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(Paths.get("paths", "output", trajectoryName + ".wpilib.json")));
-        m_driveTrain.resetOdometry(trajectory.getInitialPose());
         return trajectory;
     } catch(IOException e) {
       DriverStation.reportError("Failed to load auto trajectory: " + trajectoryName, false);

@@ -157,6 +157,9 @@ public class Shooter extends SubsystemBase {
 
         hood_motor.setIdleMode(IdleMode.kBrake);
 
+
+        //Feels wrong. This only feels like it matters if we care about the position of the hood in like angles.
+        //For now, while it isn't ideal to deal with only ticks for setting angles, it should work
         hoodEncoder.setPositionConversionFactor(42);
         hoodEncoder.setVelocityConversionFactor(42);
 
@@ -200,6 +203,7 @@ public class Shooter extends SubsystemBase {
 
     public void setVelocity(double velocity) {
         //Don't forget this is in sensor units per 100 miliseconds!!!
+        //For internal use only. Use setRPM() instead
         leftMotor.set(ControlMode.Velocity, velocity);
     }
 
@@ -252,6 +256,7 @@ public class Shooter extends SubsystemBase {
 
     }
 
+    //Don't use this. 
     public double getHoodAngle() {
         return Util.degreesToMoveHood(getHoodTicks());
     }
@@ -271,15 +276,17 @@ public class Shooter extends SubsystemBase {
         return hoodEncoder.getPosition();
     }
 
-    public void changeHoodAngle(double targetAngle) {
+    //Removed due to being too confusing to use. Use setHoodAngle() instead
+ //   public void changeHoodAngle(double targetAngle) {
+         //Change targetTicks amount of ticks from the CURRENT position.
         // v+ hood raises
-        double targetTicks = Util.ticksToMoveHood(targetAngle);
-        changeHoodTicks(targetTicks);
+ //       double targetTicks = Util.ticksToMoveHood(targetAngle);
+  //      changeHoodTicks(targetTicks);
     }
 
-    public void changeHoodTicks(double targetTicks) {
-        hoodPidController.setReference(targetTicks, ControlType.kPosition);
-    }
+    public void changeHoodTicks(double targetTicks) {  
+       hoodPidController.setReference(targetTicks, ControlType.kPosition);
+ }
 
     public void resetHood() {
         if (!hoodLimitSwitch.get()) {

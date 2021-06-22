@@ -21,6 +21,16 @@ public class Limelight extends SubsystemBase {
     public Limelight() {
     }
 
+    public void turnOnLED () {
+        table.getEntry("ledMode").setNumber(3);
+    }
+
+    public void turnOffLED() { 
+        //These can be done in pipelines, but I think this is faster?
+        table.getEntry("ledMode").setNumber(1);
+
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
@@ -31,8 +41,15 @@ public class Limelight extends SubsystemBase {
         //need height of hole from piller
         //need angle that limelight is from ground
 
+        //Turn on limelight LED's 
+        //Perhaps this should be done through commands?
+        this.turnOnLED();
+
         //a2, the difference in goal and camera is ty
         double ty = this.ty.getDouble(0.0);
+        this.turnOffLED();
+
+        //turn off LED's
 
         //TODO confirm these values
         return (Constants.TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(ty + Constants.LIMELIGHT_ANGLE));
