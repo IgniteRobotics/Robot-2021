@@ -17,8 +17,8 @@ import frc.robot.util.shooter.InterpolationCalculator;
 import frc.robot.util.shooter.ShooterParameter;
 
 import java.util.Map;
-//Shoots the ball at a specific RPM and angle 
-public class ShootBall extends CommandBase {
+//Picks the right RPM and angle to shoot the ball at depending on limelight-reported distance
+public class ShootInterpolatedBall extends CommandBase {
     private Shooter shooter;
     private Indexer indexer;
 
@@ -40,13 +40,14 @@ public class ShootBall extends CommandBase {
     private double kickupEffort = 0.3;
     private double distanceSetpoint = Constants.HOOD_SET_POINT_DISTANCE;
 
-    public ShootBall(Shooter shooter, Indexer indexer) {
+    private InterpolationCalculator calculator = new InterpolationCalculator();
+
+    public ShootInterpolatedBall(Shooter shooter, Indexer indexer, Limelight limelight) {
         this.shooter = shooter;
         this.indexer = indexer;
-        addRequirements(shooter);
+        this.limelight = limelight;
+        addRequirements(shooter, indexer);
   
-        //This might conflict with ShootinterpolatedBall... TODO check
-        //Consider moving this to robotcontainer 
         tab = Shuffleboard.getTab("Shooter");
         targetShooterVelocityEntry = tab.add("Target Shooter Velocity", Constants.SHOOTER_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
         distanceSetPointEntry = tab.add("Shooter Distance Setpoint", Constants.HOOD_SET_POINT_DISTANCE).withProperties(Map.of("min", 0)).getEntry();
@@ -68,17 +69,17 @@ public class ShootBall extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        targetVelocity = targetShooterVelocityEntry.getDouble(Constants.HOOD_DEFAULT_RPM);
         intakeEffort = intakeEffortEntry.getDouble(0.4);
         kickupEffort = kickupEffortEntry.getDouble(0.3);
-      //unused for now  distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
+        distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
         //double currentDistance = state.getShooterDistance(); State machine is not currently being used
-        targetVelocity = targetShooterVelocityEntry.getDouble(0.0);
-        targetShooterVelocityEntry.setDouble(targetVelocity);
-       System.out.println(currentDistance);
+        double currentDistance = limelight.getDistancefromgoal();
 
-        //error: 75 in -> 1.905m
-        //
+        ShooterParameter calculatedParameters = calculator.calculateParameter(currentDistance);
+
+        targetVelocity = calculatedParameters.rpm;
+        targetShooterVelocityEntry.setDouble(targetVelocity);
+
         // if (currentDistance > distanceSetpoint){
         //   shooter.extendHood();
         // } else {
@@ -87,11 +88,9 @@ public class ShootBall extends CommandBase {
 
 
         // get velocity from the Shuffleboard
-     //   setShooterVelocity(targetVelocity);
+        //setShooterVelocity(targetVelocity);
         setShooterRPM((int) targetVelocity); // use rpm from interpolation
-
-        //TODO look at this. Find specific angle to shoot from
-        shooter.setHoodTicks(60);
+        shooter.setHoodTicks(calculatedParameters.angle);
 
         double shooterRPM = shooter.getShooterRPM();
 
