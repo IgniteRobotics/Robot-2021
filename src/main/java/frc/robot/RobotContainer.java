@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.LimelightSnapshot;
 import frc.robot.commands.autonomous.GalacticSearch;
 import frc.robot.commands.shooter.ResetHood;
-import frc.robot.commands.shooter.ShootBall;
+import frc.robot.commands.shooter.ShootInterpolatedBall;
 import frc.robot.commands.shooter.TestExtendShooterHood;
 import frc.robot.commands.shooter.TestRetractHood;
 import frc.robot.subsystems.Indexer;
@@ -70,7 +70,7 @@ public class RobotContainer {
   private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
   //private AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
   
-  private ShootBall shootCommand = new ShootBall(m_shooter, m_indexer, m_limelight);
+  private ShootInterpolatedBall shootCommand = new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight);
   private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
 //  private DriveDistance drivetoDistance = new DriveDistance (.5, m_driveTrain);

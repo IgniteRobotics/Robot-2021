@@ -103,6 +103,7 @@ public class Shooter extends SubsystemBase {
 
         hood_motor.setIdleMode(IdleMode.kBrake);
 
+        //I feel like this is wrong, and we should confirm afterwards. Luckily, this shouldnt hurt us for competiton too much
         hoodEncoder.setPositionConversionFactor(42);
         hoodEncoder.setVelocityConversionFactor(42);
 
@@ -170,9 +171,10 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putBoolean("Hood in Position", this.isHoodReady());
 
         //trust the limit switch?
-        // if (this.hoodLimitSwitch.get() == true){
-        //   this.hood_motor.set(0);
-        // }
+         if (this.hoodLimitSwitch.get() == true){
+           this.hood_motor.set(0);
+
+         }
 
         // if(!this.hoodReset) {
         //   //TODO undo this once it's tested.
@@ -197,6 +199,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setVelocity(double velocity) {
+        //Don't forget this is in sensor units per 100 miliseconds!!!
         leftMotor.set(ControlMode.Velocity, velocity);
     }
 
