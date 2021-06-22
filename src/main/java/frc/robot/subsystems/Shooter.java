@@ -282,9 +282,21 @@ public class Shooter extends SubsystemBase {
         // v+ hood raises
  //       double targetTicks = Util.ticksToMoveHood(targetAngle);
   //      changeHoodTicks(targetTicks);
-    }
+   // }
+
+public void setHoodTicks(double targetTickPosition) {
+    double currentPositionTicks = getHoodTicks();
+    double tickstoMove = targetTickPosition - currentPositionTicks;
+    //If position number, that is the number of ticks it takes to move up to meet target position
+    //if negative number, that is the number of ticks to move down to meet target position
+    //if equal, do nothing. We are already at right position
+    this.changeHoodTicks(tickstoMove);
+       
+}
+
 
     public void changeHoodTicks(double targetTicks) {  
+        //Change hood ticks by targetTicks amount from the CURRENT hood position
        hoodPidController.setReference(targetTicks, ControlType.kPosition);
  }
 
