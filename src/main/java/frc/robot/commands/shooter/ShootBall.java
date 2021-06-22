@@ -75,7 +75,6 @@ public class ShootBall extends CommandBase {
         //double currentDistance = state.getShooterDistance(); State machine is not currently being used
         targetVelocity = targetShooterVelocityEntry.getDouble(0.0);
         targetShooterVelocityEntry.setDouble(targetVelocity);
-       System.out.println(currentDistance);
 
         //error: 75 in -> 1.905m
         //

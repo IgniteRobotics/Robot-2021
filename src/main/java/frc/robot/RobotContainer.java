@@ -45,6 +45,7 @@ import frc.robot.commands.drivetrain.DriveTrajectory;
 import frc.robot.commands.drivetrain.RamseteArcadeDrive;
 import frc.robot.subsystems.RamseteDriveSubsystem;
 import frc.robot.subsystems.Realsense;
+import frc.robot.commands.shooter.ShootBall;
 /**
 * This class is where the bulk of the robot should be declared.  Since Command-based is a
 * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -64,17 +65,18 @@ public class RobotContainer {
   private Joystick m_manipController = new Joystick(MotorConstants.kManipControllerPort);
   
   
-  
+
   
   //private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
   //private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
   private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
   //private AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
   
-  private ShootInterpolatedBall shootCommand = new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight);
+  private ShootInterpolatedBall ShootBallInterpolated = new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight);
   private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
-//  private DriveDistance drivetoDistance = new DriveDistance (.5, m_driveTrain);
+  private DriveDistance drivetoDistance = new DriveDistance (3, m_driveTrain);
+  private ShootBall ShootBall = new ShootBall(m_shooter, m_indexer);
  
 
 
@@ -98,6 +100,9 @@ public class RobotContainer {
   private ParallelCommandGroup intakeAndDrive = new ParallelCommandGroup(new RunIntake(1.0, m_intake), 
   this.loadTrajectoryCommand("28-GS-B-Red"));
   private SequentialCommandGroup manualGS = new SequentialCommandGroup(new ToggleIntake(m_intake), intakeAndDrive);
+  private ToggleIntake toggleIntakeCommand = new ToggleIntake(m_intake);
+  private TurnAngle Turn90Degrees = new TurnAngle (m_driveTrain, 90);
+  private LimelightSnapshot takeLimelightSnapShots = new LimelightSnapshot();
   
   /**
   * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -107,6 +112,16 @@ public class RobotContainer {
     this.configureButtonBindings();
     this.configureSubsystemCommands();
     this.configureAutonChooser();
+
+    //Livewindow commands to help with individually testing commands. Not exactly sure how this works
+    SmartDashboard.putData("ShootInterpolatedBall", ShootBallInterpolated);
+    SmartDashboard.putData("toggleIntakeCommand", toggleIntakeCommand);
+    SmartDashboard.putData("drivetoDistance", drivetoDistance);
+    SmartDashboard.putData("ShootBall", ShootBall);
+    SmartDashboard.putData("Turn90Degrees", Turn90Degrees);
+    SmartDashboard.putData("takeLimelightSnapShots", takeLimelightSnapShots);
+    
+    
   }
   
   /**
@@ -118,17 +133,17 @@ public class RobotContainer {
     private void configureButtonBindings() {
       
      // new JoystickButton(m_manipController, ControllerConstants.BUTTON_X).whileHeld(intakeCommand);
-      new JoystickButton(m_manipController, ControllerConstants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_B).whenPressed(toggleIntakeCommand);
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_A).whileHeld(new TestRetractHood(m_shooter));
-      new JoystickButton(m_manipController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(shootCommand);
-      new JoystickButton(m_manipController, ControllerConstants.BUTTON_LEFT_BUMPER).whileHeld(new LimelightSnapshot());
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(ShootBallInterpolated);
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_LEFT_BUMPER).whileHeld(takeLimelightSnapShots);
       
       
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(targetingCommand );
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_B).whileHeld( new DriveDistance (2, m_driveTrain));
-      new JoystickButton(m_driveController, ControllerConstants.BUTTON_DPAD_LEFT).whileHeld( new TurnAngle (m_driveTrain, 90));
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_DPAD_LEFT).whileHeld( Turn90Degrees);
       
       // new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestRetractHood(m_shooter));
