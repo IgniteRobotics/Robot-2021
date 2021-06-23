@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.LimelightSnapshot;
 import frc.robot.commands.autonomous.GalacticSearch;
 import frc.robot.commands.shooter.ResetHood;
+import frc.robot.commands.shooter.SetHoodAngle;
 import frc.robot.commands.shooter.ShootInterpolatedBall;
 import frc.robot.commands.shooter.TestExtendShooterHood;
 import frc.robot.commands.shooter.TestRetractHood;
@@ -103,6 +104,7 @@ public class RobotContainer {
   private ToggleIntake toggleIntakeCommand = new ToggleIntake(m_intake);
   private TurnAngle Turn90Degrees = new TurnAngle (m_driveTrain, 90);
   private LimelightSnapshot takeLimelightSnapShots = new LimelightSnapshot();
+  private SetHoodAngle setHoodShootingAngleTicks = new SetHoodAngle(m_shooter);
   
   /**
   * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -120,6 +122,9 @@ public class RobotContainer {
     SmartDashboard.putData("ShootBall", ShootBall);
     SmartDashboard.putData("Turn90Degrees", Turn90Degrees);
     SmartDashboard.putData("takeLimelightSnapShots", takeLimelightSnapShots);
+    SmartDashboard.putData("setHoodShootingAngleTicks", setHoodShootingAngleTicks);
+
+    
     
     
   }
