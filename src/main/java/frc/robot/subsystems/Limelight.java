@@ -16,6 +16,9 @@ public class Limelight extends SubsystemBase {
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     private NetworkTableEntry ty = table.getEntry("ty");
     private NetworkTableEntry tx = table.getEntry("tx");
+    private double previousDistance = 0.0;
+    private double currentDistance = 0.0;
+    private int accuracyCount = 0;
 
     /**
      * Creates a new Limelight.
@@ -42,8 +45,8 @@ public class Limelight extends SubsystemBase {
     }
 
     public double getDistancefromgoal() {
-
-       
+        //Current implementation requires the command to turnOffLed() when interrupted or finished.
+        //TODO make this method turnOffLed() when done
        
         //need height camera is from ground
         //need height of hole from piller
@@ -55,8 +58,28 @@ public class Limelight extends SubsystemBase {
 
         //a2, the difference in goal and camera is ty
         double ty = this.ty.getDouble(0.0);
-        this.turnOffLED();
-        return (Constants.TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(ty + Constants.LIMELIGHT_ANGLE));
+      //  this.turnOffLED();
+        currentDistance = (Constants.TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(ty + Constants.LIMELIGHT_ANGLE));
+       
+
+        if (previousDistance == currentDistance) {
+            accuracyCount++;
+            
+        }
+        else {
+            accuracyCount = 0;
+            previousDistance = currentDistance;
+        }
+
+        if (accuracyCount == 4) {
+            return previousDistance;
+        }
+
+
+        
+        return -1; //Limelight does not have consistent distance
+        
+
     }
 
     public double getHorizontalOffset() {

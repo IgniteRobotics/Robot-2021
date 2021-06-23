@@ -17,8 +17,8 @@ import frc.robot.util.shooter.InterpolationCalculator;
 import frc.robot.util.shooter.ShooterParameter;
 
 import java.util.Map;
-//Shoots the ball at a specific RPM and angle 
-public class ShootBall extends CommandBase {
+//Shoots the ball at a specific RPM and angle. RPM and angle are set from shuffleboard
+public class ShootBallTest extends CommandBase {
     private Shooter shooter;
     private Indexer indexer;
 
@@ -38,9 +38,9 @@ public class ShootBall extends CommandBase {
     private double targetVelocity = Constants.HOOD_DEFAULT_RPM;
     private double intakeEffort = 0.4;
     private double kickupEffort = 0.3;
-    private double distanceSetpoint = Constants.HOOD_SET_POINT_DISTANCE;
+ //   private double distanceSetpoint = Constants.HOOD_SET_POINT_DISTANCE;
 
-    public ShootBall(Shooter shooter, Indexer indexer) {
+    public ShootBallTest(Shooter shooter, Indexer indexer) {
         this.shooter = shooter;
         this.indexer = indexer;
         addRequirements(shooter);

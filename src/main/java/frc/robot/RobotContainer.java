@@ -45,7 +45,7 @@ import frc.robot.commands.drivetrain.DriveTrajectory;
 import frc.robot.commands.drivetrain.RamseteArcadeDrive;
 import frc.robot.subsystems.RamseteDriveSubsystem;
 import frc.robot.subsystems.Realsense;
-import frc.robot.commands.shooter.ShootBall;
+import frc.robot.commands.shooter.ShootBallTest;
 /**
 * This class is where the bulk of the robot should be declared.  Since Command-based is a
 * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -76,7 +76,7 @@ public class RobotContainer {
   private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
   private DriveDistance drivetoDistance = new DriveDistance (3, m_driveTrain);
-  private ShootBall ShootBall = new ShootBall(m_shooter, m_indexer);
+  private ShootBallTest ShootBall = new ShootBallTest(m_shooter, m_indexer);
  
 
 
