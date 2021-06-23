@@ -118,6 +118,8 @@ public class Shooter extends SubsystemBase {
         //shooterConfiguration(0,0,0,0); TODO set this later
 
         //Livewindow methods to help with testing
+        addChild("LeftMaster-Shooter Motor",leftMotor);
+        //addChild("Hood Shoot Motor",hood_motor);
         
     }
 
@@ -285,12 +287,12 @@ public class Shooter extends SubsystemBase {
     }
 
     //Removed due to being too confusing to use. Use setHoodAngle() instead
- //   public void changeHoodAngle(double targetAngle) {
-         //Change targetTicks amount of ticks from the CURRENT position.
+    public void changeHoodAngle(double targetAngle) {
+      
         // v+ hood raises
- //       double targetTicks = Util.ticksToMoveHood(targetAngle);
-  //      changeHoodTicks(targetTicks);
-   // }
+        double targetTicks = Util.ticksToMoveHood(targetAngle);
+        changeHoodTicks(targetTicks);
+    }
 
 public void setHoodTicks(double targetTickPosition) {
     double currentPositionTicks = getHoodTicks();

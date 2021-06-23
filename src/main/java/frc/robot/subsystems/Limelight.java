@@ -25,6 +25,7 @@ public class Limelight extends SubsystemBase {
 
     public void turnOnLED () {
         table.getEntry("ledMode").setNumber(3);
+        table2.getEntry("camMode").setNumber(0);
     }
 
     public void turnOffLED() { 
@@ -36,11 +37,14 @@ public class Limelight extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+
+        //Cache previous values here
     }
 
     public double getDistancefromgoal() {
-        table2.getEntry("camMode").setNumber(0);
-        table2.getEntry("ledMode").setNumber(3);
+
+       
+       
         //need height camera is from ground
         //need height of hole from piller
         //need angle that limelight is from ground
@@ -52,10 +56,6 @@ public class Limelight extends SubsystemBase {
         //a2, the difference in goal and camera is ty
         double ty = this.ty.getDouble(0.0);
         this.turnOffLED();
-
-        //turn off LED's
-
-        //TODO confirm these values
         return (Constants.TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(ty + Constants.LIMELIGHT_ANGLE));
     }
 

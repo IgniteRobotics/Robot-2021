@@ -166,7 +166,11 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
 
         //Testing
-        m_driveTrain.setMaxOutput(.5);
+      //  m_driveTrain.setMaxOutput(.5);
+        addChild("LeftMaster- Drivetrain",leftMaster);
+        addChild("rightMaster- Drivetrain",rightMaster);
+        addChild("rightFollower- Drivetrain",rightFollower);
+        addChild("leftFollower- Drivetrain",leftFollower);
 
     }
 

@@ -7,6 +7,7 @@ package frc.robot.commands.shooter;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.Indexer;
@@ -74,9 +75,9 @@ public class ShootInterpolatedBall extends CommandBase {
         distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
         //double currentDistance = state.getShooterDistance(); State machine is not currently being used
         double currentDistance = limelight.getDistancefromgoal();
+        SmartDashboard.putNumber("Limelight-reported distance", currentDistance);
 
         ShooterParameter calculatedParameters = calculator.calculateParameter(currentDistance);
-
         targetVelocity = calculatedParameters.rpm;
         targetShooterVelocityEntry.setDouble(targetVelocity);
 
@@ -90,8 +91,9 @@ public class ShootInterpolatedBall extends CommandBase {
         // get velocity from the Shuffleboard
         //setShooterVelocity(targetVelocity);
         setShooterRPM((int) targetVelocity); // use rpm from interpolation
-        shooter.setHoodTicks(calculatedParameters.angle);
+        shooter.changeHoodAngle(calculatedParameters.angle);
 
+        SmartDashboard.putNumber("Target AngleTicks", calculatedParameters.angle);
         double shooterRPM = shooter.getShooterRPM();
 
         // if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM) &&
