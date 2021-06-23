@@ -40,6 +40,9 @@ public class Shooter extends SubsystemBase {
     private WPI_TalonFX followMotor = new WPI_TalonFX(MotorConstants.kShooterTalonMotorFollowerPort);
     private WPI_TalonSRX kickUp = new WPI_TalonSRX(MotorConstants.kShooterTalonMotorKickUpPort); //TODO confirm this
 
+  
+
+
     private CANSparkMax hood_motor = new CANSparkMax(MotorConstants.kShooterSparkMotorHoodPort, MotorType.kBrushless);
     private CANEncoder hoodEncoder = hood_motor.getEncoder();
     private CANPIDController hoodPidController = hood_motor.getPIDController();
@@ -113,6 +116,11 @@ public class Shooter extends SubsystemBase {
 
         configureHood(hood_kP_value, hood_kI_value, hood_kD_value, hood_max_vel_value);
         //shooterConfiguration(0,0,0,0); TODO set this later
+
+        //Livewindow methods to help with testing
+        addChild("LeftMaster-Shooter Motor",leftMotor);
+        //addChild("Hood Shoot Motor",hood_motor);
+        
     }
 
     private void configureFlywheel(double kP, double kI, double kD) {
@@ -279,12 +287,12 @@ public class Shooter extends SubsystemBase {
     }
 
     //Removed due to being too confusing to use. Use setHoodAngle() instead
- //   public void changeHoodAngle(double targetAngle) {
-         //Change targetTicks amount of ticks from the CURRENT position.
+    public void changeHoodAngle(double targetAngle) {
+      
         // v+ hood raises
- //       double targetTicks = Util.ticksToMoveHood(targetAngle);
-  //      changeHoodTicks(targetTicks);
-   // }
+        double targetTicks = Util.ticksToMoveHood(targetAngle);
+        changeHoodTicks(targetTicks);
+    }
 
 public void setHoodTicks(double targetTickPosition) {
     double currentPositionTicks = getHoodTicks();

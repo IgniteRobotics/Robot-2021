@@ -66,6 +66,12 @@ public class Climber extends SubsystemBase {
 
         climberLeader.configMotionCruiseVelocity(CRUISE_VELOCITY, 10);
         climberLeader.configMotionAcceleration(MAX_ACCELERATION, 10);
+
+        //Livewindow methods for testing
+        addChild("climberLeader- Climber",climberLeader);
+        addChild("climberFollower- Climber",climberFollower);
+
+        
     }
 
 

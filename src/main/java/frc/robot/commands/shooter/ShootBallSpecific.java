@@ -7,7 +7,6 @@ package frc.robot.commands.shooter;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.Indexer;
@@ -18,8 +17,8 @@ import frc.robot.util.shooter.InterpolationCalculator;
 import frc.robot.util.shooter.ShooterParameter;
 
 import java.util.Map;
-//Picks the right RPM and angle to shoot the ball at depending on limelight-reported distance
-public class ShootInterpolatedBall extends CommandBase {
+//Shoots the ball at a specific RPM and angle. RPM and angle set during command instantiation
+public class ShootBallSpecific extends CommandBase {
     private Shooter shooter;
     private Indexer indexer;
 
@@ -36,21 +35,24 @@ public class ShootInterpolatedBall extends CommandBase {
     private static final int RANGE = 150;
     private static final double ANGLE_RANGE = 5;
 
-    private double targetVelocity = Constants.HOOD_DEFAULT_RPM;
+    private double targetVelocity;
     private double intakeEffort = 0.4;
     private double kickupEffort = 0.3;
-    private double distanceSetpoint = Constants.HOOD_SET_POINT_DISTANCE;
+    private  int targetHoodTicks;
+ //   private double distanceSetpoint = Constants.HOOD_SET_POINT_DISTANCE;
 
-    private InterpolationCalculator calculator = new InterpolationCalculator();
-
-    public ShootInterpolatedBall(Shooter shooter, Indexer indexer, Limelight limelight) {
+    public ShootBallSpecific(Shooter shooter, Indexer indexer, int targetRPM, int targetHoodTicks) {
         this.shooter = shooter;
         this.indexer = indexer;
-        this.limelight = limelight;
-        addRequirements(shooter, indexer);
+        this.targetVelocity = targetRPM;
+        this.targetHoodTicks = targetHoodTicks;
+        addRequirements(shooter);
   
+        //This might conflict with ShootinterpolatedBall... TODO check
+        //Consider moving this to robotcontainer 
         tab = Shuffleboard.getTab("Shooter");
         targetShooterVelocityEntry = tab.add("Target Shooter Velocity", Constants.SHOOTER_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
+
         distanceSetPointEntry = tab.add("Shooter Distance Setpoint", Constants.HOOD_SET_POINT_DISTANCE).withProperties(Map.of("min", 0)).getEntry();
         intakeEffortEntry = tab.add("Intake Effort Percentage", 0.6).withProperties(Map.of("min", -1, "max", 1)).getEntry();
         kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.5).withProperties(Map.of("min", 0, "max", 1)).getEntry();
@@ -70,17 +72,15 @@ public class ShootInterpolatedBall extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+       
         intakeEffort = intakeEffortEntry.getDouble(0.4);
         kickupEffort = kickupEffortEntry.getDouble(0.3);
-        distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
+      //unused for now  distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
         //double currentDistance = state.getShooterDistance(); State machine is not currently being used
-        double currentDistance = limelight.getDistancefromgoal();
-        SmartDashboard.putNumber("Limelight-reported distance", currentDistance);
-
-        ShooterParameter calculatedParameters = calculator.calculateParameter(currentDistance);
-        targetVelocity = calculatedParameters.rpm;
         targetShooterVelocityEntry.setDouble(targetVelocity);
 
+        //error: 75 in -> 1.905m
+        //
         // if (currentDistance > distanceSetpoint){
         //   shooter.extendHood();
         // } else {
@@ -89,11 +89,12 @@ public class ShootInterpolatedBall extends CommandBase {
 
 
         // get velocity from the Shuffleboard
-        //setShooterVelocity(targetVelocity);
+     //   setShooterVelocity(targetVelocity);
         setShooterRPM((int) targetVelocity); // use rpm from interpolation
-        shooter.changeHoodAngle(calculatedParameters.angle);
 
-        SmartDashboard.putNumber("Target AngleTicks", calculatedParameters.angle);
+        //TODO look at this. Find specific angle to shoot from
+        shooter.changeHoodAngle(targetHoodTicks);
+
         double shooterRPM = shooter.getShooterRPM();
 
         // if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM) &&
@@ -133,7 +134,6 @@ public class ShootInterpolatedBall extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        limelight.turnOffLED();
         stop();
     }
 

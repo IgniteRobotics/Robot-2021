@@ -34,6 +34,7 @@ public class Intake extends SubsystemBase {
 
         //intakePistonSolenoid = null;
         intakePistonSolenoid = new Solenoid(44, MotorConstants.kIntakeSolenoidPort);
+        addChild("intakeMotor- Intake",intakeMotor);
     }
 
     private void extendIntake() {

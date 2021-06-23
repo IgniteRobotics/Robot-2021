@@ -16,6 +16,9 @@ public class Limelight extends SubsystemBase {
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     private NetworkTableEntry ty = table.getEntry("ty");
     private NetworkTableEntry tx = table.getEntry("tx");
+    private double previousDistance = 0.0;
+    private double currentDistance = 0.0;
+    private int accuracyCount = 0;
 
     /**
      * Creates a new Limelight.
@@ -25,6 +28,7 @@ public class Limelight extends SubsystemBase {
 
     public void turnOnLED () {
         table.getEntry("ledMode").setNumber(3);
+        table2.getEntry("camMode").setNumber(0);
     }
 
     public void turnOffLED() { 
@@ -36,11 +40,14 @@ public class Limelight extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+
+        //Cache previous values here
     }
 
     public double getDistancefromgoal() {
-        table2.getEntry("camMode").setNumber(0);
-        table2.getEntry("ledMode").setNumber(3);
+        //Current implementation requires the command to turnOffLed() when interrupted or finished.
+        //TODO make this method turnOffLed() when done
+       
         //need height camera is from ground
         //need height of hole from piller
         //need angle that limelight is from ground
@@ -51,12 +58,28 @@ public class Limelight extends SubsystemBase {
 
         //a2, the difference in goal and camera is ty
         double ty = this.ty.getDouble(0.0);
-        this.turnOffLED();
+      //  this.turnOffLED();
+        currentDistance = (Constants.TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(ty + Constants.LIMELIGHT_ANGLE));
+       
 
-        //turn off LED's
+        if (previousDistance == currentDistance) {
+            accuracyCount++;
+            
+        }
+        else {
+            accuracyCount = 0;
+            previousDistance = currentDistance;
+        }
 
-        //TODO confirm these values
-        return (Constants.TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(ty + Constants.LIMELIGHT_ANGLE));
+        if (accuracyCount == 4) {
+            return previousDistance;
+        }
+
+
+        
+        return -1; //Limelight does not have consistent distance
+        
+
     }
 
     public double getHorizontalOffset() {
