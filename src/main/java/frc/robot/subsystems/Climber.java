@@ -8,6 +8,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.MotorConstants;
 
@@ -17,6 +20,14 @@ public class Climber extends SubsystemBase {
 
   private WPI_TalonFX leftClimb;
   private WPI_TalonFX rightClimb;
+
+  private ShuffleboardTab shuffleTab = Shuffleboard.getTab("Climber");
+  private NetworkTableEntry leftClimbTicks = shuffleTab.add("Left Climb (Ticks)", 0).getEntry();
+  private NetworkTableEntry rightClimbTicks = shuffleTab.add("Right Climb (Ticks)", 0).getEntry();
+
+  private NetworkTableEntry leftClimbCurrent = shuffleTab.add("Left Climb Supply (Amps)", 0).getEntry();
+  private NetworkTableEntry rightClimbCurrent = shuffleTab.add("Right Climb Supply (Amps)", 0).getEntry();
+
   public Climber() {
       leftClimb = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
       rightClimb = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
@@ -32,7 +43,15 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    publishData();
+  }
+
+  private void publishData() {
+    leftClimbTicks.setNumber(leftClimb.getSelectedSensorPosition());
+    rightClimbTicks.setNumber(rightClimb.getSelectedSensorPosition());
+
+    leftClimbCurrent.setNumber(leftClimb.getSupplyCurrent());
+    rightClimbCurrent.setNumber(rightClimb.getSupplyCurrent());
   }
 
   public void goUp(){
