@@ -20,11 +20,13 @@ import frc.robot.commands.LimelightSnapshot;
 import frc.robot.commands.autonomous.GalacticSearch;
 import frc.robot.commands.shooter.ResetHood;
 import frc.robot.commands.shooter.SetHoodAngle;
+import frc.robot.commands.shooter.ShootBallSpecific;
 import frc.robot.commands.shooter.ShootInterpolatedBall;
 import frc.robot.commands.shooter.TestExtendShooterHood;
 import frc.robot.commands.shooter.TestRetractHood;
 import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Intake;
@@ -78,8 +80,6 @@ public class RobotContainer {
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
   private DriveDistance drivetoDistance = new DriveDistance (3, m_driveTrain);
   private ShootBallTest ShootBall = new ShootBallTest(m_shooter, m_indexer);
- 
-
 
   SendableChooser<Command> chooseAuton = new SendableChooser<>();
 
@@ -105,7 +105,9 @@ public class RobotContainer {
   private TurnAngle Turn90Degrees = new TurnAngle (m_driveTrain, 90);
   private LimelightSnapshot takeLimelightSnapShots = new LimelightSnapshot();
   private SetHoodAngle setHoodShootingAngleTicks = new SetHoodAngle(m_shooter);
-  
+  private SequentialCommandGroup DriveBackAndShoot = new SequentialCommandGroup(new DriveDistance(-3.048, m_driveTrain),
+      new ShootBallSpecific(m_shooter, m_indexer, 4000, 1400));
+
   /**
   * The container for the robot.  Contains subsystems, OI devices, and commands.
   */
@@ -124,6 +126,8 @@ public class RobotContainer {
     SmartDashboard.putData("takeLimelightSnapShots", takeLimelightSnapShots);
     SmartDashboard.putData("setHoodShootingAngleTicks", setHoodShootingAngleTicks);
 
+    SmartDashboard.putData("DriveBackAndShoot", DriveBackAndShoot);
+    
     
     
     
@@ -218,7 +222,6 @@ public class RobotContainer {
     
     protected Command loadTrajectoryCommand(String trajectoryName) {
       Trajectory t = loadTrajectory(trajectoryName);
-      //remember to change this to follow trajecotry
       return new DriveTrajectory(m_driveTrain, t).andThen(() -> m_driveTrain.tankDriveVolts(0.0, 0.0));
     }
 
