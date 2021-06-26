@@ -229,10 +229,10 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     }
 
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+
+        //TODO Convert this to wheel speeds later
         //DifferentialDriveWHeelSpeeds expects meters per second
         return new DifferentialDriveWheelSpeeds(leftMaster.getSelectedSensorVelocity(),
-
-
                 rightMaster.getSelectedSensorVelocity());
     }
 
@@ -283,6 +283,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
             m_driveTrain.tankDrive(leftSpeed, rightSpeed, useSquares);
         }
     }
+ 
 
     public void tankDriveVelocity(double leftVelocity, double rightVelocity) {
         //TODO - remove later.  liting velocity to 1 m/s
@@ -302,7 +303,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
                 DemandType.ArbitraryFeedForward, rightFeedForwardVolts / 12);
         m_driveTrain.feed();
     }
-
+   //used to drive trajectories
     public void tankDriveVolts(double leftVolts, double rightVolts) {
         this.leftMaster.setVoltage(leftVolts);
         this.leftFollower.setVoltage(leftVolts);
@@ -463,9 +464,5 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber("Drivetrain/Turn error", this.getTurnError());
         // SmartDashboard.putNumber("Drivetrain/Turn setpoint", this.getTurnSetpoint());
     }
-
-
-
-
 
 }

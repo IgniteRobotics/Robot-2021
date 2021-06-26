@@ -20,7 +20,7 @@ public class MotorConstants {
     public static final int kShooterTalonMotorFollowerPort = 13;
 
     public static final int kKickerMotorPort = 9;
-    public static final int kClimberMotorPort = 7;
+   
     public static final int kTurretMotorPort = 12;
 
     public static final int kIntakeSolenoidPort = 0;
@@ -30,4 +30,8 @@ public class MotorConstants {
     public static final int kSorterMotorPort = 11;
     public static final int kIndexerMotorPortLeft = 7;
     public static final int kIndexerMotorPortRight = 8;
+
+    public static final int kLeftClimberMotorPort = 11; // TODO find actual numbers 
+    public static final int kRightClimberMotorPort = 16; // TODO find actual numbers 
+
 }
