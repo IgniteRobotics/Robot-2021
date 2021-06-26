@@ -232,8 +232,8 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
         //TODO Convert this to wheel speeds later
         //DifferentialDriveWHeelSpeeds expects meters per second
-        return new DifferentialDriveWheelSpeeds(leftMaster.getSelectedSensorVelocity(),
-                rightMaster.getSelectedSensorVelocity());
+        return new DifferentialDriveWheelSpeeds(getWheelSpeedsMetersPerSecond(leftMaster.getSelectedSensorVelocity()),
+        getWheelSpeedsMetersPerSecond (rightMaster.getSelectedSensorVelocity()));
     }
 
     public void resetOdometry() {

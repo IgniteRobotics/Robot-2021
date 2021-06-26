@@ -18,8 +18,8 @@ public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
   //Climb won't break if we extend too far. Will it fly off if we let it go up too fast?
 
-  private WPI_TalonFX leftClimb;
-  private WPI_TalonFX rightClimb;
+  private WPI_TalonFX climberLeader;
+  private WPI_TalonFX climberFollower;
 
   private ShuffleboardTab shuffleTab = Shuffleboard.getTab("Climber");
   private NetworkTableEntry leftClimbTicks = shuffleTab.add("Left Climb (Ticks)", 0).getEntry();
@@ -29,23 +29,23 @@ public class Climber extends SubsystemBase {
   private NetworkTableEntry rightClimbCurrent = shuffleTab.add("Right Climb Supply (Amps)", 0).getEntry();
 
   public Climber() {
-      leftClimb = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
-      rightClimb = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
+      climberLeader = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
+      climberFollower = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
 
 
       //TODO check what direction motor needs to pull to bring in climber
-      rightClimb.follow(leftClimb);
-      rightClimb.setInverted(true);
+      climberFollower.follow(climberLeader);
+      climberFollower.setInverted(true);
 
-      leftClimb.setNeutralMode(NeutralMode.Brake);
-      rightClimb.setNeutralMode(NeutralMode.Brake);
+      climberLeader.setNeutralMode(NeutralMode.Brake);
+      climberFollower.setNeutralMode(NeutralMode.Brake);
     
        // leftClimb.configMotionCruiseVelocity(CRUISE_VELOCITY, 10);
       //  leftClimb.configMotionAcceleration(MAX_ACCELERATION, 10);
 
         //Livewindow methods for testing
-        addChild("climberLeader- Climber",leftClimb);
-        addChild("climberFollower- Climber",rightClimb);
+        addChild("climberLeader- Climber",climberLeader);
+        addChild("climberFollower- Climber",climberFollower);
 
   }
 
@@ -55,35 +55,30 @@ public class Climber extends SubsystemBase {
   }
 
   private void publishData() {
-    leftClimbTicks.setNumber(leftClimb.getSelectedSensorPosition());
-    rightClimbTicks.setNumber(rightClimb.getSelectedSensorPosition());
+    leftClimbTicks.setNumber(climberLeader.getSelectedSensorPosition());
+    rightClimbTicks.setNumber(climberFollower.getSelectedSensorPosition());
 
-    leftClimbCurrent.setNumber(leftClimb.getSupplyCurrent());
-    rightClimbCurrent.setNumber(rightClimb.getSupplyCurrent());
+    leftClimbCurrent.setNumber(climberLeader.getSupplyCurrent());
+    rightClimbCurrent.setNumber(climberFollower.getSupplyCurrent());
   }
 
   public void goUp(){
     //TODO make this shuffleboard changeable
-    leftClimb.set(ControlMode.PercentOutput, .75);
+    climberLeader.set(ControlMode.PercentOutput, .10);
 
   }
  
   public void goDown() {
-    leftClimb.set(ControlMode.PercentOutput, -.75);
+    climberLeader.set(ControlMode.PercentOutput, -.10);
   }
-
-        
-    @Override
-    public void periodic() {
-        // This method will be called once per scheduler run
-    }
 
     public void setOpenLoop(double percentage) {
         climberLeader.set(ControlMode.PercentOutput, percentage);
     }
 
     public void setOpenLoop(double percentage, double deadband) {
-        percentage = Util.applyDeadband(percentage, Constants.CLIMBER_JOG_DEADBAND);
+      //  percentage = Util.applyDeadband(percentage, Constants.CLIMBER_JOG_DEADBAND); We'll worry about deadband here later. Besides, it makes more sense 
+      //to use the built-in falon motor deadbands
         setOpenLoop(percentage);
     }
 
@@ -92,7 +87,10 @@ public class Climber extends SubsystemBase {
     }
 
     public boolean isMotionMagicDone() {
-        return Math.abs(climberLeader.getClosedLoopTarget() - this.getEncoderPos()) <= TOLERANCE;
+      //  return Math.abs(climberLeader.getClosedLoopTarget() - this.getEncoderPos()) <= TOLERANCE;
+      //motion magic is a little too much for this, let's focus on this later
+      return true;
+
     }
 
     public int getEncoderPos() {
