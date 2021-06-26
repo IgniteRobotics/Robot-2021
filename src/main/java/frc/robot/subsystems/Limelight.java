@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.time.Duration;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -20,6 +22,10 @@ public class Limelight extends SubsystemBase {
     private double currentDistance = 0.0;
     private int accuracyCount = 0;
 
+    private long lastLimelightUsage;
+    private boolean ledStatus = false;
+    private long limelightDuration = Duration.ofSeconds(3).toMillis();
+
     /**
      * Creates a new Limelight.
      */
@@ -29,12 +35,13 @@ public class Limelight extends SubsystemBase {
     public void turnOnLED () {
         table.getEntry("ledMode").setNumber(3);
         table2.getEntry("camMode").setNumber(0);
+        ledStatus = true;
     }
 
     public void turnOffLED() { 
         //These can be done in pipelines, but I think this is faster?
         table.getEntry("ledMode").setNumber(1);
-
+        ledStatus = false;
     }
 
     @Override
@@ -42,6 +49,18 @@ public class Limelight extends SubsystemBase {
         // This method will be called once per scheduler run
 
         //Cache previous values here
+        long delta = System.currentTimeMillis() - lastLimelightUsage;
+        if(delta > limelightDuration && isLedOn()) {
+            turnOffLED();
+        }
+    }
+
+    private void onLimelightUse() {
+        if(!isLedOn()) {
+            turnOnLED();
+        }
+
+        lastLimelightUsage = System.currentTimeMillis();
     }
 
     public double getDistancefromgoal() {
@@ -54,7 +73,7 @@ public class Limelight extends SubsystemBase {
 
         //Turn on limelight LED's 
         //Perhaps this should be done through commands?
-        this.turnOnLED();
+        onLimelightUse();
 
         //a2, the difference in goal and camera is ty
         double ty = this.ty.getDouble(0.0);
@@ -83,6 +102,11 @@ public class Limelight extends SubsystemBase {
     }
 
     public double getHorizontalOffset() {
+        onLimelightUse();
         return tx.getDouble(0.0);
+    }
+
+    public boolean isLedOn() {
+        return ledStatus;
     }
 }
