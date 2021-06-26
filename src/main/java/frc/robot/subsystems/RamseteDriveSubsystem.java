@@ -14,8 +14,11 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.kauailabs.navx.frc.AHRS;
 
+import badlog.lib.BadLog;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.EntryNotification;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -43,6 +46,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import frc.robot.Main;
 import frc.robot.constants.Constants;
 import frc.robot.constants.MotorConstants;
 
@@ -87,11 +92,12 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     private double velocityLimitMultiplier;
     private double turnRampExponent;
     private double turnLimitMultiplier;
-
+    //7.8 is gear ratio
+    private double ticksPerMeter =  (2048.0 * 7.8) / Constants.WHEEL_CIRCUMFERENCE_METERS;
 
     public RamseteDriveSubsystem() {
         m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); //assume robot starts at x =0, y=0, theta = 0
-        resetEncoders();
+       
         navX.zeroYaw();
 
         leftMaster.configFactoryDefault();
@@ -100,25 +106,31 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
 
 
-        TalonFXConfiguration talonConfig = new TalonFXConfiguration();
+         TalonFXConfiguration talonConfig = new TalonFXConfiguration();
         talonConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
-        talonConfig.slot0.kP = Constants.kPDriveVel;
+      //  talonConfig.slot0.kP = Constants.kPDriveVel;
+      talonConfig.slot0.kP = .01;
         talonConfig.slot0.kI = 0.0;
         talonConfig.slot0.kD = 0.0;
         talonConfig.slot0.integralZone = 400;
         talonConfig.slot0.closedLoopPeakOutput = 1.0;
-        talonConfig.openloopRamp = Constants.OPEN_LOOP_RAMP;
+        
+       talonConfig.openloopRamp = Constants.OPEN_LOOP_RAMP;
+
+//    leftMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+  //      rightMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
 
         leftMaster.configAllSettings(talonConfig);
         leftMaster.enableVoltageCompensation(true);
         leftFollower.configFactoryDefault();
       
 
-        rightMaster.configAllSettings(talonConfig);
+       rightMaster.configAllSettings(talonConfig);
         rightMaster.enableVoltageCompensation(true);
         rightFollower.configFactoryDefault();
-  
-        enableEncoders();
+      
+        resetEncoders();
+     //   enableEncoders();
 
         setNeutralMode(NeutralMode.Brake);
         
@@ -153,6 +165,13 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
         turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
 
+        //Testing
+      //  m_driveTrain.setMaxOutput(.5);
+        addChild("LeftMaster- Drivetrain",leftMaster);
+        addChild("rightMaster- Drivetrain",rightMaster);
+        addChild("rightFollower- Drivetrain",rightFollower);
+        addChild("leftFollower- Drivetrain",leftFollower);
+
     }
 
     private void enableEncoders() {
@@ -177,7 +196,16 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
         turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
 
+        
         outputTelemetry();
+
+        BadLog.publish("LeftMasterSupply", leftMaster.getSupplyCurrent());
+        BadLog.publish("LeftFollowSupply", leftFollower.getSupplyCurrent());
+        BadLog.publish("RightMasterSupply", rightMaster.getSupplyCurrent());
+        BadLog.publish("RightFollowSupply", rightFollower.getSupplyCurrent());
+
+        Main.log.updateTopics();
+        Main.log.log();
     }
 
     public Pose2d getCurrentPose() {
@@ -192,8 +220,18 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         return savedPose;
     }
 
+    public double getWheelSpeedsMetersPerSecond(double ticksPer100ms) {
+      //CTRE encoders return raw sensor units per 100 miliseconds
+
+      //Ticks / 100second 
+      //Wheel circumference / 2048 
+      return ticksPer100ms * 10 * (1 / ticksPerMeter);
+    }
+
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+
         //TODO Convert this to wheel speeds later
+        //DifferentialDriveWHeelSpeeds expects meters per second
         return new DifferentialDriveWheelSpeeds(leftMaster.getSelectedSensorVelocity(),
                 rightMaster.getSelectedSensorVelocity());
     }
@@ -388,6 +426,17 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         return leftMaster.getClosedLoopTarget();
     }
 
+   
+    //TODO: Fix this to be more consistent with inverted and negative voltages. 
+    //Right now it's sort of a hack 
+    public void driveDistance(double setpointTicks){
+     //I don't think the arbitary feed forward is really that helpful here
+      leftMaster.set(TalonFXControlMode.Position, setpointTicks, DemandType.ArbitraryFeedForward,  0.0007);
+      rightMaster.set(TalonFXControlMode.Position, -setpointTicks, DemandType.ArbitraryFeedForward,  0.0007);
+    }
+    public double getLeftMasterPositionTicks(){
+        return leftMaster.getSelectedSensorPosition();
+    }
 
     public void outputTelemetry() {
         SmartDashboard.putNumber("Drivetrain/Left enc pos", this.getLeftEncoderPosition());
@@ -415,4 +464,5 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber("Drivetrain/Turn error", this.getTurnError());
         // SmartDashboard.putNumber("Drivetrain/Turn setpoint", this.getTurnSetpoint());
     }
+
 }

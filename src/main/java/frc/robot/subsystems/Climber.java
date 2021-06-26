@@ -39,6 +39,14 @@ public class Climber extends SubsystemBase {
 
       leftClimb.setNeutralMode(NeutralMode.Brake);
       rightClimb.setNeutralMode(NeutralMode.Brake);
+    
+       // leftClimb.configMotionCruiseVelocity(CRUISE_VELOCITY, 10);
+      //  leftClimb.configMotionAcceleration(MAX_ACCELERATION, 10);
+
+        //Livewindow methods for testing
+        addChild("climberLeader- Climber",leftClimb);
+        addChild("climberFollower- Climber",rightClimb);
+
   }
 
   @Override
@@ -59,8 +67,71 @@ public class Climber extends SubsystemBase {
     leftClimb.set(ControlMode.PercentOutput, .75);
 
   }
-
+ 
   public void goDown() {
     leftClimb.set(ControlMode.PercentOutput, -.75);
   }
+
+        
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
+
+    public void setOpenLoop(double percentage) {
+        climberLeader.set(ControlMode.PercentOutput, percentage);
+    }
+
+    public void setOpenLoop(double percentage, double deadband) {
+        percentage = Util.applyDeadband(percentage, Constants.CLIMBER_JOG_DEADBAND);
+        setOpenLoop(percentage);
+    }
+
+    public void setMotionMagicPosition(double position) {
+        climberLeader.set(ControlMode.MotionMagic, position);
+    }
+
+    public boolean isMotionMagicDone() {
+        return Math.abs(climberLeader.getClosedLoopTarget() - this.getEncoderPos()) <= TOLERANCE;
+    }
+
+    public int getEncoderPos() {
+        return (int) climberLeader.getSelectedSensorPosition();
+    }
+
+    public double getEncoderVel() {
+        return climberLeader.getSelectedSensorVelocity();
+    }
+
+    public double getMasterVoltage() {
+        return climberLeader.getMotorOutputVoltage();
+    }
+
+    public double getFollowerVoltage() {
+        return climberFollower.getMotorOutputVoltage();
+    }
+
+    public double getPercentOutput() {
+        return climberLeader.getMotorOutputPercent();
+    }
+
+    public double getMasterCurrent() {
+        return climberLeader.getOutputCurrent();
+    }
+
+    public void zeroSensors() {
+        climberLeader.setSelectedSensorPosition(0);
+    }
+
+    public boolean isFwdLimitTripped() {
+        return climberLeader.getSensorCollection().isFwdLimitSwitchClosed() != 0;
+    }
+
+    public boolean isRevLimitTripped() {
+        return climberLeader.getSensorCollection().isRevLimitSwitchClosed() != 0;
+    }
+
+    public void stop() {
+        climberLeader.stopMotor();
+    }
 }

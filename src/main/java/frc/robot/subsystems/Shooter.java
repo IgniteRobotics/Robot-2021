@@ -40,6 +40,9 @@ public class Shooter extends SubsystemBase {
     private WPI_TalonFX followMotor = new WPI_TalonFX(MotorConstants.kShooterTalonMotorFollowerPort);
     private WPI_TalonSRX kickUp = new WPI_TalonSRX(MotorConstants.kShooterTalonMotorKickUpPort); //TODO confirm this
 
+  
+
+
     private CANSparkMax hood_motor = new CANSparkMax(MotorConstants.kShooterSparkMotorHoodPort, MotorType.kBrushless);
     private CANEncoder hoodEncoder = hood_motor.getEncoder();
     private CANPIDController hoodPidController = hood_motor.getPIDController();
@@ -103,13 +106,21 @@ public class Shooter extends SubsystemBase {
 
         hood_motor.setIdleMode(IdleMode.kBrake);
 
+        //I feel like this is wrong, and we should confirm afterwards. Luckily, this shouldnt hurt us for competiton too much
         hoodEncoder.setPositionConversionFactor(42);
         hoodEncoder.setVelocityConversionFactor(42);
+        leftMotor.enableVoltageCompensation(true);
+        followMotor.enableVoltageCompensation(true);
 
         kickUp.setInverted(true);
 
         configureHood(hood_kP_value, hood_kI_value, hood_kD_value, hood_max_vel_value);
         //shooterConfiguration(0,0,0,0); TODO set this later
+
+        //Livewindow methods to help with testing
+        addChild("LeftMaster-Shooter Motor",leftMotor);
+        //addChild("Hood Shoot Motor",hood_motor);
+        
     }
 
     private void configureFlywheel(double kP, double kI, double kD) {
@@ -156,6 +167,9 @@ public class Shooter extends SubsystemBase {
 
         hood_motor.setIdleMode(IdleMode.kBrake);
 
+
+        //Feels wrong. This only feels like it matters if we care about the position of the hood in like angles.
+        //For now, while it isn't ideal to deal with only ticks for setting angles, it should work
         hoodEncoder.setPositionConversionFactor(42);
         hoodEncoder.setVelocityConversionFactor(42);
 
@@ -170,9 +184,10 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putBoolean("Hood in Position", this.isHoodReady());
 
         //trust the limit switch?
-        // if (this.hoodLimitSwitch.get() == true){
-        //   this.hood_motor.set(0);
-        // }
+         if (this.hoodLimitSwitch.get() == true){
+           this.hood_motor.set(0);
+
+         }
 
         // if(!this.hoodReset) {
         //   //TODO undo this once it's tested.
@@ -197,6 +212,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setVelocity(double velocity) {
+        //Don't forget this is in sensor units per 100 miliseconds!!!
+        //For internal use only. Use setRPM() instead
         leftMotor.set(ControlMode.Velocity, velocity);
     }
 
@@ -221,7 +238,7 @@ public class Shooter extends SubsystemBase {
 
     public void shooterConfiguration(int kSlotIdx, int kPIDLoopIdx, int kTimeoutMs, double kP, double kI, double kD, double kF) {
         /* Config sensor used for Primary PID [Velocity] */
-        leftMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, kPIDLoopIdx, kTimeoutMs);
+        leftMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, kPIDLoopIdx, kTimeoutMs);
         leftMotor.setSensorPhase(true);
 
         /* Config the peak and nominal outputs */
@@ -249,6 +266,7 @@ public class Shooter extends SubsystemBase {
 
     }
 
+    //Don't use this. 
     public double getHoodAngle() {
         return Util.degreesToMoveHood(getHoodTicks());
     }
@@ -268,15 +286,29 @@ public class Shooter extends SubsystemBase {
         return hoodEncoder.getPosition();
     }
 
+    //Removed due to being too confusing to use. Use setHoodAngle() instead
     public void changeHoodAngle(double targetAngle) {
+      
         // v+ hood raises
         double targetTicks = Util.ticksToMoveHood(targetAngle);
         changeHoodTicks(targetTicks);
     }
 
-    public void changeHoodTicks(double targetTicks) {
-        hoodPidController.setReference(targetTicks, ControlType.kPosition);
-    }
+public void setHoodTicks(double targetTickPosition) {
+    double currentPositionTicks = getHoodTicks();
+    double tickstoMove = targetTickPosition - currentPositionTicks;
+    //If position number, that is the number of ticks it takes to move up to meet target position
+    //if negative number, that is the number of ticks to move down to meet target position
+    //if equal, do nothing. We are already at right position
+    this.changeHoodTicks(tickstoMove);
+       
+}
+
+
+    public void changeHoodTicks(double targetTicks) {  
+        //Change hood ticks by targetTicks amount from the CURRENT hood position
+       hoodPidController.setReference(targetTicks, ControlType.kPosition);
+ }
 
     public void resetHood() {
         if (!hoodLimitSwitch.get()) {
