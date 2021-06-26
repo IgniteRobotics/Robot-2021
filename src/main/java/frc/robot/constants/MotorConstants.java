@@ -31,7 +31,7 @@ public class MotorConstants {
     public static final int kIndexerMotorPortLeft = 7;
     public static final int kIndexerMotorPortRight = 8;
 
-    public static final int kLeftClimberMotorPort = 11; // TODO find actual numbers 
-    public static final int kRightClimberMotorPort = 16; // TODO find actual numbers 
+    public static final int kLeftClimberMotorPort = 16; // TODO find actual numbers 
+    public static final int kRightClimberMotorPort = 17; // TODO find actual numbers 
 
 }
