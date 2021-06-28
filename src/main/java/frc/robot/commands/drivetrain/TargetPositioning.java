@@ -112,10 +112,6 @@ public class TargetPositioning extends CommandBase {
         } else {
             targetFound = false;
             m_driveTrain.arcadeDrive(getSpeed(), getRotation(), true);
-            //place distance in shuffleboard
-            
- 
-
         }
     }
 
