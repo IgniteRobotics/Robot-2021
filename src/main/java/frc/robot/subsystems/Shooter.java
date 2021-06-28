@@ -286,7 +286,6 @@ public class Shooter extends SubsystemBase {
         return hoodEncoder.getPosition();
     }
 
-    //Removed due to being too confusing to use. Use setHoodAngle() instead
     public void changeHoodAngle(double targetAngle) {
       
         // v+ hood raises
@@ -294,15 +293,6 @@ public class Shooter extends SubsystemBase {
         changeHoodTicks(targetTicks);
     }
 
-public void setHoodTicks(double targetTickPosition) {
-    double currentPositionTicks = getHoodTicks();
-    double tickstoMove = targetTickPosition - currentPositionTicks;
-    //If position number, that is the number of ticks it takes to move up to meet target position
-    //if negative number, that is the number of ticks to move down to meet target position
-    //if equal, do nothing. We are already at right position
-    this.changeHoodTicks(tickstoMove);
-       
-}
 
 
     public void changeHoodTicks(double targetTicks) {  
