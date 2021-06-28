@@ -18,6 +18,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.kauailabs.navx.frc.AHRS;
 
+import badlog.lib.BadLog;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.EntryNotification;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -45,6 +46,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import frc.robot.Main;
 import frc.robot.constants.Constants;
 import frc.robot.constants.MotorConstants;
 
@@ -89,7 +92,8 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     private double velocityLimitMultiplier;
     private double turnRampExponent;
     private double turnLimitMultiplier;
-
+    //7.8 is gear ratio
+    private double ticksPerMeter =  (2048.0 * 7.8) / Constants.WHEEL_CIRCUMFERENCE_METERS;
 
     public RamseteDriveSubsystem() {
         m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); //assume robot starts at x =0, y=0, theta = 0
@@ -161,12 +165,19 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
         turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
 
+        //Testing
+      //  m_driveTrain.setMaxOutput(.5);
+        addChild("LeftMaster- Drivetrain",leftMaster);
+        addChild("rightMaster- Drivetrain",rightMaster);
+        addChild("rightFollower- Drivetrain",rightFollower);
+        addChild("leftFollower- Drivetrain",leftFollower);
+
     }
 
     private void enableEncoders() {
         encodersAvailable =
-                leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10) == ErrorCode.OK &
-                        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10) == ErrorCode.OK;
+                leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10) == ErrorCode.OK &
+                        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10) == ErrorCode.OK;
         if (!encodersAvailable) {
             DriverStation.reportError("Failed to configure drivetrain encoders!", false);
             useEncoders = false;
@@ -188,6 +199,13 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         
         outputTelemetry();
 
+        BadLog.publish("LeftMasterSupply", leftMaster.getSupplyCurrent());
+        BadLog.publish("LeftFollowSupply", leftFollower.getSupplyCurrent());
+        BadLog.publish("RightMasterSupply", rightMaster.getSupplyCurrent());
+        BadLog.publish("RightFollowSupply", rightFollower.getSupplyCurrent());
+
+        Main.log.updateTopics();
+        Main.log.log();
     }
 
     public Pose2d getCurrentPose() {
@@ -202,9 +220,20 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         return savedPose;
     }
 
+    public double getWheelSpeedsMetersPerSecond(double ticksPer100ms) {
+      //CTRE encoders return raw sensor units per 100 miliseconds
+
+      //Ticks / 100second 
+      //Wheel circumference / 2048 
+      return ticksPer100ms * 10 * (1 / ticksPerMeter);
+    }
+
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-        return new DifferentialDriveWheelSpeeds(leftMaster.getSelectedSensorVelocity(),
-                rightMaster.getSelectedSensorVelocity());
+
+        //TODO Convert this to wheel speeds later
+        //DifferentialDriveWHeelSpeeds expects meters per second
+        return new DifferentialDriveWheelSpeeds(getWheelSpeedsMetersPerSecond(leftMaster.getSelectedSensorVelocity()),
+        getWheelSpeedsMetersPerSecond (rightMaster.getSelectedSensorVelocity()));
     }
 
     public void resetOdometry() {
@@ -254,6 +283,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
             m_driveTrain.tankDrive(leftSpeed, rightSpeed, useSquares);
         }
     }
+ 
 
     public void tankDriveVelocity(double leftVelocity, double rightVelocity) {
         //TODO - remove later.  liting velocity to 1 m/s
@@ -273,7 +303,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
                 DemandType.ArbitraryFeedForward, rightFeedForwardVolts / 12);
         m_driveTrain.feed();
     }
-
+   //used to drive trajectories
     public void tankDriveVolts(double leftVolts, double rightVolts) {
         this.leftMaster.setVoltage(leftVolts);
         this.leftFollower.setVoltage(leftVolts);
@@ -434,4 +464,5 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber("Drivetrain/Turn error", this.getTurnError());
         // SmartDashboard.putNumber("Drivetrain/Turn setpoint", this.getTurnSetpoint());
     }
+
 }

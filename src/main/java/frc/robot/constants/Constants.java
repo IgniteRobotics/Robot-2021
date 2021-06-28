@@ -81,7 +81,7 @@ public final class Constants {
     public static double HOOD_DEFAULT_KI = 0.0;
     public static double HOOD_DEFAULT_KD = 0;
     public static double HOOD_DEFAULT_RPM = 100;
-    public static double HOOD_MAX_POSITION = 1600;
+    public static double HOOD_MAX_POSITION = 1599;
     public static double HOOD_SET_POINT_DISTANCE = 4.572;
 
     public static double SHOOTER_GEAR_RATIO = 1.5;
@@ -114,4 +114,5 @@ public final class Constants {
 
     public static PathData pathABlue = new PathData(0, 37, "28-GS-A-Blue");
     public static PathData pathBBlue = new PathData(0, 25, "28-GS-B-Blue");
+    
 }

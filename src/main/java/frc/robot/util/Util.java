@@ -1,5 +1,5 @@
 package frc.robot.util;
-
+//All these methods are deprecated. Each subsystem should have its own methods to convert to RPM and distances and ticks, etc
 import static frc.robot.constants.Constants.*;
 
 public class Util {
