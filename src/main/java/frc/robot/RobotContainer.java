@@ -21,7 +21,6 @@ import frc.robot.commands.ClimbUp;
 import frc.robot.commands.LimelightSnapshot;
 import frc.robot.commands.autonomous.GalacticSearch;
 import frc.robot.commands.shooter.AdjustHoodAngle;
-import frc.robot.commands.shooter.ClimbDown;
 import frc.robot.commands.shooter.ResetHood;
 import frc.robot.commands.shooter.SetHoodAngle;
 import frc.robot.commands.shooter.ShootBallSpecific;
@@ -53,6 +52,10 @@ import frc.robot.commands.drivetrain.RamseteArcadeDrive;
 import frc.robot.subsystems.RamseteDriveSubsystem;
 import frc.robot.subsystems.Realsense;
 import frc.robot.commands.shooter.ShootBallTest;
+import frc.robot.subsystems.Climber;
+import frc.robot.commands.ClimbUp;
+import frc.robot.commands.ClimbDown;
+
 /**
 * This class is where the bulk of the robot should be declared.  Since Command-based is a
 * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -70,6 +73,7 @@ public class RobotContainer {
   private Realsense m_realsense = new Realsense();
   private Joystick m_driveController = new Joystick(MotorConstants.kDriveControllerPort);
   private Joystick m_manipController = new Joystick(MotorConstants.kManipControllerPort);
+  private Climber m_climber = new Climber();
   
   
 
@@ -85,6 +89,7 @@ public class RobotContainer {
   private AdjustHoodAngle adjustHoodCommand = new AdjustHoodAngle(m_shooter);
   private DriveDistance drivetoDistance = new DriveDistance (3, m_driveTrain);
   private ShootBallTest ShootBall = new ShootBallTest(m_shooter, m_indexer);
+  
 
 
   SendableChooser<Command> chooseAuton = new SendableChooser<>();
@@ -113,6 +118,8 @@ public class RobotContainer {
   private SetHoodAngle setHoodShootingAngleTicks = new SetHoodAngle(m_shooter);
   private SequentialCommandGroup DriveBackAndShoot = new SequentialCommandGroup(new DriveDistance(-3.048, m_driveTrain),
       new ShootBallSpecific(m_shooter, m_indexer, 4000, 1400));
+  private ClimbUp climbUp = new ClimbUp(m_climber);
+  private ClimbDown climbDown = new ClimbDown(m_climber);
 
   /**
   * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -131,11 +138,9 @@ public class RobotContainer {
     SmartDashboard.putData("Turn90Degrees", Turn90Degrees);
     SmartDashboard.putData("takeLimelightSnapShots", takeLimelightSnapShots);
     SmartDashboard.putData("setHoodShootingAngleTicks", setHoodShootingAngleTicks);
-
     SmartDashboard.putData("DriveBackAndShoot", DriveBackAndShoot);
-    
-    
-    
+    SmartDashboard.putData("ClimbUp", climbUp);
+    SmartDashboard.putData("ClimbDown",climbDown);
     
   }
   
@@ -168,8 +173,8 @@ public class RobotContainer {
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestRetractHood(m_shooter));
       // new JoystickButton(m_driveController, Constants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
       // new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
-      new JoystickButton(m_driveController, ControllerConstants.BUTTON_DPAD_UP).whileHeld(new ClimbUp());
-      new JoystickButton(m_driveController, ControllerConstants.BUTTON_DPAD_DOWN).whileHeld(new ClimbDown());
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_X).whileHeld(climbUp);
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_Y).whileHeld(climbDown);
     }
     
     private void configureSubsystemCommands() {

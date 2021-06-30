@@ -16,6 +16,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.util.StateMachine;
 import frc.robot.util.shooter.InterpolationCalculator;
 import frc.robot.util.shooter.ShooterParameter;
+import frc.robot.util.ShuffleBoardShootBall;
 
 import java.util.Map;
 //Picks the right RPM and angle to shoot the ball at depending on limelight-reported distance
@@ -23,11 +24,7 @@ public class ShootInterpolatedBall extends CommandBase {
     private Shooter shooter;
     private Indexer indexer;
 
-    private ShuffleboardTab tab;
-    private NetworkTableEntry targetShooterVelocityEntry;
-    private NetworkTableEntry intakeEffortEntry;
-    private NetworkTableEntry kickupEffortEntry;
-    private NetworkTableEntry distanceSetPointEntry;
+    private ShuffleBoardShootBall shuffle = ShuffleBoardShootBall.getInstance();
 
     private Limelight limelight;
 
@@ -48,13 +45,6 @@ public class ShootInterpolatedBall extends CommandBase {
         this.indexer = indexer;
         this.limelight = limelight;
         addRequirements(shooter, indexer);
-  
-        tab = Shuffleboard.getTab("Shooter");
-        targetShooterVelocityEntry = tab.add("Target Shooter Velocity", Constants.SHOOTER_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
-        distanceSetPointEntry = tab.add("Shooter Distance Setpoint", Constants.HOOD_SET_POINT_DISTANCE).withProperties(Map.of("min", 0)).getEntry();
-        intakeEffortEntry = tab.add("Intake Effort Percentage", 0.6).withProperties(Map.of("min", -1, "max", 1)).getEntry();
-        kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.5).withProperties(Map.of("min", 0, "max", 1)).getEntry();
-
     }
 
     // Called when the command is initially scheduled.
@@ -70,16 +60,15 @@ public class ShootInterpolatedBall extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        intakeEffort = intakeEffortEntry.getDouble(0.4);
-        kickupEffort = kickupEffortEntry.getDouble(0.3);
-        distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
+        intakeEffort = shuffle.getIntakeEffort();
+        kickupEffort = shuffle.getKickupEffort();
+        distanceSetpoint = shuffle.getDistanceSetPoint();
         //double currentDistance = state.getShooterDistance(); State machine is not currently being used
         double currentDistance = limelight.getDistancefromgoal();
         SmartDashboard.putNumber("Limelight-reported distance", currentDistance);
 
         ShooterParameter calculatedParameters = calculator.calculateParameter(currentDistance);
         targetVelocity = calculatedParameters.rpm;
-        targetShooterVelocityEntry.setDouble(targetVelocity);
 
         // if (currentDistance > distanceSetpoint){
         //   shooter.extendHood();

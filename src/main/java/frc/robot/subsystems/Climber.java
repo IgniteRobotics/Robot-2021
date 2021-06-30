@@ -72,6 +72,10 @@ public class Climber extends SubsystemBase {
     climberLeader.set(ControlMode.PercentOutput, -.10);
   }
 
+  public void go(double effort) {
+    climberLeader.set(ControlMode.PercentOutput, effort);
+  }
+
     public void setOpenLoop(double percentage) {
         climberLeader.set(ControlMode.PercentOutput, percentage);
     }

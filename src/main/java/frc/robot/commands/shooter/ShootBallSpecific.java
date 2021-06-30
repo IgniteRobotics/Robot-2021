@@ -22,12 +22,6 @@ public class ShootBallSpecific extends CommandBase {
     private Shooter shooter;
     private Indexer indexer;
 
-    private ShuffleboardTab tab;
-    private NetworkTableEntry targetShooterVelocityEntry;
-    private NetworkTableEntry intakeEffortEntry;
-    private NetworkTableEntry kickupEffortEntry;
-    private NetworkTableEntry distanceSetPointEntry;
-
     private Limelight limelight;
 
     private StateMachine state;
@@ -50,12 +44,6 @@ public class ShootBallSpecific extends CommandBase {
   
         //This might conflict with ShootinterpolatedBall... TODO check
         //Consider moving this to robotcontainer 
-        tab = Shuffleboard.getTab("Shooter");
-        targetShooterVelocityEntry = tab.add("Target Shooter Velocity", Constants.SHOOTER_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
-
-        distanceSetPointEntry = tab.add("Shooter Distance Setpoint", Constants.HOOD_SET_POINT_DISTANCE).withProperties(Map.of("min", 0)).getEntry();
-        intakeEffortEntry = tab.add("Intake Effort Percentage", 0.6).withProperties(Map.of("min", -1, "max", 1)).getEntry();
-        kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.5).withProperties(Map.of("min", 0, "max", 1)).getEntry();
 
     }
 
@@ -72,12 +60,8 @@ public class ShootBallSpecific extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-       
-        intakeEffort = intakeEffortEntry.getDouble(0.4);
-        kickupEffort = kickupEffortEntry.getDouble(0.3);
       //unused for now  distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
         //double currentDistance = state.getShooterDistance(); State machine is not currently being used
-        targetShooterVelocityEntry.setDouble(targetVelocity);
 
         //error: 75 in -> 1.905m
         //

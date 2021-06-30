@@ -6,7 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.subsystems;
-
+import frc.robot.Robot;
 import java.util.Map;
 
 import com.ctre.phoenix.ErrorCode;
@@ -204,8 +204,8 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         BadLog.publish("RightMasterSupply", rightMaster.getSupplyCurrent());
         BadLog.publish("RightFollowSupply", rightFollower.getSupplyCurrent());
 
-        Main.log.updateTopics();
-        Main.log.log();
+        Robot.logger.updateTopics();
+        Robot.logger.log();
     }
 
     public Pose2d getCurrentPose() {

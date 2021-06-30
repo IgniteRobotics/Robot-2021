@@ -9,6 +9,7 @@ package frc.robot;
 
 import badlog.lib.BadLog;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.util.LogUtil;
 
 /**
  * Do NOT add any static variables to this class, or any initialization at all. Unless you know what
@@ -16,7 +17,6 @@ import edu.wpi.first.wpilibj.RobotBase;
  * call.
  */
 public final class Main {
-  public static BadLog log;
   private Main() {
   }
 
@@ -26,16 +26,6 @@ public final class Main {
    * <p>If you change your main robot class, change the parameter type.
    */
   public static void main(String... args) {
-    // logging setup
-    log = BadLog.init("log.bag");
-
-    BadLog.createTopicSubscriber("LeftMasterSupply", "Amps", badlog.lib.DataInferMode.LAST);
-    BadLog.createTopicSubscriber("RightMasterSupply", "Amps", badlog.lib.DataInferMode.LAST);
-    BadLog.createTopicSubscriber("LeftFollowSupply", "Amps", badlog.lib.DataInferMode.LAST);
-    BadLog.createTopicSubscriber("RightFollowSupply", "Amps", badlog.lib.DataInferMode.LAST);
-    
-    log.finishInitialization();
-
     RobotBase.startRobot(Robot::new);
   }
 }

@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import badlog.lib.BadLog;
+import frc.robot.util.LogUtil;
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -18,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
+  public static BadLog logger;
   private Command m_autonomousCommand;
   private Command m_teleopInitCommand;
 
@@ -31,7 +35,19 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    initLogging();
     m_robotContainer = new RobotContainer();
+  }
+
+  public void initLogging() {
+    logger = BadLog.init("/home/lvuser/log/" + LogUtil.genSessionName() + ".bag");
+
+    BadLog.createTopicSubscriber("LeftMasterSupply", "Amps", badlog.lib.DataInferMode.LAST);
+    BadLog.createTopicSubscriber("RightMasterSupply", "Amps", badlog.lib.DataInferMode.LAST);
+    BadLog.createTopicSubscriber("LeftFollowSupply", "Amps", badlog.lib.DataInferMode.LAST);
+    BadLog.createTopicSubscriber("RightFollowSupply", "Amps", badlog.lib.DataInferMode.LAST);
+    
+    logger.finishInitialization();
   }
 
   /**
