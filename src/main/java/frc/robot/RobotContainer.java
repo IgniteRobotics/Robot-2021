@@ -83,7 +83,7 @@ public class RobotContainer {
   private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_manipController, m_driveTrain);
   //private AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
   
-  private ShootInterpolatedBall ShootBallInterpolated = new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight);
+  private ShootInterpolatedBall shootBallInterpolated = new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight);
   private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
   private AdjustHoodAngle adjustHoodCommand = new AdjustHoodAngle(m_shooter);
@@ -131,7 +131,7 @@ public class RobotContainer {
     this.configureAutonChooser();
 
     //Livewindow commands to help with individually testing commands. Not exactly sure how this works
-    SmartDashboard.putData("ShootInterpolatedBall", ShootBallInterpolated);
+    SmartDashboard.putData("ShootInterpolatedBall", shootBallInterpolated);
     SmartDashboard.putData("toggleIntakeCommand", toggleIntakeCommand);
     SmartDashboard.putData("drivetoDistance", drivetoDistance);
     SmartDashboard.putData("ShootBall", ShootBall);
@@ -175,6 +175,10 @@ public class RobotContainer {
       // new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_X).whileHeld(climbUp);
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_Y).whileHeld(climbDown);
+
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_LEFT_BUMPER)
+      .whenPressed(() -> teleDriveCommand.setReversed(true))
+      .whenReleased(() -> teleDriveCommand.setReversed(false));
     }
     
     private void configureSubsystemCommands() {
@@ -186,23 +190,6 @@ public class RobotContainer {
       SmartDashboard.putData("Auto Chooser", this.chooseAuton);
       
       String[] paths = {
-        "28-BarrelRacing6",
-        "28-Bounce-A3",
-        "28-Bounce-A6",
-        "28-Bounce-A9",
-        "28-Bounce-finish",
-        "28-GS-A-Blue",
-        "28-GS-A-Red",
-        "28-GS-B-Blue",
-        "28-GS-B-Red",
-        "28-Slalom",
-        "Sam's Barrol",
-        "Sam's Bounce",
-        "Sam's Slalom",
-        "barrel1",
-        "barrelracing",
-        "bounceRace1",
-        "halfSlalom",
         "leftTurn",
         "line",
         "oneMeter1",
@@ -230,6 +217,11 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
       System.out.println("Auto: " + chooseAuton.getSelected().getName());
       return chooseAuton.getSelected();
+    }
+
+    public Command getAutonomousShootCommand() {
+      SequentialCommandGroup driveAndShoot = new SequentialCommandGroup(getAutonomousCommand().withTimeout(8), shootBallInterpolated.withTimeout(5));
+      return driveAndShoot;
     }
 
     public Command getTeleopInitCommand() {

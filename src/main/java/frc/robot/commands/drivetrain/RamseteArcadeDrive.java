@@ -73,6 +73,10 @@ public class RamseteArcadeDrive extends CommandBase { //TODO Figure out how to m
         return false;
     }
 
+    public void setReversed(boolean b) {
+        this.isReversed = b;
+    }
+
     public void outputTelemetry() {
         SmartDashboard.putNumber("RamseteAD/Speed", this.getSpeed());
         SmartDashboard.putNumber("RamseteAD/Rotation", this.getRotation());

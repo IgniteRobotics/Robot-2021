@@ -16,7 +16,8 @@ import frc.robot.constants.MotorConstants;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
-  //Climb won't break if we extend too far. Will it fly off if we let it go up too fast?
+  // Climb won't break if we extend too far. Will it fly off if we let it go up
+  // too fast?
 
   private WPI_TalonFX climberLeader;
   private WPI_TalonFX climberFollower;
@@ -28,25 +29,36 @@ public class Climber extends SubsystemBase {
   private NetworkTableEntry leftClimbCurrent = shuffleTab.add("Left Climb Supply (Amps)", 0).getEntry();
   private NetworkTableEntry rightClimbCurrent = shuffleTab.add("Right Climb Supply (Amps)", 0).getEntry();
 
+  public static final int CLIMBER_FORWARD_LIMIT = 290000;
+  public static final int CLIMBER_REVERSE_LIMIT = 10000;
+
   public Climber() {
-      climberLeader = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
-      climberFollower = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
+    climberLeader = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
+    climberFollower = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
 
+    // TODO check what direction motor needs to pull to bring in climber
+    climberFollower.follow(climberLeader);
+    climberFollower.setInverted(true);
 
-      //TODO check what direction motor needs to pull to bring in climber
-      climberFollower.follow(climberLeader);
-      climberFollower.setInverted(true);
+    climberLeader.setNeutralMode(NeutralMode.Brake);
+    climberFollower.setNeutralMode(NeutralMode.Brake);
 
-      climberLeader.setNeutralMode(NeutralMode.Brake);
-      climberFollower.setNeutralMode(NeutralMode.Brake);
-    
-       // leftClimb.configMotionCruiseVelocity(CRUISE_VELOCITY, 10);
-      //  leftClimb.configMotionAcceleration(MAX_ACCELERATION, 10);
+    climberLeader.configForwardSoftLimitThreshold(CLIMBER_FORWARD_LIMIT);
+    climberLeader.configReverseSoftLimitThreshold(CLIMBER_REVERSE_LIMIT);
+    climberLeader.configForwardSoftLimitEnable(true, 0);
+    climberLeader.configReverseSoftLimitEnable(true, 0);
 
-        //Livewindow methods for testing
-        addChild("climberLeader- Climber",climberLeader);
-        addChild("climberFollower- Climber",climberFollower);
+    climberFollower.configForwardSoftLimitThreshold(CLIMBER_FORWARD_LIMIT);
+    climberFollower.configReverseSoftLimitThreshold(CLIMBER_REVERSE_LIMIT);
+    climberFollower.configForwardSoftLimitEnable(true, 0);
+    climberFollower.configReverseSoftLimitEnable(true, 0);
 
+    // leftClimb.configMotionCruiseVelocity(CRUISE_VELOCITY, 10);
+    // leftClimb.configMotionAcceleration(MAX_ACCELERATION, 10);
+
+    // Livewindow methods for testing
+    addChild("climberLeader- Climber", climberLeader);
+    addChild("climberFollower- Climber", climberFollower);
   }
 
   @Override
@@ -62,12 +74,12 @@ public class Climber extends SubsystemBase {
     rightClimbCurrent.setNumber(climberFollower.getSupplyCurrent());
   }
 
-  public void goUp(){
-    //TODO make this shuffleboard changeable
+  public void goUp() {
+    // TODO make this shuffleboard changeable
     climberLeader.set(ControlMode.PercentOutput, .10);
 
   }
- 
+
   public void goDown() {
     climberLeader.set(ControlMode.PercentOutput, -.10);
   }
@@ -76,64 +88,66 @@ public class Climber extends SubsystemBase {
     climberLeader.set(ControlMode.PercentOutput, effort);
   }
 
-    public void setOpenLoop(double percentage) {
-        climberLeader.set(ControlMode.PercentOutput, percentage);
-    }
+  public void setOpenLoop(double percentage) {
+    climberLeader.set(ControlMode.PercentOutput, percentage);
+  }
 
-    public void setOpenLoop(double percentage, double deadband) {
-      //  percentage = Util.applyDeadband(percentage, Constants.CLIMBER_JOG_DEADBAND); We'll worry about deadband here later. Besides, it makes more sense 
-      //to use the built-in falon motor deadbands
-        setOpenLoop(percentage);
-    }
+  public void setOpenLoop(double percentage, double deadband) {
+    // percentage = Util.applyDeadband(percentage, Constants.CLIMBER_JOG_DEADBAND);
+    // We'll worry about deadband here later. Besides, it makes more sense
+    // to use the built-in falon motor deadbands
+    setOpenLoop(percentage);
+  }
 
-    public void setMotionMagicPosition(double position) {
-        climberLeader.set(ControlMode.MotionMagic, position);
-    }
+  public void setMotionMagicPosition(double position) {
+    climberLeader.set(ControlMode.MotionMagic, position);
+  }
 
-    public boolean isMotionMagicDone() {
-      //  return Math.abs(climberLeader.getClosedLoopTarget() - this.getEncoderPos()) <= TOLERANCE;
-      //motion magic is a little too much for this, let's focus on this later
-      return true;
+  public boolean isMotionMagicDone() {
+    // return Math.abs(climberLeader.getClosedLoopTarget() - this.getEncoderPos())
+    // <= TOLERANCE;
+    // motion magic is a little too much for this, let's focus on this later
+    return true;
 
-    }
+  }
 
-    public int getEncoderPos() {
-        return (int) climberLeader.getSelectedSensorPosition();
-    }
+  public int getEncoderPos() {
+    return (int) climberLeader.getSelectedSensorPosition();
+  }
 
-    public double getEncoderVel() {
-        return climberLeader.getSelectedSensorVelocity();
-    }
+  public double getEncoderVel() {
+    return climberLeader.getSelectedSensorVelocity();
+  }
 
-    public double getMasterVoltage() {
-        return climberLeader.getMotorOutputVoltage();
-    }
+  public double getMasterVoltage() {
+    return climberLeader.getMotorOutputVoltage();
+  }
 
-    public double getFollowerVoltage() {
-        return climberFollower.getMotorOutputVoltage();
-    }
+  public double getFollowerVoltage() {
+    return climberFollower.getMotorOutputVoltage();
+  }
 
-    public double getPercentOutput() {
-        return climberLeader.getMotorOutputPercent();
-    }
+  public double getPercentOutput() {
+    return climberLeader.getMotorOutputPercent();
+  }
 
-    public double getMasterCurrent() {
-        return climberLeader.getOutputCurrent();
-    }
+  public double getMasterCurrent() {
+    return climberLeader.getOutputCurrent();
+  }
 
-    public void zeroSensors() {
-        climberLeader.setSelectedSensorPosition(0);
-    }
+  public void zeroSensors() {
+    climberLeader.setSelectedSensorPosition(0);
+  }
 
-    public boolean isFwdLimitTripped() {
-        return climberLeader.getSensorCollection().isFwdLimitSwitchClosed() != 0;
-    }
+  public boolean isFwdLimitTripped() {
+    return climberLeader.getSensorCollection().isFwdLimitSwitchClosed() != 0;
+  }
 
-    public boolean isRevLimitTripped() {
-        return climberLeader.getSensorCollection().isRevLimitSwitchClosed() != 0;
-    }
+  public boolean isRevLimitTripped() {
+    return climberLeader.getSensorCollection().isRevLimitSwitchClosed() != 0;
+  }
 
-    public void stop() {
-        climberLeader.stopMotor();
-    }
+  public void stop() {
+    climberLeader.stopMotor();
+  }
 }

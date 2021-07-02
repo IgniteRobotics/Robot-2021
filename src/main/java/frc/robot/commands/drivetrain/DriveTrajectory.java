@@ -68,6 +68,6 @@ public class DriveTrajectory extends RamseteCommand {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return super.isFinished();
+        return !ramseteDriveTrain.isConnected() || super.isFinished();
     }
 }
