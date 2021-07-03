@@ -453,7 +453,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Drivetrain/Is navX connected?", this.isConnected());
         SmartDashboard.putNumber("Drivetrain/Angle", this.getAngle());
         SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
-        SmartDashboard.putNumber("Drivetrain/Closed loop target", this.getClosedLoopTarget());
+      //  SmartDashboard.putNumber("Drivetrain/Closed loop target", this.getClosedLoopTarget());
         SmartDashboard.putBoolean("Drivetrain/Using Encoders?", this.useEncoders);
         SmartDashboard.putNumber("Drivetrain/Current VRamp Exp", this.velocityRampExponent);
         SmartDashboard.putNumber("Drivetrain/Current VRamp Lim", this.velocityLimitMultiplier);

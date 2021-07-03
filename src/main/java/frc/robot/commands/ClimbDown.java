@@ -28,9 +28,7 @@ public class ClimbDown extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-   // climberLeader.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
     climb.stop();
-    climb.zeroEncoders();
   }
 
   // Returns true when the command should end.

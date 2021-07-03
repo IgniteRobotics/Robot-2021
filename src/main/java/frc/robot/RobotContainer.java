@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import edu.wpi.first.wpilibj.Controller;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -127,26 +128,36 @@ public class RobotContainer {
   private ParallelCommandGroup intakeAndDrive = new ParallelCommandGroup(new RunIntake(1.0, m_intake),
       this.loadTrajectoryCommand("28-GS-B-Red"));
   private SequentialCommandGroup manualGS = new SequentialCommandGroup(new ToggleIntake(m_intake), intakeAndDrive);
-  private ToggleIntake toggleIntakeCommand = new ToggleIntake(m_intake);
   private TurnAngle Turn90Degrees = new TurnAngle(m_driveTrain, 90);
   private LimelightSnapshot takeLimelightSnapShots = new LimelightSnapshot();
   private SequentialCommandGroup DriveBackAndShoot = new SequentialCommandGroup(new DriveDistance(-3.048, m_driveTrain),
       new ShootBallSpecific(m_shooter, m_indexer, 4000, 1400));
-  private ClimbUp climbUp = new ClimbUp(m_climber);
-  private ClimbDown climbDown = new ClimbDown(m_climber);
 
   private SetHoodAngle sethoodAngle = new SetHoodAngle(m_shooter);
 
   private ShootBallSpecific shortShot = new ShootBallSpecific(m_shooter, m_indexer, 3500, 0);
-  private ShootBallSpecific baseShot = new ShootBallSpecific(m_shooter, m_indexer, 6000, 1370);
+  private ShootBallSpecific baseShot = new ShootBallSpecific(m_shooter, m_indexer, 6000, 1600);
   private ShootBallSpecific trenchShot = new ShootBallSpecific(m_shooter, m_indexer, 5500, 1600);
+
+  private ClimbUp climbUp = new ClimbUp(m_climber);
+  private ClimbDown climbDown = new ClimbDown(m_climber);
+
+  private ToggleIntake toggleIntakeCommand = new ToggleIntake(m_intake);
+
+  private RunIntake intakeBalls = new RunIntake(1.0, m_intake);
+  private RunIntake outtakeBalls = new RunIntake(-1.0, m_intake);
 
   private JoystickButton btn_driverA = new JoystickButton(m_driveController, ControllerConstants.BUTTON_A);
   private JoystickButton btn_driverB = new JoystickButton(m_driveController, ControllerConstants.BUTTON_B);
   private JoystickButton btn_driverY = new JoystickButton(m_driveController, ControllerConstants.BUTTON_Y);
+  private JoystickButton btn_driverX = new JoystickButton(m_driveController, ControllerConstants.BUTTON_X);
+  private JoystickButton btn_driverLTrigger = new JoystickButton(m_driveController, ControllerConstants.BUTTON_LEFT_BUMPER);
+  private JoystickButton btn_driverRTrigger = new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER);
 
   private JoystickButton btn_manipA = new JoystickButton(m_manipController, ControllerConstants.BUTTON_A);
   private JoystickButton btn_manipY = new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y);
+  private JoystickButton btn_manipLTrigger = new JoystickButton(m_manipController, ControllerConstants.BUTTON_LEFT_BUMPER);
+  private JoystickButton btn_manipRTrigger = new JoystickButton(m_manipController, ControllerConstants.BUTTON_RIGHT_BUMPER);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -185,6 +196,12 @@ public class RobotContainer {
     btn_driverA.whileHeld(shortShot);
     btn_driverB.whileHeld(baseShot);
     btn_driverY.whileHeld(trenchShot);
+    btn_driverX.whenPressed(toggleIntakeCommand);
+    btn_driverLTrigger.whileHeld(outtakeBalls);
+    btn_driverRTrigger.whileHeld(intakeBalls);
+
+    btn_manipLTrigger.whileHeld(climbUp);
+    btn_manipRTrigger.whileHeld(climbDown);
   }
 
   private void configureSubsystemCommands() {

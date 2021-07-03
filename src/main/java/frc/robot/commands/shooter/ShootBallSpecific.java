@@ -27,7 +27,7 @@ public class ShootBallSpecific extends CommandBase {
     private StateMachine state;
 
     private static final int RANGE = 150;
-    private static final double ANGLE_RANGE = 5;
+    private static final double HOOD_TOL = 5;
 
     private double targetVelocity;
     private double intakeEffort = 0.4;
@@ -41,10 +41,6 @@ public class ShootBallSpecific extends CommandBase {
         this.targetVelocity = targetRPM;
         this.targetHoodTicks = targetHoodTicks;
         addRequirements(shooter);
-  
-        //This might conflict with ShootinterpolatedBall... TODO check
-        //Consider moving this to robotcontainer 
-
     }
 
     // Called when the command is initially scheduled.
@@ -60,32 +56,16 @@ public class ShootBallSpecific extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-      //unused for now  distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
-        //double currentDistance = state.getShooterDistance(); State machine is not currently being used
-
-        //error: 75 in -> 1.905m
-        //
-        // if (currentDistance > distanceSetpoint){
-        //   shooter.extendHood();
-        // } else {
-        //   shooter.retractHood();
-        // }
-
-
-        // get velocity from the Shuffleboard
-     //   setShooterVelocity(targetVelocity);
         setShooterRPM((int) targetVelocity); // use rpm from interpolation
 
         //TODO look at this. Find specific angle to shoot from
-        shooter.changeHoodAngle(targetHoodTicks);
+        shooter.changeHoodTicks(targetHoodTicks);
 
         double shooterRPM = shooter.getShooterRPM();
 
         // if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM) &&
         //     (shooterAngle - ANGLE_RANGE < computedAngle && shooterAngle + ANGLE_RANGE > computedAngle)) {
-        if ((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM)
-            //  && shooter.isHoodReady()
-        ) {
+        if (targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM && shooter.isHoodReady()) {
             shooter.runKickup(kickupEffort);
             indexer.runIndexer(intakeEffort);
         } else {

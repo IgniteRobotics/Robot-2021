@@ -20,6 +20,7 @@ public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
   // Climb won't break if we extend too far. Will it fly off if we let it go up
   // too fast?
+  public static final double CLIMB_EFFORT = 0.15;
 
   private WPI_TalonFX climberLeader;
   private WPI_TalonFX climberFollower;
@@ -31,7 +32,7 @@ public class Climber extends SubsystemBase {
   private NetworkTableEntry leftClimbCurrent = shuffleTab.add("Left Climb Supply (Amps)", 0).getEntry();
   private NetworkTableEntry rightClimbCurrent = shuffleTab.add("Right Climb Supply (Amps)", 0).getEntry();
 
-  private NetworkTableEntry climbEffort = shuffleTab.add("Climb Effort", 0).getEntry();
+  private NetworkTableEntry climbEffort = shuffleTab.add("Climb Effort", CLIMB_EFFORT).getEntry();
   private NetworkTableEntry cruiseVelocityEntry = shuffleTab.add("cruiseVelocity (sensor units / 100ms", 10000).getEntry();
   private NetworkTableEntry accelerationEntry  = shuffleTab.add("acceleration", 6000).getEntry();
 
@@ -56,8 +57,8 @@ public class Climber extends SubsystemBase {
     climberLeader = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
     climberFollower = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
 
-    climberFollower.follow(climberLeader);
     climberFollower.setInverted(true);
+    climberFollower.follow(climberLeader);
 
     climberLeader.setNeutralMode(NeutralMode.Brake);
     climberFollower.setNeutralMode(NeutralMode.Brake);
@@ -72,20 +73,31 @@ public class Climber extends SubsystemBase {
     climberFollower.configForwardSoftLimitEnable(true, 0);
     climberFollower.configReverseSoftLimitEnable(true, 0);
 
-    climberLeader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
-    climberFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+    // climberLeader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+    // climberFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
 
+		// climberLeader.configNominalOutputForward(0, 30);
+		// climberLeader.configNominalOutputReverse(0,30);
+		// climberLeader.configPeakOutputForward(1, 30);
+    // climberLeader.configPeakOutputReverse(-1, 30);
 
-		climberLeader.configNominalOutputForward(0, 30);
-		climberLeader.configNominalOutputReverse(0,30);
-		climberLeader.configPeakOutputForward(.5, 30);
-    climberLeader.configPeakOutputReverse(-.5, 30);
+    // climberFollower.configNominalOutputForward(0, 30);
+		// climberFollower.configNominalOutputReverse(0,30);
+		// climberFollower.configPeakOutputForward(1, 30);
+    // climberFollower.configPeakOutputReverse(1, 30);
 
-    climberFollower.configNominalOutputForward(0, 30);
-		climberFollower.configNominalOutputReverse(0,30);
-		climberFollower.configPeakOutputForward(.5, 30);
-    climberFollower.configPeakOutputReverse(-.5, 30);
+    // configureMotionMagic();
+    
+    addChild("climberLeader- Climber", climberLeader);
+    addChild("climberFollower- Climber", climberFollower);
+  }
 
+  @Override
+  public void periodic() {
+    publishData();
+  }
+
+  private void configureMotionMagic() {
     climberLeader.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
     climberLeader.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
     
@@ -97,33 +109,8 @@ public class Climber extends SubsystemBase {
 		climberLeader.config_kP(kSlotIdx, kP, kTimeoutMs);
 		climberLeader.config_kI(kSlotIdx, kI, kTimeoutMs);
 		climberLeader.config_kD(kSlotIdx, kD, kTimeoutMs);
-
-		/* Set acceleration and vcruise velocity - see documentation */
 		climberLeader.configMotionCruiseVelocity(15000, kTimeoutMs);
 		climberLeader.configMotionAcceleration(6000, kTimeoutMs);
-
-		/* Zero the sensor once on robot boot up */
-    this.zeroEncoders();
-    
-
-    // leftClimb.configMotionCruiseVelocity(CRUISE_VELOCITY, 10);
-    // leftClimb.configMotionAcceleration(MAX_ACCELERATION, 10);
-
-    // Livewindow methods for testing
-    addChild("climberLeader- Climber", climberLeader);
-    addChild("climberFollower- Climber", climberFollower);
-  }
-
-  @Override
-  public void periodic() {
-    publishData();
-    //cruiseVelocity = cruiseVelocityEntry.getDouble(15000);
-   // acceleration = accelerationEntry.getDouble(6000);
-
-   // climberLeader.configMotionCruiseVelocity(15000, kTimeoutMs);
-	//	climberLeader.configMotionAcceleration(6000, kTimeoutMs);
-  
-
   }
 
   private void publishData() {

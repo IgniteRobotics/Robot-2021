@@ -298,8 +298,13 @@ public class Shooter extends SubsystemBase {
 
     public void changeHoodTicks(double targetTicks) {  
         //Change hood ticks by targetTicks amount from the CURRENT hood position
-        if(targetTicks <= hood_max_position_value)
+        if(targetTicks <= hood_max_position_value) {
             hoodPidController.setReference(targetTicks, ControlType.kPosition);
+            this.hoodPositionTicksSetPoint = targetTicks;
+        } else {
+            hoodPidController.setReference(hood_max_position_value, ControlType.kPosition);
+            this.hoodPositionTicksSetPoint = hood_max_position_value;
+        }
  }
 
     public void resetHood() {
@@ -315,7 +320,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isHoodReady() {
-        double range = 25;
+        double range = 3;
         return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint
                 && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
     }
