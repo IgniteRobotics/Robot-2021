@@ -30,6 +30,7 @@ import frc.robot.commands.shooter.TestRetractHood;
 import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Intake;
@@ -121,6 +122,8 @@ public class RobotContainer {
   private ClimbUp climbUp = new ClimbUp(m_climber);
   private ClimbDown climbDown = new ClimbDown(m_climber);
 
+  private SetHoodAngle sethoodAngle = new SetHoodAngle(m_shooter);
+
   /**
   * The container for the robot.  Contains subsystems, OI devices, and commands.
   */
@@ -131,6 +134,16 @@ public class RobotContainer {
     this.configureAutonChooser();
 
     //Livewindow commands to help with individually testing commands. Not exactly sure how this works
+    SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
+    SmartDashboard.putData("Shooter Subsystem", m_shooter);
+    SmartDashboard.putData("Drivetrain Subsystem", m_driveTrain);
+    SmartDashboard.putData("Limelight Subsystem", m_limelight);
+    SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
+    SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
+    
+    SmartDashboard.putData("setHoodAngle", sethoodAngle);
+    
+
     SmartDashboard.putData("ShootInterpolatedBall", shootBallInterpolated);
     SmartDashboard.putData("toggleIntakeCommand", toggleIntakeCommand);
     SmartDashboard.putData("drivetoDistance", drivetoDistance);

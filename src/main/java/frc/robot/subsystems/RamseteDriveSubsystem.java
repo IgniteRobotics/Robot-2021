@@ -171,6 +171,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         addChild("rightMaster- Drivetrain",rightMaster);
         addChild("rightFollower- Drivetrain",rightFollower);
         addChild("leftFollower- Drivetrain",leftFollower);
+        addChild("navX", navX);
 
     }
 
