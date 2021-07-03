@@ -39,13 +39,13 @@ public class Intake extends SubsystemBase {
         addChild("intakeMotor- Intake",intakeMotor);
     }
 
-    private void extendIntake() {
+    public void extendIntake() {
         System.out.println("extending intake");
         isExtended = true;
         intakePistonSolenoid.set(Value.kForward);
     }
 
-    private void retractIntake() {
+    public void retractIntake() {
         System.out.println("retracting intake");
         isExtended = false;
         intakePistonSolenoid.set(Value.kReverse);
@@ -65,6 +65,10 @@ public class Intake extends SubsystemBase {
 
     public void stop() {
         intakeMotor.set(ControlMode.PercentOutput, 0);
+    }
+
+    public boolean isExtended() {
+        return isExtended;
     }
 
     @Override

@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.intake.RunIntake;
+import frc.robot.commands.intake.SetIntake;
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.MotorConstants;
@@ -88,8 +89,15 @@ public class RobotContainer {
   private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
   private DriveDistance drivetoDistance = new DriveDistance (3, m_driveTrain);
-  private ShootBallTest ShootBall = new ShootBallTest(m_shooter, m_indexer);
+  private ShootBallTest shootBall = new ShootBallTest(m_shooter, m_indexer);
+  private ShootBallTest autonShootBall = new ShootBallTest(m_shooter, m_indexer); // this must be used in command group
   private ResetHood resetHood = new ResetHood(m_shooter);
+
+  private SetIntake extendIntake = new SetIntake(m_intake, true);
+  private SequentialCommandGroup autonSequence = new SequentialCommandGroup(
+    extendIntake,
+    autonShootBall
+  );
   
 
 
@@ -146,13 +154,14 @@ public class RobotContainer {
     SmartDashboard.putData("ShootInterpolatedBall", shootBallInterpolated);
     SmartDashboard.putData("toggleIntakeCommand", toggleIntakeCommand);
     SmartDashboard.putData("drivetoDistance", drivetoDistance);
-    SmartDashboard.putData("ShootBall", ShootBall);
+    SmartDashboard.putData("ShootBall", shootBall);
     SmartDashboard.putData("Turn90Degrees", Turn90Degrees);
     SmartDashboard.putData("takeLimelightSnapShots", takeLimelightSnapShots);
     SmartDashboard.putData("DriveBackAndShoot", DriveBackAndShoot);
     SmartDashboard.putData("ClimbUp", climbUp);
     SmartDashboard.putData("ClimbDown",climbDown);
     
+    this.chooseAuton.addOption("Default Auton", autonSequence);
   }
   
 
@@ -172,7 +181,7 @@ public class RobotContainer {
       
       
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
-      new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(ShootBall);
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(shootBall);
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_B).whileHeld( new DriveDistance (2, m_driveTrain));
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_DPAD_LEFT).whileHeld( Turn90Degrees);
       
