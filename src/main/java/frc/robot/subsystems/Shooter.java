@@ -298,7 +298,8 @@ public class Shooter extends SubsystemBase {
 
     public void changeHoodTicks(double targetTicks) {  
         //Change hood ticks by targetTicks amount from the CURRENT hood position
-       hoodPidController.setReference(targetTicks, ControlType.kPosition);
+        if(targetTicks <= hood_max_position_value)
+            hoodPidController.setReference(targetTicks, ControlType.kPosition);
  }
 
     public void resetHood() {

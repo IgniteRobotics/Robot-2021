@@ -34,7 +34,8 @@ public class ShootBallTest extends CommandBase {
 
     private double targetVelocity = Constants.HOOD_DEFAULT_RPM;
     private double intakeEffort = 0.4;
-    private double kickupEffort = 0.3;
+    private double kickupEffort = 0.8;
+    private double targetHoodTicks;
  //   private double distanceSetpoint = Constants.HOOD_SET_POINT_DISTANCE;
 
     public ShootBallTest(Shooter shooter, Indexer indexer) {
@@ -62,6 +63,8 @@ public class ShootBallTest extends CommandBase {
         targetVelocity = shuffle.getTargetVelocity();
         intakeEffort = shuffle.getIntakeEffort();
         kickupEffort = shuffle.getKickupEffort();
+        targetHoodTicks = shuffle.getTargetHoodTicks();
+
       //unused for now  distanceSetpoint = distanceSetPointEntry.getDouble(Constants.HOOD_SET_POINT_DISTANCE);
         //double currentDistance = state.getShooterDistance(); State machine is not currently being used
 
@@ -79,7 +82,7 @@ public class ShootBallTest extends CommandBase {
         setShooterRPM((int) targetVelocity); // use rpm from interpolation
 
         //TODO look at this. Find specific angle to shoot from
-        shooter.changeHoodAngle(60);
+        shooter.changeHoodAngle(targetHoodTicks);
 
         double shooterRPM = shooter.getShooterRPM();
 

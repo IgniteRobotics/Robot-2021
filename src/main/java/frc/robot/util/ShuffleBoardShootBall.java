@@ -13,6 +13,8 @@ public class ShuffleBoardShootBall {
     private NetworkTableEntry intakeEffortEntry;
     private NetworkTableEntry kickupEffortEntry;
 
+    private NetworkTableEntry targetHoodTicksEntry;
+
     private static ShuffleBoardShootBall instance;
 
     private ShuffleBoardShootBall() {
@@ -20,6 +22,7 @@ public class ShuffleBoardShootBall {
         distanceSetPointEntry = tab.add("Shooter Distance Setpoint", Constants.HOOD_SET_POINT_DISTANCE).withProperties(Map.of("min", 0)).getEntry();
         intakeEffortEntry = tab.add("Intake Effort Percentage", 0.6).withProperties(Map.of("min", -1, "max", 1)).getEntry();
         kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.5).withProperties(Map.of("min", 0, "max", 1)).getEntry();
+        targetHoodTicksEntry = tab.add("Target Hood Ticks", 0).withProperties(Map.of("min", 0)).getEntry();
     }
 
     public double getTargetVelocity() {
@@ -36,6 +39,10 @@ public class ShuffleBoardShootBall {
 
     public double getDistanceSetPoint() {
         return distanceSetPointEntry.getDouble(0);
+    }
+
+    public double getTargetHoodTicks() {
+        return targetHoodTicksEntry.getDouble(0);
     }
 
     public static synchronized ShuffleBoardShootBall getInstance() {

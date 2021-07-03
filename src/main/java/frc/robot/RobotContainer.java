@@ -81,13 +81,12 @@ public class RobotContainer {
   
   //private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController, m_driveTrain);
   //private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
-  private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_manipController, m_driveTrain);
+  private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
   //private AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
   
   private ShootInterpolatedBall shootBallInterpolated = new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight);
   private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
-  private AdjustHoodAngle adjustHoodCommand = new AdjustHoodAngle(m_shooter);
   private DriveDistance drivetoDistance = new DriveDistance (3, m_driveTrain);
   private ShootBallTest ShootBall = new ShootBallTest(m_shooter, m_indexer);
   private ResetHood resetHood = new ResetHood(m_shooter);
@@ -117,7 +116,6 @@ public class RobotContainer {
   private ToggleIntake toggleIntakeCommand = new ToggleIntake(m_intake);
   private TurnAngle Turn90Degrees = new TurnAngle (m_driveTrain, 90);
   private LimelightSnapshot takeLimelightSnapShots = new LimelightSnapshot();
-  private SetHoodAngle setHoodShootingAngleTicks = new SetHoodAngle(m_shooter);
   private SequentialCommandGroup DriveBackAndShoot = new SequentialCommandGroup(new DriveDistance(-3.048, m_driveTrain),
       new ShootBallSpecific(m_shooter, m_indexer, 4000, 1400));
   private ClimbUp climbUp = new ClimbUp(m_climber);
@@ -151,7 +149,6 @@ public class RobotContainer {
     SmartDashboard.putData("ShootBall", ShootBall);
     SmartDashboard.putData("Turn90Degrees", Turn90Degrees);
     SmartDashboard.putData("takeLimelightSnapShots", takeLimelightSnapShots);
-    SmartDashboard.putData("setHoodShootingAngleTicks", setHoodShootingAngleTicks);
     SmartDashboard.putData("DriveBackAndShoot", DriveBackAndShoot);
     SmartDashboard.putData("ClimbUp", climbUp);
     SmartDashboard.putData("ClimbDown",climbDown);
@@ -162,9 +159,10 @@ public class RobotContainer {
     private void configureButtonBindings() {
       
      // new JoystickButton(m_manipController, ControllerConstants.BUTTON_X).whileHeld(intakeCommand);
-      new JoystickButton(m_manipController, ControllerConstants.BUTTON_B).whenPressed(toggleIntakeCommand);
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_B).whenPressed(toggleIntakeCommand);
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       new JoystickButton(m_manipController, ControllerConstants.BUTTON_A).whileHeld(new TestRetractHood(m_shooter));
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_X).whileHeld(sethoodAngle);
 
   //    new JoystickButton(m_manipController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(shootCommand);
    //   new JoystickButton(m_manipController, ControllerConstants.BUTTON_X).whileHeld(adjustHoodCommand);
@@ -174,15 +172,15 @@ public class RobotContainer {
       
       
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
-      new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(targetingCommand );
-      new JoystickButton(m_driveController, ControllerConstants.BUTTON_B).whileHeld( new DriveDistance (2, m_driveTrain));
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(ShootBall);
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_B).whileHeld( new DriveDistance (2, m_driveTrain));
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_DPAD_LEFT).whileHeld( Turn90Degrees);
       
       // new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestRetractHood(m_shooter));
       // new JoystickButton(m_driveController, Constants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
       // new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
-      new JoystickButton(m_driveController, ControllerConstants.BUTTON_X).whileHeld(climbUp);
+      new JoystickButton(m_manipController, ControllerConstants).whileHeld(climbUp);
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_Y).whileHeld(climbDown);
 
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_LEFT_BUMPER)
