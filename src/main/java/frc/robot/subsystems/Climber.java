@@ -29,6 +29,8 @@ public class Climber extends SubsystemBase {
   private NetworkTableEntry leftClimbCurrent = shuffleTab.add("Left Climb Supply (Amps)", 0).getEntry();
   private NetworkTableEntry rightClimbCurrent = shuffleTab.add("Right Climb Supply (Amps)", 0).getEntry();
 
+  private NetworkTableEntry climbEffort = shuffleTab.add("Climb Effort", 0).getEntry();
+
   public static final int CLIMBER_FORWARD_LIMIT = 290000;
   public static final int CLIMBER_REVERSE_LIMIT = 10000;
 
@@ -76,12 +78,12 @@ public class Climber extends SubsystemBase {
 
   public void goUp() {
     // TODO make this shuffleboard changeable
-    climberLeader.set(ControlMode.PercentOutput, .10);
+    climberLeader.set(ControlMode.PercentOutput, climbEffort.getDouble(0));
 
   }
 
   public void goDown() {
-    climberLeader.set(ControlMode.PercentOutput, -.10);
+    climberLeader.set(ControlMode.PercentOutput, -climbEffort.getDouble(0));
   }
 
   public void go(double effort) {

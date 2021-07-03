@@ -180,8 +180,8 @@ public class RobotContainer {
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(new TestRetractHood(m_shooter));
       // new JoystickButton(m_driveController, Constants.BUTTON_B).whenPressed(new ToggleIntake(m_intake));
       // new JoystickButton(m_driveController, Constants.BUTTON_A).whileHeld(shootCommand);
-      new JoystickButton(m_manipController, ControllerConstants).whileHeld(climbUp);
-      new JoystickButton(m_driveController, ControllerConstants.BUTTON_Y).whileHeld(climbDown);
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_X).whileHeld(climbUp);
+      new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y).whileHeld(climbDown);
 
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_LEFT_BUMPER)
       .whenPressed(() -> teleDriveCommand.setReversed(true))
