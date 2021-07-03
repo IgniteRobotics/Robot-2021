@@ -11,14 +11,16 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 import frc.robot.constants.MotorConstants;
 
 public class Intake extends SubsystemBase {
     private final WPI_VictorSPX intakeMotor;
-    private Solenoid intakePistonSolenoid;
+    private DoubleSolenoid intakePistonSolenoid;
 
     private boolean isExtended;
 
@@ -33,20 +35,20 @@ public class Intake extends SubsystemBase {
         isExtended = false;
 
         //intakePistonSolenoid = null;
-        intakePistonSolenoid = new Solenoid(44, MotorConstants.kIntakeSolenoidPort);
+        intakePistonSolenoid = new DoubleSolenoid(44, MotorConstants.kIntakeSolenoidForwardPort, MotorConstants.kIntakeSolenoidReversePort);
         addChild("intakeMotor- Intake",intakeMotor);
     }
 
     private void extendIntake() {
         System.out.println("extending intake");
         isExtended = true;
-        intakePistonSolenoid.set(true);
+        intakePistonSolenoid.set(Value.kForward);
     }
 
     private void retractIntake() {
         System.out.println("retracting intake");
         isExtended = false;
-        intakePistonSolenoid.set(false);
+        intakePistonSolenoid.set(Value.kReverse);
     }
 
     public void toggleIntake() {
