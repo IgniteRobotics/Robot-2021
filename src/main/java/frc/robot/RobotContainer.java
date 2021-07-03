@@ -90,6 +90,7 @@ public class RobotContainer {
   private AdjustHoodAngle adjustHoodCommand = new AdjustHoodAngle(m_shooter);
   private DriveDistance drivetoDistance = new DriveDistance (3, m_driveTrain);
   private ShootBallTest ShootBall = new ShootBallTest(m_shooter, m_indexer);
+  private ResetHood resetHood = new ResetHood(m_shooter);
   
 
 
@@ -157,12 +158,7 @@ public class RobotContainer {
     
   }
   
-  /**
-  * Use this method to define your button->command mappings.  Buttons can be created by
-  * instantiating a {@link GenericHID} or one of its subclasses ({@link
-    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
-    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-    */
+
     private void configureButtonBindings() {
       
      // new JoystickButton(m_manipController, ControllerConstants.BUTTON_X).whileHeld(intakeCommand);
@@ -195,7 +191,8 @@ public class RobotContainer {
     }
     
     private void configureSubsystemCommands() {
-    m_driveTrain.setDefaultCommand(teleDriveCommand);
+      m_driveTrain.setDefaultCommand(teleDriveCommand);
+      m_shooter.setDefaultCommand(resetHood);
     }
     
     private void configureAutonChooser() {
@@ -238,7 +235,7 @@ public class RobotContainer {
     }
 
     public Command getTeleopInitCommand() {
-      return new ResetHood(m_shooter);
+      return resetHood;
     }
     
     protected Command loadTrajectoryCommand(String trajectoryName) {

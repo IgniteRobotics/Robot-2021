@@ -21,6 +21,7 @@ import java.util.Map;
 import com.ctre.phoenix.VelocityPeriod;
 import com.ctre.phoenix.motorcontrol.*;
 import frc.robot.RobotContainer;
+import frc.robot.commands.shooter.ResetHood;
 import frc.robot.util.Util;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -302,7 +303,7 @@ public class Shooter extends SubsystemBase {
 
     public void resetHood() {
         if (!hoodLimitSwitch.get()) {
-            hood_motor.set(-0.05);
+            hood_motor.set(-0.1);
         } else {
             // reset encoders
             hood_motor.set(0);
@@ -336,5 +337,9 @@ public class Shooter extends SubsystemBase {
 
     public double getKickupPower() {
         return kickUp.get();
+    }
+
+    public void initDefaultCommand() {
+        setDefaultCommand(new ResetHood(this));
     }
 }

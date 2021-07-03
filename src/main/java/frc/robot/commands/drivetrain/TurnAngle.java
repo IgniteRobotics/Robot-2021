@@ -23,8 +23,6 @@ public class TurnAngle extends PIDCommand {
   private final static double kI_TURN = 0;
   private final static double kD_TURN = 0;
 
-  private final static AHRS navX = new AHRS(SPI.Port.kMXP, (byte) 200);
-
   public TurnAngle(RamseteDriveSubsystem driveTrain, double targetAngleDegrees) {
     super(
       new PIDController(kP_TURN, kI_TURN,kD_TURN),
@@ -45,7 +43,7 @@ public class TurnAngle extends PIDCommand {
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
-    navX.zeroYaw();
+    m_driveTrain.zeroHeading();
   }
 
   // // Called repeatedly when this Command is scheduled to run
