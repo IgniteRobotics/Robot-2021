@@ -55,7 +55,6 @@ public class Climber extends SubsystemBase {
     climberLeader = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
     climberFollower = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
 
-    // TODO check what direction motor needs to pull to bring in climber
     climberFollower.follow(climberLeader);
     climberFollower.setInverted(true);
 
@@ -73,6 +72,7 @@ public class Climber extends SubsystemBase {
     climberFollower.configReverseSoftLimitEnable(true, 0);
 
     climberLeader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+    climberFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
 
 
 		climberLeader.configNominalOutputForward(0, 30);
