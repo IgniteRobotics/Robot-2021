@@ -89,6 +89,7 @@ public class RobotContainer {
   private AdjustHoodAngle adjustHoodCommand = new AdjustHoodAngle(m_shooter);
   private DriveDistance drivetoDistance = new DriveDistance (3, m_driveTrain);
   private ShootBallTest ShootBall = new ShootBallTest(m_shooter, m_indexer);
+  private ResetHood resetHood = new ResetHood(m_shooter);
   
 
 
@@ -177,7 +178,8 @@ public class RobotContainer {
     }
     
     private void configureSubsystemCommands() {
-    m_driveTrain.setDefaultCommand(teleDriveCommand);
+      m_driveTrain.setDefaultCommand(teleDriveCommand);
+      m_shooter.setDefaultCommand(resetHood);
     }
     
     private void configureAutonChooser() {
@@ -220,7 +222,7 @@ public class RobotContainer {
     }
 
     public Command getTeleopInitCommand() {
-      return new ResetHood(m_shooter);
+      return resetHood;
     }
     
     protected Command loadTrajectoryCommand(String trajectoryName) {

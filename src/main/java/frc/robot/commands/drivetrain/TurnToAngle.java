@@ -23,14 +23,12 @@ public class TurnToAngle extends PIDCommand {
     private final static double kI_TURN = 0;
     private final static double kD_TURN = 0;
 
-    private final static AHRS navX = new AHRS(SPI.Port.kMXP, (byte) 200);
-
     private Limelight limelight;
 
     public TurnToAngle(RamseteDriveSubsystem driveTrain, Limelight limelight) {
         super(
                 new PIDController(kP_TURN, kI_TURN, kD_TURN),
-                navX::getYaw,
+                driveTrain::getYaw,
                 limelight::getHorizontalOffset,
                 output -> driveTrain.tankDrivePower(-output, output),
                 driveTrain
@@ -48,7 +46,7 @@ public class TurnToAngle extends PIDCommand {
     // Called just before this Command runs the first time
     @Override
     public void initialize() {
-        navX.zeroYaw();
+        m_driveTrain.zeroHeading();
     }
     // // Called repeatedly when this Command is scheduled to run
     // @Override

@@ -103,7 +103,7 @@ public final class Constants {
     public static final double VELOCITY_LIMIT_MULTIPLIER = 1;
     public static final double TURN_RAMP_EXPONENT = 2;
     public static final double TURN_LIMIT_MULTIPLIER = 1;
-    public static final double LIMELIGHT_HEIGHT = 0.61595;
+    public static final double LIMELIGHT_HEIGHT = 0.59055;
     public static final double LIMELIGHT_ANGLE = 41.6; // degrees
     public static final double TARGET_HEIGHT = 2.49555;
 
