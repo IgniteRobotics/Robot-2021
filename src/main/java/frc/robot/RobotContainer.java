@@ -57,6 +57,7 @@ import frc.robot.commands.shooter.ShootBallTest;
 import frc.robot.subsystems.Climber;
 import frc.robot.commands.ClimbUp;
 import frc.robot.commands.ClimbDown;
+import frc.robot.commands.ClimbMotionMagicUp;
 
 /**
 * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -131,6 +132,7 @@ public class RobotContainer {
 
   private SetHoodAngle sethoodAngle = new SetHoodAngle(m_shooter);
 
+
   /**
   * The container for the robot.  Contains subsystems, OI devices, and commands.
   */
@@ -181,8 +183,8 @@ public class RobotContainer {
       
       
       // new JoystickButton(m_driveController, Constants.BUTTON_X).whileHeld(intakeCommand);
-      new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(shootBall);
-      new JoystickButton(m_manipController, ControllerConstants.BUTTON_B).whileHeld( new DriveDistance (2, m_driveTrain));
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER).whileHeld(targetingCommand );
+      new JoystickButton(m_driveController, ControllerConstants.BUTTON_B).whileHeld( new ClimbMotionMagicUp(m_climber));
       new JoystickButton(m_driveController, ControllerConstants.BUTTON_DPAD_LEFT).whileHeld( Turn90Degrees);
       
       // new JoystickButton(m_driveController, Constants.BUTTON_Y).whileHeld(new TestExtendShooterHood(m_shooter));

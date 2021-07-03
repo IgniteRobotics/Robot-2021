@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -30,15 +32,30 @@ public class Climber extends SubsystemBase {
   private NetworkTableEntry rightClimbCurrent = shuffleTab.add("Right Climb Supply (Amps)", 0).getEntry();
 
   private NetworkTableEntry climbEffort = shuffleTab.add("Climb Effort", 0).getEntry();
+  private NetworkTableEntry cruiseVelocityEntry = shuffleTab.add("cruiseVelocity (sensor units / 100ms", 10000).getEntry();
+  private NetworkTableEntry accelerationEntry  = shuffleTab.add("acceleration", 6000).getEntry();
 
   public static final int CLIMBER_FORWARD_LIMIT = 290000;
   public static final int CLIMBER_REVERSE_LIMIT = 10000;
+
+  private final int kTimeoutMs = 30;
+  private final int kSlotIdx = 0;
+  private final double  kP = 0.2;
+  private final double  kF = 0;
+  private final double  kI = 0;
+  private final double  kD = 0;
+  private final int kPIDLoopIdx = 0;
+
+  private double cruiseVelocity;
+  private double acceleration;
+
+
+
 
   public Climber() {
     climberLeader = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
     climberFollower = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
 
-    // TODO check what direction motor needs to pull to bring in climber
     climberFollower.follow(climberLeader);
     climberFollower.setInverted(true);
 
@@ -55,6 +72,40 @@ public class Climber extends SubsystemBase {
     climberFollower.configForwardSoftLimitEnable(true, 0);
     climberFollower.configReverseSoftLimitEnable(true, 0);
 
+    climberLeader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+    climberFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+
+
+		climberLeader.configNominalOutputForward(0, 30);
+		climberLeader.configNominalOutputReverse(0,30);
+		climberLeader.configPeakOutputForward(.5, 30);
+    climberLeader.configPeakOutputReverse(-.5, 30);
+
+    climberFollower.configNominalOutputForward(0, 30);
+		climberFollower.configNominalOutputReverse(0,30);
+		climberFollower.configPeakOutputForward(.5, 30);
+    climberFollower.configPeakOutputReverse(-.5, 30);
+
+    climberLeader.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
+    climberLeader.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
+    
+    climberFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
+    climberFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
+    
+    climberLeader.selectProfileSlot(kSlotIdx, kPIDLoopIdx);
+		climberLeader.config_kF(kSlotIdx, kF, kTimeoutMs);
+		climberLeader.config_kP(kSlotIdx, kP, kTimeoutMs);
+		climberLeader.config_kI(kSlotIdx, kI, kTimeoutMs);
+		climberLeader.config_kD(kSlotIdx, kD, kTimeoutMs);
+
+		/* Set acceleration and vcruise velocity - see documentation */
+		climberLeader.configMotionCruiseVelocity(15000, kTimeoutMs);
+		climberLeader.configMotionAcceleration(6000, kTimeoutMs);
+
+		/* Zero the sensor once on robot boot up */
+    this.zeroEncoders();
+    
+
     // leftClimb.configMotionCruiseVelocity(CRUISE_VELOCITY, 10);
     // leftClimb.configMotionAcceleration(MAX_ACCELERATION, 10);
 
@@ -66,6 +117,13 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     publishData();
+    //cruiseVelocity = cruiseVelocityEntry.getDouble(15000);
+   // acceleration = accelerationEntry.getDouble(6000);
+
+   // climberLeader.configMotionCruiseVelocity(15000, kTimeoutMs);
+	//	climberLeader.configMotionAcceleration(6000, kTimeoutMs);
+  
+
   }
 
   private void publishData() {
@@ -111,6 +169,10 @@ public class Climber extends SubsystemBase {
     // motion magic is a little too much for this, let's focus on this later
     return true;
 
+  }
+  public void zeroEncoders() {
+    climberLeader.setSelectedSensorPosition(0);
+    climberFollower.setSelectedSensorPosition(0);
   }
 
   public int getEncoderPos() {
