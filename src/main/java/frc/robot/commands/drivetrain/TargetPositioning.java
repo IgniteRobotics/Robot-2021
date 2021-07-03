@@ -72,7 +72,6 @@ public class TargetPositioning extends CommandBase {
         KpTurn = kpTurnEntry.getDouble(KpTurn);
         minCommand = minTurnEntry.getDouble(minCommand);
         minInfPoint = minInfEntry.getDouble(minInfPoint);
-        table.getEntry("camMode").setNumber(0);
         table.getEntry("ledMode").setNumber(3);
     }
 
@@ -118,7 +117,6 @@ public class TargetPositioning extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        table.getEntry("camMode").setNumber(1);
         table.getEntry("ledMode").setNumber(1);
      //   m_driveTrain.stop();
     }

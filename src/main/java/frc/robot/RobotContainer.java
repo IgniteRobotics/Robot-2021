@@ -135,6 +135,8 @@ public class RobotContainer {
 
   private SetHoodAngle sethoodAngle = new SetHoodAngle(m_shooter);
 
+  // begin current driver commands / input
+
   private ShootBallSpecific shortShot = new ShootBallSpecific(m_shooter, m_indexer, 3500, 0);
   private ShootBallSpecific baseShot = new ShootBallSpecific(m_shooter, m_indexer, 6000, 1600);
   private ShootBallSpecific trenchShot = new ShootBallSpecific(m_shooter, m_indexer, 5500, 1600);

@@ -73,20 +73,20 @@ public class Climber extends SubsystemBase {
     climberFollower.configForwardSoftLimitEnable(true, 0);
     climberFollower.configReverseSoftLimitEnable(true, 0);
 
-    // climberLeader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
-    // climberFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+    climberLeader.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+    climberFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
 
-		// climberLeader.configNominalOutputForward(0, 30);
-		// climberLeader.configNominalOutputReverse(0,30);
-		// climberLeader.configPeakOutputForward(1, 30);
-    // climberLeader.configPeakOutputReverse(-1, 30);
+		climberLeader.configNominalOutputForward(0, 30);
+		climberLeader.configNominalOutputReverse(0,30);
+		climberLeader.configPeakOutputForward(1, 30);
+    climberLeader.configPeakOutputReverse(-1, 30);
 
-    // climberFollower.configNominalOutputForward(0, 30);
-		// climberFollower.configNominalOutputReverse(0,30);
-		// climberFollower.configPeakOutputForward(1, 30);
-    // climberFollower.configPeakOutputReverse(1, 30);
+    climberFollower.configNominalOutputForward(0, 30);
+		climberFollower.configNominalOutputReverse(0,30);
+		climberFollower.configPeakOutputForward(1, 30);
+    climberFollower.configPeakOutputReverse(-1, 30);
 
-    // configureMotionMagic();
+    configureMotionMagic();
     
     addChild("climberLeader- Climber", climberLeader);
     addChild("climberFollower- Climber", climberFollower);
@@ -109,8 +109,8 @@ public class Climber extends SubsystemBase {
 		climberLeader.config_kP(kSlotIdx, kP, kTimeoutMs);
 		climberLeader.config_kI(kSlotIdx, kI, kTimeoutMs);
 		climberLeader.config_kD(kSlotIdx, kD, kTimeoutMs);
-		climberLeader.configMotionCruiseVelocity(15000, kTimeoutMs);
-		climberLeader.configMotionAcceleration(6000, kTimeoutMs);
+		climberLeader.configMotionCruiseVelocity(5525, kTimeoutMs);
+		climberLeader.configMotionAcceleration(5525, kTimeoutMs);
   }
 
   private void publishData() {

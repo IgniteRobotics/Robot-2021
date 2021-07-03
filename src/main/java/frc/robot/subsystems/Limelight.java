@@ -31,11 +31,11 @@ public class Limelight extends SubsystemBase {
      * Creates a new Limelight.
      */
     public Limelight() {
+        table.getEntry("camMode").setNumber(1);
     }
 
     public void turnOnLED () {
         table.getEntry("ledMode").setNumber(3);
-        table2.getEntry("camMode").setNumber(0);
         ledStatus = true;
     }
 
@@ -49,6 +49,7 @@ public class Limelight extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
 
+        table.getEntry("camMode").setNumber(1);
         //Cache previous values here
         long delta = System.currentTimeMillis() - lastLimelightUsage;
         if(delta > limelightDuration && isLedOn()) {
