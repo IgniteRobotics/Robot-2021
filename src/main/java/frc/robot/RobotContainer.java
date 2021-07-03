@@ -153,6 +153,7 @@ public class RobotContainer {
   private JoystickButton btn_driverX = new JoystickButton(m_driveController, ControllerConstants.BUTTON_X);
   private JoystickButton btn_driverLTrigger = new JoystickButton(m_driveController, ControllerConstants.BUTTON_LEFT_BUMPER);
   private JoystickButton btn_driverRTrigger = new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER);
+  private JoystickButton btn_driverRStick = new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_STICK);
 
   private JoystickButton btn_manipA = new JoystickButton(m_manipController, ControllerConstants.BUTTON_A);
   private JoystickButton btn_manipY = new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y);
@@ -199,6 +200,8 @@ public class RobotContainer {
     btn_driverX.whenPressed(toggleIntakeCommand);
     btn_driverLTrigger.whileHeld(outtakeBalls);
     btn_driverRTrigger.whileHeld(intakeBalls);
+
+    btn_driverRStick.whenPressed(teleDriveCommand::toggleReversed);
 
     btn_manipLTrigger.whileHeld(climbUp);
     btn_manipRTrigger.whileHeld(climbDown);
