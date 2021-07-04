@@ -2,17 +2,17 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
 
-public class ClimbMotionMagicDown extends CommandBase {
+public class ClimbMotionMagicUp extends CommandBase {
   private Climber climb;
-  private int targetPositionTicks = 10000;
+  private int targetPositionTicks = 210000;
   /** Creates a new ClimbMotionMagicUp. */
-  public ClimbMotionMagicDown(Climber climb) {
+  public ClimbMotionMagicUp(Climber climb) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.climb = climb;
     addRequirements(climb);
@@ -31,7 +31,7 @@ public class ClimbMotionMagicDown extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    climb.zeroEncoders();
+    climb.stop();
   }
 
   // Returns true when the command should end.

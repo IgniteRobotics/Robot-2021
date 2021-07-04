@@ -2,20 +2,17 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
-
-public class ClimbMotionMagicUp extends CommandBase {
+public class ClimbDown extends CommandBase {
   private Climber climb;
-  private int targetPositionTicks = 210000;
-  /** Creates a new ClimbMotionMagicUp. */
-  public ClimbMotionMagicUp(Climber climb) {
+  /** Creates a new ClimbUp. */
+  public ClimbDown(Climber climb) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.climb = climb;
-    addRequirements(climb);
+     this.climb = climb;
   }
 
   // Called when the command is initially scheduled.
@@ -25,7 +22,7 @@ public class ClimbMotionMagicUp extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climb.setMotionMagicPosition(targetPositionTicks);
+    climb.goDown();
   }
 
   // Called once the command ends or is interrupted.
