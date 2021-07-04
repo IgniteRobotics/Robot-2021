@@ -196,17 +196,6 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);
         turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
         turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
-
-        
-        outputTelemetry();
-
-        BadLog.publish("LeftMasterSupply", leftMaster.getSupplyCurrent());
-        BadLog.publish("LeftFollowSupply", leftFollower.getSupplyCurrent());
-        BadLog.publish("RightMasterSupply", rightMaster.getSupplyCurrent());
-        BadLog.publish("RightFollowSupply", rightFollower.getSupplyCurrent());
-
-        Robot.logger.updateTopics();
-        Robot.logger.log();
     }
 
     public Pose2d getCurrentPose() {

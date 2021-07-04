@@ -17,9 +17,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.MotorConstants;
 
 public class Climber extends SubsystemBase {
-  /** Creates a new Climber. */
-  // Climb won't break if we extend too far. Will it fly off if we let it go up
-  // too fast?
   public static final double CLIMB_EFFORT = 0.15;
 
   private WPI_TalonFX climberLeader;
@@ -33,8 +30,6 @@ public class Climber extends SubsystemBase {
   private NetworkTableEntry rightClimbCurrent = shuffleTab.add("Right Climb Supply (Amps)", 0).getEntry();
 
   private NetworkTableEntry climbEffort = shuffleTab.add("Climb Effort", CLIMB_EFFORT).getEntry();
-  private NetworkTableEntry cruiseVelocityEntry = shuffleTab.add("cruiseVelocity (sensor units / 100ms", 10000).getEntry();
-  private NetworkTableEntry accelerationEntry  = shuffleTab.add("acceleration", 6000).getEntry();
 
   public static final int CLIMBER_FORWARD_LIMIT = 290000;
   public static final int CLIMBER_REVERSE_LIMIT = 10000;
@@ -47,15 +42,12 @@ public class Climber extends SubsystemBase {
   private final double  kD = 0;
   private final int kPIDLoopIdx = 0;
 
-  private double cruiseVelocity;
-  private double acceleration;
-
-
-
-
   public Climber() {
     climberLeader = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
     climberFollower = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
+
+    climberLeader.configFactoryDefault();
+    climberFollower.configFactoryDefault();
 
     climberFollower.setInverted(true);
     climberFollower.follow(climberLeader);
