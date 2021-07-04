@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
-import frc.robot.commands.ClimbUp;
+import frc.robot.commands.climber.ClimbUp;
 import frc.robot.commands.LimelightSnapshot;
 import frc.robot.commands.autonomous.GalacticSearch;
 import frc.robot.commands.shooter.AdjustHoodAngle;
@@ -56,9 +56,9 @@ import frc.robot.subsystems.RamseteDriveSubsystem;
 import frc.robot.subsystems.Realsense;
 import frc.robot.commands.shooter.ShootBallTest;
 import frc.robot.subsystems.Climber;
-import frc.robot.commands.ClimbUp;
-import frc.robot.commands.ClimbDown;
-import frc.robot.commands.ClimbMotionMagicUp;
+import frc.robot.commands.climber.ClimbUp;
+import frc.robot.commands.climber.ClimbDown;
+import frc.robot.commands.climber.ClimbMotionMagicUp;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -202,8 +202,6 @@ public class RobotContainer {
     btn_driverX.whenPressed(toggleIntakeCommand);
     btn_driverLTrigger.whileHeld(outtakeBalls);
     btn_driverRTrigger.whileHeld(intakeBalls);
-
-    btn_driverRStick.whenPressed(teleDriveCommand::toggleReversed);
 
     btn_manipLTrigger.whileHeld(climbUp);
     btn_manipRTrigger.whileHeld(climbDown);
