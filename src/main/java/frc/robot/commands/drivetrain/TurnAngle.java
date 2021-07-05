@@ -11,6 +11,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.subsystems.RamseteDriveSubsystem;
 
@@ -18,6 +19,7 @@ import frc.robot.subsystems.RamseteDriveSubsystem;
 public class TurnAngle extends PIDCommand {
 
   private RamseteDriveSubsystem m_driveTrain;
+  private double targetAngleDegrees;
 
   private final static double kP_TURN = 0.1;
   private final static double kI_TURN = 0;
@@ -27,29 +29,31 @@ public class TurnAngle extends PIDCommand {
     super(
       new PIDController(kP_TURN, kI_TURN,kD_TURN),
       driveTrain::getHeading,
-      targetAngleDegrees,
-      output -> driveTrain.tankDrivePower(-output, output),
+      driveTrain.getHeading() + targetAngleDegrees,
+      output -> driveTrain.arcadeDrive(0, output * 0.1, false),
       driveTrain
     );
     this.m_driveTrain = driveTrain;
 
-    getController().enableContinuousInput(-180, 180);
-    getController().setTolerance(5.0f);
+    getController().setP(0.05);
+    getController().setTolerance(2.0f);
 
     addRequirements(m_driveTrain);
-
+    this.targetAngleDegrees = targetAngleDegrees;
   }
 
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
-    m_driveTrain.zeroHeading();
+    super.initialize();
+    getController().setSetpoint(m_driveTrain.getHeading() + targetAngleDegrees);
   }
 
   // // Called repeatedly when this Command is scheduled to run
    @Override
    public void execute() {
      super.execute();
+     SmartDashboard.putNumber("TurnAngleError", getController().getPositionError());
    //System.out.println(m_driveTrain.getHeading() + "DAASSS");
    }
 

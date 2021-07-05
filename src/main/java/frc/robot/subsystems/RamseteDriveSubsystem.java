@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.subsystems;
+
 import frc.robot.Robot;
 import java.util.Map;
 
@@ -59,11 +60,9 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
     private final WPI_TalonFX leftMaster = new WPI_TalonFX(MotorConstants.kLeftMasterPort);
     private final WPI_TalonFX leftFollower = new WPI_TalonFX(MotorConstants.kLeftFollowerPort);
-   
 
     private final WPI_TalonFX rightMaster = new WPI_TalonFX(MotorConstants.kRightMasterPort);
     private final WPI_TalonFX rightFollower = new WPI_TalonFX(MotorConstants.kRightFollowerPort);
-  
 
     private DifferentialDrive m_driveTrain;
 
@@ -92,55 +91,47 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     private double velocityLimitMultiplier;
     private double turnRampExponent;
     private double turnLimitMultiplier;
-    //7.8 is gear ratio
-    private double ticksPerMeter =  (2048.0 * 7.8) / Constants.WHEEL_CIRCUMFERENCE_METERS;
+    // 7.8 is gear ratio
+    private double ticksPerMeter = (2048.0 * 7.8) / Constants.WHEEL_CIRCUMFERENCE_METERS;
 
     public RamseteDriveSubsystem() {
-        m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); //assume robot starts at x =0, y=0, theta = 0
-       
+        m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); // assume robot starts at x =0, y=0,
+                                                                               // theta = 0
+
         navX.zeroYaw();
 
         leftMaster.configFactoryDefault();
         rightMaster.configFactoryDefault();
 
-
-
-
-         TalonFXConfiguration talonConfig = new TalonFXConfiguration();
+        TalonFXConfiguration talonConfig = new TalonFXConfiguration();
         talonConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
-      //  talonConfig.slot0.kP = Constants.kPDriveVel;
-      talonConfig.slot0.kP = .01;
+        talonConfig.slot0.kP = .01;
         talonConfig.slot0.kI = 0.0;
         talonConfig.slot0.kD = 0.0;
         talonConfig.slot0.integralZone = 400;
         talonConfig.slot0.closedLoopPeakOutput = 1.0;
-        
-       talonConfig.openloopRamp = Constants.OPEN_LOOP_RAMP;
 
-//    leftMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
-  //      rightMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+        talonConfig.openloopRamp = Constants.OPEN_LOOP_RAMP;
 
         leftMaster.configAllSettings(talonConfig);
         leftMaster.enableVoltageCompensation(true);
         leftFollower.configFactoryDefault();
-      
 
-       rightMaster.configAllSettings(talonConfig);
+        rightMaster.configAllSettings(talonConfig);
         rightMaster.enableVoltageCompensation(true);
         rightFollower.configFactoryDefault();
-      
+
         resetEncoders();
-     //   enableEncoders();
 
         setNeutralMode(NeutralMode.Brake);
-        
-        //Falcons don't need to set sensor phase
-        //rightMaster.setSensorPhase(false);
-        //rightMaster.setInverted(false);
-        //rightFollower.setInverted(false);
-       // leftMaster.setSensorPhase(true);
 
-//uninvert right
+        // Falcons don't need to set sensor phase
+        // rightMaster.setSensorPhase(false);
+        // rightMaster.setInverted(false);
+        // rightFollower.setInverted(false);
+        // leftMaster.setSensorPhase(true);
+
+        // uninvert right
         leftMaster.setInverted(false);
         leftFollower.setInverted(false);
 
@@ -150,35 +141,39 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         leftFollower.follow(leftMaster);
         rightFollower.follow(rightMaster);
 
-        //inversion etc has to happen BEFORE this statement!
+        // inversion etc has to happen BEFORE this statement!
         m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
         SmartDashboard.putData("Field", m_field);
 
         tab = Shuffleboard.getTab("Drivetrain");
-        velocityRampExponentEntry = tab.add("DT Vel Ramp Exp", Constants.VELOCITY_RAMP_EXPONENT).withProperties(Map.of("min", 1)).getEntry();
-        velocityLimitMultiplierEntry = tab.add("DT Vel Lim Mult", Constants.VELOCITY_LIMIT_MULTIPLIER).withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
-        turnRampExponentEntry = tab.add("DT Turn Ramp Exp", Constants.TURN_RAMP_EXPONENT).withProperties(Map.of("min", 1)).getEntry();
-        turnLimitMultiplierEntry = tab.add("DT Trun Lim Mult", Constants.TURN_LIMIT_MULTIPLIER).withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
+        velocityRampExponentEntry = tab.add("DT Vel Ramp Exp", Constants.VELOCITY_RAMP_EXPONENT)
+                .withProperties(Map.of("min", 1)).getEntry();
+        velocityLimitMultiplierEntry = tab.add("DT Vel Lim Mult", Constants.VELOCITY_LIMIT_MULTIPLIER)
+                .withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
+        turnRampExponentEntry = tab.add("DT Turn Ramp Exp", Constants.TURN_RAMP_EXPONENT)
+                .withProperties(Map.of("min", 1)).getEntry();
+        turnLimitMultiplierEntry = tab.add("DT Trun Lim Mult", Constants.TURN_LIMIT_MULTIPLIER)
+                .withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
 
         velocityLimitMultiplier = velocityLimitMultiplierEntry.getDouble(Constants.VELOCITY_LIMIT_MULTIPLIER);
         velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);
         turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
         turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
 
-        //Testing
-      //  m_driveTrain.setMaxOutput(.5);
-        addChild("LeftMaster- Drivetrain",leftMaster);
-        addChild("rightMaster- Drivetrain",rightMaster);
-        addChild("rightFollower- Drivetrain",rightFollower);
-        addChild("leftFollower- Drivetrain",leftFollower);
+        // Testing
+        // m_driveTrain.setMaxOutput(.5);
+        addChild("LeftMaster- Drivetrain", leftMaster);
+        addChild("rightMaster- Drivetrain", rightMaster);
+        addChild("rightFollower- Drivetrain", rightFollower);
+        addChild("leftFollower- Drivetrain", leftFollower);
         addChild("navX", navX);
 
     }
 
     private void enableEncoders() {
-        encodersAvailable =
-                leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10) == ErrorCode.OK &
-                        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10) == ErrorCode.OK;
+        encodersAvailable = leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0,
+                10) == ErrorCode.OK
+                & rightMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10) == ErrorCode.OK;
         if (!encodersAvailable) {
             DriverStation.reportError("Failed to configure drivetrain encoders!", false);
             useEncoders = false;
@@ -188,9 +183,12 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        m_odometry.update(Rotation2d.fromDegrees(getHeading()), Util.getMetersFromEncoderTicks(getLeftEncoderPosition()),
+        m_odometry.update(Rotation2d.fromDegrees(getHeading()),
+                Util.getMetersFromEncoderTicks(getLeftEncoderPosition()),
                 Util.getMetersFromEncoderTicks(getRightEncoderPosition()));
         m_field.setRobotPose(m_odometry.getPoseMeters());
+
+        outputTelemetry();
 
         velocityLimitMultiplier = velocityLimitMultiplierEntry.getDouble(Constants.VELOCITY_LIMIT_MULTIPLIER);
         velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);
@@ -211,19 +209,19 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     }
 
     public double getWheelSpeedsMetersPerSecond(double ticksPer100ms) {
-      //CTRE encoders return raw sensor units per 100 miliseconds
+        // CTRE encoders return raw sensor units per 100 miliseconds
 
-      //Ticks / 100second 
-      //Wheel circumference / 2048 
-      return ticksPer100ms * 10 * (1 / ticksPerMeter);
+        // Ticks / 100second
+        // Wheel circumference / 2048
+        return ticksPer100ms * 10 * (1 / ticksPerMeter);
     }
 
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
 
-        //TODO Convert this to wheel speeds later
-        //DifferentialDriveWHeelSpeeds expects meters per second
+        // TODO Convert this to wheel speeds later
+        // DifferentialDriveWHeelSpeeds expects meters per second
         return new DifferentialDriveWheelSpeeds(getWheelSpeedsMetersPerSecond(leftMaster.getSelectedSensorVelocity()),
-        getWheelSpeedsMetersPerSecond (rightMaster.getSelectedSensorVelocity()));
+                getWheelSpeedsMetersPerSecond(rightMaster.getSelectedSensorVelocity()));
     }
 
     public void resetOdometry() {
@@ -273,14 +271,13 @@ public class RamseteDriveSubsystem extends SubsystemBase {
             m_driveTrain.tankDrive(leftSpeed, rightSpeed, useSquares);
         }
     }
- 
 
     public void tankDriveVelocity(double leftVelocity, double rightVelocity) {
-        //TODO - remove later.  liting velocity to 1 m/s
+        // TODO - remove later. liting velocity to 1 m/s
         leftVelocity = Util.limit(leftVelocity, 1.0);
         rightVelocity = Util.limit(rightVelocity, 1.0);
-        final double leftAccel = (leftVelocity - Util.stepsPerDecisecToMetersPerSec(leftMaster.getSelectedSensorVelocity()))
-                / .20;
+        final double leftAccel = (leftVelocity
+                - Util.stepsPerDecisecToMetersPerSec(leftMaster.getSelectedSensorVelocity())) / .20;
         final double rightAccel = (rightVelocity
                 - Util.stepsPerDecisecToMetersPerSec(rightMaster.getSelectedSensorVelocity())) / .20;
 
@@ -293,16 +290,16 @@ public class RamseteDriveSubsystem extends SubsystemBase {
                 DemandType.ArbitraryFeedForward, rightFeedForwardVolts / 12);
         m_driveTrain.feed();
     }
-   //used to drive trajectories
+
+    // used to drive trajectories
     public void tankDriveVolts(double leftVolts, double rightVolts) {
         this.leftMaster.setVoltage(leftVolts);
         this.leftFollower.setVoltage(leftVolts);
 
-        //if you're raw setting volts, you need to flip the right side.
+        // if you're raw setting volts, you need to flip the right side.
         this.rightMaster.setVoltage(-rightVolts);
         this.rightFollower.setVoltage(-rightVolts);
     }
-
 
     private double safeClamp(final double input) {
         if (Double.isNaN(input)) {
@@ -314,7 +311,6 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     public void driveCurvature(double xSpeed, double zRotation, boolean isQuickTurn) {
         m_driveTrain.curvatureDrive(xSpeed, zRotation, isQuickTurn);
     }
-
 
     public void resetEncoders() {
         leftMaster.setSelectedSensorPosition(0);
@@ -341,8 +337,14 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         navX.reset();
     }
 
+    /**
+     * Returns the absolute position of the yaw axis.
+     * 
+     * Increments over 360
+     * @return
+     */
     public double getHeading() {
-        return Math.IEEEremainder(-navX.getAngle(), 360.0) * (1.0);
+        return navX.getAngle();
     }
 
     public void setNeutralMode(final NeutralMode neutralMode) {
@@ -357,14 +359,9 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     }
 
     public Command createCommandForTrajectory(final Trajectory trajectory) {
-        return new RamseteCommand(
-                trajectory,
-                this::getCurrentPose,
-                new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
-                Constants.kDriveKinematics,
-                this::tankDriveVelocity,
-                this)
-                .andThen(this::stop, this);
+        return new RamseteCommand(trajectory, this::getCurrentPose,
+                new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta), Constants.kDriveKinematics,
+                this::tankDriveVelocity, this).andThen(this::stop, this);
     }
 
     public double getLeftEncoderVel() {
@@ -382,7 +379,6 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     public double getRightMasterVoltage() {
         return rightMaster.getMotorOutputVoltage();
     }
-
 
     public double getLeftPercentOutput() {
         return leftMaster.getMotorOutputPercent();
@@ -416,15 +412,15 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         return leftMaster.getClosedLoopTarget();
     }
 
-   
-    //TODO: Fix this to be more consistent with inverted and negative voltages. 
-    //Right now it's sort of a hack 
-    public void driveDistance(double setpointTicks){
-     //I don't think the arbitary feed forward is really that helpful here
-      leftMaster.set(TalonFXControlMode.Position, setpointTicks, DemandType.ArbitraryFeedForward,  0.0007);
-      rightMaster.set(TalonFXControlMode.Position, -setpointTicks, DemandType.ArbitraryFeedForward,  0.0007);
+    // TODO: Fix this to be more consistent with inverted and negative voltages.
+    // Right now it's sort of a hack
+    public void driveDistance(double setpointTicks) {
+        // I don't think the arbitary feed forward is really that helpful here
+        leftMaster.set(TalonFXControlMode.Position, setpointTicks, DemandType.ArbitraryFeedForward, 0.0007);
+        rightMaster.set(TalonFXControlMode.Position, -setpointTicks, DemandType.ArbitraryFeedForward, 0.0007);
     }
-    public double getLeftMasterPositionTicks(){
+
+    public double getLeftMasterPositionTicks() {
         return leftMaster.getSelectedSensorPosition();
     }
 
@@ -441,8 +437,9 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Drivetrain/Right percent out", this.getRightPercentOutput());
         SmartDashboard.putBoolean("Drivetrain/Is navX connected?", this.isConnected());
         SmartDashboard.putNumber("Drivetrain/Angle", this.getAngle());
-        SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
-      //  SmartDashboard.putNumber("Drivetrain/Closed loop target", this.getClosedLoopTarget());
+        SmartDashboard.putNumber("Drivetrain/Heading", this.getHeading());
+        // SmartDashboard.putNumber("Drivetrain/Closed loop target",
+        // this.getClosedLoopTarget());
         SmartDashboard.putBoolean("Drivetrain/Using Encoders?", this.useEncoders);
         SmartDashboard.putNumber("Drivetrain/Current VRamp Exp", this.velocityRampExponent);
         SmartDashboard.putNumber("Drivetrain/Current VRamp Lim", this.velocityLimitMultiplier);

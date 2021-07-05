@@ -128,7 +128,6 @@ public class RobotContainer {
   private ParallelCommandGroup intakeAndDrive = new ParallelCommandGroup(new RunIntake(1.0, m_intake),
       this.loadTrajectoryCommand("28-GS-B-Red"));
   private SequentialCommandGroup manualGS = new SequentialCommandGroup(new ToggleIntake(m_intake), intakeAndDrive);
-  private TurnAngle Turn90Degrees = new TurnAngle(m_driveTrain, 90);
   private LimelightSnapshot takeLimelightSnapShots = new LimelightSnapshot();
   private SequentialCommandGroup DriveBackAndShoot = new SequentialCommandGroup(new DriveDistance(-3.048, m_driveTrain),
       new ShootBallSpecific(m_shooter, m_indexer, 4000, 1400));
@@ -148,6 +147,8 @@ public class RobotContainer {
 
   private RunIntake intakeBalls = new RunIntake(1.0, m_intake);
   private RunIntake outtakeBalls = new RunIntake(-1.0, m_intake);
+
+  private TurnAngle turn90Degrees = new TurnAngle(m_driveTrain, 90);
 
   private JoystickButton btn_driverA = new JoystickButton(m_driveController, ControllerConstants.BUTTON_A);
   private JoystickButton btn_driverB = new JoystickButton(m_driveController, ControllerConstants.BUTTON_B);
@@ -186,7 +187,7 @@ public class RobotContainer {
     SmartDashboard.putData("toggleIntakeCommand", toggleIntakeCommand);
     SmartDashboard.putData("drivetoDistance", drivetoDistance);
     SmartDashboard.putData("ShootBall", shootBall);
-    SmartDashboard.putData("Turn90Degrees", Turn90Degrees);
+    SmartDashboard.putData("Turn90Degrees", turn90Degrees);
     SmartDashboard.putData("takeLimelightSnapShots", takeLimelightSnapShots);
     SmartDashboard.putData("DriveBackAndShoot", DriveBackAndShoot);
     SmartDashboard.putData("ClimbUp", climbUp);
@@ -205,6 +206,7 @@ public class RobotContainer {
 
     btn_manipLTrigger.whileHeld(climbUp);
     btn_manipRTrigger.whileHeld(climbDown);
+    btn_manipA.whileHeld(turn90Degrees);
   }
 
   private void configureSubsystemCommands() {
