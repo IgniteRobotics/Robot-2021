@@ -27,10 +27,10 @@ import frc.robot.util.VisionUtils;
 public class TargetPositioning extends CommandBase {
     private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private static NetworkTable table = inst.getTable("limelight");
-    private static double KpTurn = 0.025;// or 0.035
+    private static double KpTurn = 0.015;// or 0.035
     //private static double minCommand = 0.08;
-    private static double minCommand = 0.04;
-    private static double minInfPoint = 8; // or 4
+    private static double minCommand = 0.08;
+    private static double minInfPoint = 4; // or 4
     // the range you want.
     //allowed margin of errorit
     private double marginOfErrorTurn = 2.0;
@@ -81,7 +81,7 @@ public class TargetPositioning extends CommandBase {
         double tv = (double) table.getEntry("tv").getNumber(0);
         SmartDashboard.putNumber("Limelight tv", tv);
 
-        if (tv > 0) {
+        if (Math.abs(tv) > 0) {
 
             targetFound = true;
 
@@ -96,18 +96,15 @@ public class TargetPositioning extends CommandBase {
 
             state.setShooterDistance(dist);
 
-            double headingError = -tx;
+            double headingError = Math.abs(tx);
             double steeringAdjust = 0.0;
-            if (tx >= minInfPoint) {
-                steeringAdjust = KpTurn * headingError - minCommand;
-            } else if (tx < minInfPoint) {
-                steeringAdjust = KpTurn * headingError + minCommand;
-            }
+            steeringAdjust = -(KpTurn * headingError + minCommand) * Math.signum(tx);
 
 
             //m_driveTrain.arcadeDrive(-drivingAdjust,steeringAdjust,Constants.kDriveDeadband);
             //flip it since the shooter is on the back.
-            m_driveTrain.arcadeDrive(0, -steeringAdjust, true);
+            SmartDashboard.putNumber("TargetPositioning/SteeringAdjust", steeringAdjust);
+            m_driveTrain.arcadeDrive(0, -steeringAdjust, false);
         } else {
             targetFound = false;
             m_driveTrain.arcadeDrive(getSpeed(), getRotation(), true);
@@ -117,7 +114,6 @@ public class TargetPositioning extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        table.getEntry("ledMode").setNumber(1);
      //   m_driveTrain.stop();
     }
 

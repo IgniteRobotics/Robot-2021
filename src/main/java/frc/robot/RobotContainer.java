@@ -206,7 +206,8 @@ public class RobotContainer {
 
     btn_manipLTrigger.whileHeld(climbUp);
     btn_manipRTrigger.whileHeld(climbDown);
-    btn_manipA.whileHeld(turn90Degrees);
+    btn_manipA.whileHeld(shootBallInterpolated);
+    btn_manipY.whileHeld(targetingCommand);
   }
 
   private void configureSubsystemCommands() {
