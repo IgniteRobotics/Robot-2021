@@ -104,7 +104,7 @@ public final class Constants {
     public static final double TURN_RAMP_EXPONENT = 2;
     public static final double TURN_LIMIT_MULTIPLIER = 0.4;
     public static final double LIMELIGHT_HEIGHT = 0.59055;
-    public static final double LIMELIGHT_ANGLE = 41.6; // degrees
+    public static final double LIMELIGHT_ANGLE = 35; // degrees
     public static final double TARGET_HEIGHT = 2.49555;
 
     //Pathdata for galactic search. Units are in cm, pixel offset

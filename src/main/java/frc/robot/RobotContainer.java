@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
 import frc.robot.commands.climber.ClimbUp;
+import frc.robot.commands.climber.RetractClimbMax;
 import frc.robot.commands.LimelightSnapshot;
 import frc.robot.commands.autonomous.GalacticSearch;
 import frc.robot.commands.shooter.AdjustHoodAngle;
@@ -142,6 +143,7 @@ public class RobotContainer {
 
   private ClimbUp climbUp = new ClimbUp(m_climber);
   private ClimbDown climbDown = new ClimbDown(m_climber);
+  private RetractClimbMax retractClimbMax = new RetractClimbMax(m_climber);
 
   private ToggleIntake toggleIntakeCommand = new ToggleIntake(m_intake);
 
@@ -160,6 +162,7 @@ public class RobotContainer {
 
   private JoystickButton btn_manipA = new JoystickButton(m_manipController, ControllerConstants.BUTTON_A);
   private JoystickButton btn_manipY = new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y);
+  private JoystickButton btn_manipX = new JoystickButton(m_manipController, ControllerConstants.BUTTON_X);
   private JoystickButton btn_manipLTrigger = new JoystickButton(m_manipController, ControllerConstants.BUTTON_LEFT_BUMPER);
   private JoystickButton btn_manipRTrigger = new JoystickButton(m_manipController, ControllerConstants.BUTTON_RIGHT_BUMPER);
 
@@ -208,6 +211,7 @@ public class RobotContainer {
     btn_manipRTrigger.whileHeld(climbDown);
     btn_manipA.whileHeld(shootBallInterpolated);
     btn_manipY.whileHeld(targetingCommand);
+    btn_manipX.whenHeld(retractClimbMax);
   }
 
   private void configureSubsystemCommands() {

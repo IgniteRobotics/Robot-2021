@@ -42,6 +42,12 @@ public class Climber extends SubsystemBase {
   private final double  kD = 0;
   private final int kPIDLoopIdx = 0;
 
+  private boolean leaderCurrentStopped;
+  private boolean followerCurrentStopped;
+
+  public static final double safeReduceEffort = 0.08;
+  public static final double safeStatorLimit = 0.3;
+
   public Climber() {
     climberLeader = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
     climberFollower = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
@@ -50,7 +56,6 @@ public class Climber extends SubsystemBase {
     climberFollower.configFactoryDefault();
 
     climberFollower.setInverted(true);
-    climberFollower.follow(climberLeader);
 
     climberLeader.setNeutralMode(NeutralMode.Brake);
     climberFollower.setNeutralMode(NeutralMode.Brake);
@@ -101,19 +106,62 @@ public class Climber extends SubsystemBase {
   public void goUp() {
     // TODO make this shuffleboard changeable
     climberLeader.set(ControlMode.PercentOutput, climbEffort.getDouble(0));
-
+    climberFollower.set(ControlMode.PercentOutput, climbEffort.getDouble(0));
   }
 
   public void goDown() {
     climberLeader.set(ControlMode.PercentOutput, -climbEffort.getDouble(0));
+    climberFollower.set(ControlMode.PercentOutput, -climbEffort.getDouble(0));
   }
 
   public void go(double effort) {
     climberLeader.set(ControlMode.PercentOutput, effort);
+    climberFollower.set(ControlMode.PercentOutput, effort);
   }
 
   public void setOpenLoop(double percentage) {
     climberLeader.set(ControlMode.PercentOutput, percentage);
+  }
+
+  public void reduceMaxSafe() {
+    if(!leaderCurrentStopped) {
+      climberLeader.set(ControlMode.PercentOutput, -safeReduceEffort);
+    }
+
+    if(!followerCurrentStopped) {
+      climberFollower.set(ControlMode.PercentOutput, -safeReduceEffort);
+    }
+
+    if(climberLeader.getSupplyCurrent() > safeStatorLimit) {
+      leaderCurrentStopped = true;
+      climberLeader.stopMotor();
+      climberLeader.setSelectedSensorPosition(0);
+    }
+
+    if(climberFollower.getSupplyCurrent() > safeStatorLimit) {
+      followerCurrentStopped = true;
+      climberFollower.stopMotor();
+      climberFollower.setSelectedSensorPosition(0);
+    }
+  }
+
+  /**
+   * Disables and enables soft limits on climber, depending on parameter set. 
+   * Also removes follower mode on climberFollower.
+   * 
+   * For reducing climber to zero
+   * @param set
+   */
+  public void setNoLimits(boolean set) {
+    climberLeader.configForwardSoftLimitEnable(!set, 0);
+    climberLeader.configReverseSoftLimitEnable(!set, 0);
+
+    climberFollower.configForwardSoftLimitEnable(!set, 0);
+    climberFollower.configReverseSoftLimitEnable(!set, 0);
+  }
+
+  public boolean bothCurrentStopped() {
+    return leaderCurrentStopped && followerCurrentStopped;
   }
 
   public void setOpenLoop(double percentage, double deadband) {
@@ -175,7 +223,12 @@ public class Climber extends SubsystemBase {
     return climberLeader.getSensorCollection().isRevLimitSwitchClosed() != 0;
   }
 
+  public void resetCurrentLimits() {
+    leaderCurrentStopped = followerCurrentStopped = false;
+  }
+
   public void stop() {
     climberLeader.stopMotor();
+    climberFollower.stopMotor();
   }
 }
