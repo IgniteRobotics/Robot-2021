@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.MotorConstants;
 
 public class Climber extends SubsystemBase {
-  public static final double CLIMB_EFFORT = 0.15;
+  public static final double CLIMB_EFFORT_UP = 1;
+  public static final double CLIMB_EFFORT_DOWN_ENGAGE = 0.2;
+  public static final double CLIMB_EFFORT_DOWN = 1;
 
   private WPI_TalonFX climberLeader;
   private WPI_TalonFX climberFollower;
@@ -28,8 +30,6 @@ public class Climber extends SubsystemBase {
 
   private NetworkTableEntry leftClimbCurrent = shuffleTab.add("Left Climb Supply (Amps)", 0).getEntry();
   private NetworkTableEntry rightClimbCurrent = shuffleTab.add("Right Climb Supply (Amps)", 0).getEntry();
-
-  private NetworkTableEntry climbEffort = shuffleTab.add("Climb Effort", CLIMB_EFFORT).getEntry();
 
   public static final int CLIMBER_FORWARD_LIMIT = 290000;
   public static final int CLIMBER_REVERSE_LIMIT = 10000;
@@ -105,13 +105,18 @@ public class Climber extends SubsystemBase {
 
   public void goUp() {
     // TODO make this shuffleboard changeable
-    climberLeader.set(ControlMode.PercentOutput, climbEffort.getDouble(0));
-    climberFollower.set(ControlMode.PercentOutput, climbEffort.getDouble(0));
+    climberLeader.set(ControlMode.PercentOutput, CLIMB_EFFORT_UP);
+    climberFollower.set(ControlMode.PercentOutput, CLIMB_EFFORT_UP);
   }
 
   public void goDown() {
-    climberLeader.set(ControlMode.PercentOutput, -climbEffort.getDouble(0));
-    climberFollower.set(ControlMode.PercentOutput, -climbEffort.getDouble(0));
+    climberLeader.set(ControlMode.PercentOutput, -CLIMB_EFFORT_DOWN);
+    climberFollower.set(ControlMode.PercentOutput, -CLIMB_EFFORT_DOWN);
+  }
+
+  public void goDownEngage() {
+    climberLeader.set(ControlMode.PercentOutput, -CLIMB_EFFORT_DOWN_ENGAGE);
+    climberFollower.set(ControlMode.PercentOutput, -CLIMB_EFFORT_DOWN_ENGAGE);
   }
 
   public void go(double effort) {

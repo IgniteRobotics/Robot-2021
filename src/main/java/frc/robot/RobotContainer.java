@@ -59,6 +59,7 @@ import frc.robot.commands.shooter.ShootBallTest;
 import frc.robot.subsystems.Climber;
 import frc.robot.commands.climber.ClimbUp;
 import frc.robot.commands.climber.ClimbDown;
+import frc.robot.commands.climber.ClimbDownEngage;
 import frc.robot.commands.climber.ClimbMotionMagicUp;
 
 /**
@@ -97,8 +98,6 @@ public class RobotContainer {
   private ResetHood resetHood = new ResetHood(m_shooter);
 
   private SetIntake extendIntake = new SetIntake(m_intake, true);
-  private SequentialCommandGroup autonSequence = new SequentialCommandGroup(extendIntake, autonShootBall);
-
   SendableChooser<Command> chooseAuton = new SendableChooser<>();
 
   // private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new
@@ -143,6 +142,8 @@ public class RobotContainer {
 
   private ClimbUp climbUp = new ClimbUp(m_climber);
   private ClimbDown climbDown = new ClimbDown(m_climber);
+  private ClimbDownEngage climbDownEngage = new ClimbDownEngage(m_climber, m_manipController);
+
   private RetractClimbMax retractClimbMax = new RetractClimbMax(m_climber);
 
   private ToggleIntake toggleIntakeCommand = new ToggleIntake(m_intake);
@@ -152,19 +153,32 @@ public class RobotContainer {
 
   private TurnAngle turn90Degrees = new TurnAngle(m_driveTrain, 90);
 
+  // private SequentialCommandGroup autonCommandGroup = new
+  // SequentialCommandGroup(
+  // new SetIntake(m_intake, true),
+  // new TargetPositioning(m_driveTrain, m_driveController).withTimeout(1),
+  // new ShootBallSpecific(m_shooter, m_indexer, 3500, 0).withTimeout(3)
+  // );
+
   private JoystickButton btn_driverA = new JoystickButton(m_driveController, ControllerConstants.BUTTON_A);
   private JoystickButton btn_driverB = new JoystickButton(m_driveController, ControllerConstants.BUTTON_B);
   private JoystickButton btn_driverY = new JoystickButton(m_driveController, ControllerConstants.BUTTON_Y);
   private JoystickButton btn_driverX = new JoystickButton(m_driveController, ControllerConstants.BUTTON_X);
-  private JoystickButton btn_driverLTrigger = new JoystickButton(m_driveController, ControllerConstants.BUTTON_LEFT_BUMPER);
-  private JoystickButton btn_driverRTrigger = new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_BUMPER);
-  private JoystickButton btn_driverRStick = new JoystickButton(m_driveController, ControllerConstants.BUTTON_RIGHT_STICK);
+  private JoystickButton btn_driverLBumper = new JoystickButton(m_driveController,
+      ControllerConstants.BUTTON_LEFT_BUMPER);
+  private JoystickButton btn_driverRBumper = new JoystickButton(m_driveController,
+      ControllerConstants.BUTTON_RIGHT_BUMPER);
+  private JoystickButton btn_driverRStick = new JoystickButton(m_driveController,
+      ControllerConstants.BUTTON_RIGHT_STICK);
 
   private JoystickButton btn_manipA = new JoystickButton(m_manipController, ControllerConstants.BUTTON_A);
   private JoystickButton btn_manipY = new JoystickButton(m_manipController, ControllerConstants.BUTTON_Y);
   private JoystickButton btn_manipX = new JoystickButton(m_manipController, ControllerConstants.BUTTON_X);
-  private JoystickButton btn_manipLTrigger = new JoystickButton(m_manipController, ControllerConstants.BUTTON_LEFT_BUMPER);
-  private JoystickButton btn_manipRTrigger = new JoystickButton(m_manipController, ControllerConstants.BUTTON_RIGHT_BUMPER);
+  private JoystickButton btn_manipB = new JoystickButton(m_manipController, ControllerConstants.BUTTON_B);
+  private JoystickButton btn_manipLBumper = new JoystickButton(m_manipController,
+      ControllerConstants.BUTTON_LEFT_BUMPER);
+  private JoystickButton btn_manipRBumper = new JoystickButton(m_manipController,
+      ControllerConstants.BUTTON_RIGHT_BUMPER);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -196,7 +210,7 @@ public class RobotContainer {
     SmartDashboard.putData("ClimbUp", climbUp);
     SmartDashboard.putData("ClimbDown", climbDown);
 
-    this.chooseAuton.addOption("Default Auton", autonSequence);
+    // this.chooseAuton.addOption("Default Auton", autonCommandGroup);
   }
 
   private void configureButtonBindings() {
@@ -204,19 +218,22 @@ public class RobotContainer {
     btn_driverB.whileHeld(baseShot);
     btn_driverY.whileHeld(trenchShot);
     btn_driverX.whenPressed(toggleIntakeCommand);
-    btn_driverLTrigger.whileHeld(outtakeBalls);
-    btn_driverRTrigger.whileHeld(intakeBalls);
+    btn_driverLBumper.whileHeld(outtakeBalls);
+    btn_driverRBumper.whileHeld(intakeBalls);
 
-    btn_manipLTrigger.whileHeld(climbUp);
-    btn_manipRTrigger.whileHeld(climbDown);
+    btn_manipLBumper.whileHeld(climbUp);
+    btn_manipRBumper.whileHeld(climbDown);
+
     btn_manipA.whileHeld(shootBallInterpolated);
     btn_manipY.whileHeld(targetingCommand);
     btn_manipX.whenHeld(retractClimbMax);
+    // btn_manipB.whenHeld(autonCommandGroup);
   }
 
   private void configureSubsystemCommands() {
     m_driveTrain.setDefaultCommand(teleDriveCommand);
     m_shooter.setDefaultCommand(resetHood);
+    m_climber.setDefaultCommand(climbDownEngage);
   }
 
   private void configureAutonChooser() {
