@@ -41,9 +41,6 @@ public class Shooter extends SubsystemBase {
     private WPI_TalonFX followMotor = new WPI_TalonFX(MotorConstants.kShooterTalonMotorFollowerPort);
     private WPI_TalonSRX kickUp = new WPI_TalonSRX(MotorConstants.kShooterTalonMotorKickUpPort); //TODO confirm this
 
-  
-
-
     private CANSparkMax hood_motor = new CANSparkMax(MotorConstants.kShooterSparkMotorHoodPort, MotorType.kBrushless);
     private CANEncoder hoodEncoder = hood_motor.getEncoder();
     private CANPIDController hoodPidController = hood_motor.getPIDController();
@@ -309,15 +306,7 @@ public class Shooter extends SubsystemBase {
  }
 
     public void resetHood() {
-        if (!hoodLimitSwitch.get()) {
-            hood_motor.set(-0.1);
-        } else {
-            // reset encoders
-            hood_motor.set(0);
-            hoodReset = true;
-
-            hoodEncoder.setPosition(0);
-        }
+        hood_motor.set(-0.2);
     }
 
     public boolean isHoodReady() {
@@ -327,11 +316,19 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isHoodReset() {
-        return hoodReset;
+        return hoodLimitSwitch.get();
+    }
+
+    public void setHoodReset(boolean b) {
+        this.hoodReset = b;
     }
 
     public void stopHood() {
         hood_motor.stopMotor();
+    }
+
+    public void zeroEncoders() {
+        hoodEncoder.setPosition(0);
     }
 
     public void runKickup(double effort) {
@@ -347,6 +344,6 @@ public class Shooter extends SubsystemBase {
     }
 
     public void initDefaultCommand() {
-        setDefaultCommand(new ResetHood(this));
+        
     }
 }

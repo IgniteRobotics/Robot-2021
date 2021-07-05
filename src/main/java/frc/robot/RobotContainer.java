@@ -24,6 +24,7 @@ import frc.robot.commands.LimelightSnapshot;
 import frc.robot.commands.autonomous.GalacticSearch;
 import frc.robot.commands.shooter.AdjustHoodAngle;
 import frc.robot.commands.shooter.ResetHood;
+import frc.robot.commands.shooter.RetractHood;
 import frc.robot.commands.shooter.SetHoodAngle;
 import frc.robot.commands.shooter.ShootBallSpecific;
 import frc.robot.commands.shooter.ShootInterpolatedBall;
@@ -49,6 +50,7 @@ import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.MotorConstants;
 import frc.robot.commands.intake.ToggleIntake;
 import frc.robot.commands.drivetrain.TargetPositioning;
+import frc.robot.commands.drivetrain.TargetPositioningAuton;
 import frc.robot.commands.drivetrain.TurnAngle;
 import frc.robot.commands.drivetrain.DriveDistance;
 import frc.robot.commands.drivetrain.DriveTrajectory;
@@ -95,7 +97,6 @@ public class RobotContainer {
   private DriveDistance drivetoDistance = new DriveDistance(3, m_driveTrain);
   private ShootBallTest shootBall = new ShootBallTest(m_shooter, m_indexer);
   private ShootBallTest autonShootBall = new ShootBallTest(m_shooter, m_indexer); // this must be used in command group
-  private ResetHood resetHood = new ResetHood(m_shooter);
 
   private SetIntake extendIntake = new SetIntake(m_intake, true);
   SendableChooser<Command> chooseAuton = new SendableChooser<>();
@@ -135,6 +136,8 @@ public class RobotContainer {
   private SetHoodAngle sethoodAngle = new SetHoodAngle(m_shooter);
 
   // begin current driver commands / input
+  private ResetHood resetHood = new ResetHood(m_shooter);
+  private RetractHood retractHood = new RetractHood(m_shooter);
 
   private ShootBallSpecific shortShot = new ShootBallSpecific(m_shooter, m_indexer, 3500, 0);
   private ShootBallSpecific baseShot = new ShootBallSpecific(m_shooter, m_indexer, 6000, 1600);
@@ -153,12 +156,15 @@ public class RobotContainer {
 
   private TurnAngle turn90Degrees = new TurnAngle(m_driveTrain, 90);
 
-  // private SequentialCommandGroup autonCommandGroup = new
-  // SequentialCommandGroup(
-  // new SetIntake(m_intake, true),
-  // new TargetPositioning(m_driveTrain, m_driveController).withTimeout(1),
-  // new ShootBallSpecific(m_shooter, m_indexer, 3500, 0).withTimeout(3)
-  // );
+  private SequentialCommandGroup autonCommandGroup = new
+  SequentialCommandGroup(
+    new ResetHood(m_shooter),
+    new SetIntake(m_intake, false),
+    new RunIntake(1.0, m_intake).withTimeout(1),
+    new TargetPositioningAuton(m_driveTrain, m_driveController).withTimeout(2),
+    new ShootBallSpecific(m_shooter, m_indexer, 6000, 1600).withTimeout(4),
+    new DriveDistance(-2, m_driveTrain)
+  );
 
   private JoystickButton btn_driverA = new JoystickButton(m_driveController, ControllerConstants.BUTTON_A);
   private JoystickButton btn_driverB = new JoystickButton(m_driveController, ControllerConstants.BUTTON_B);
@@ -210,7 +216,7 @@ public class RobotContainer {
     SmartDashboard.putData("ClimbUp", climbUp);
     SmartDashboard.putData("ClimbDown", climbDown);
 
-    // this.chooseAuton.addOption("Default Auton", autonCommandGroup);
+    this.chooseAuton.addOption("Default Auton", autonCommandGroup);
   }
 
   private void configureButtonBindings() {
@@ -227,12 +233,12 @@ public class RobotContainer {
     btn_manipA.whileHeld(shootBallInterpolated);
     btn_manipY.whileHeld(targetingCommand);
     btn_manipX.whenHeld(retractClimbMax);
-    // btn_manipB.whenHeld(autonCommandGroup);
+    btn_manipB.whenHeld(autonCommandGroup);
   }
 
   private void configureSubsystemCommands() {
     m_driveTrain.setDefaultCommand(teleDriveCommand);
-    m_shooter.setDefaultCommand(resetHood);
+    m_shooter.setDefaultCommand(retractHood);
     m_climber.setDefaultCommand(climbDownEngage);
   }
 

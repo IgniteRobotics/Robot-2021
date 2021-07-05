@@ -65,7 +65,7 @@ public class ShootBallSpecific extends CommandBase {
 
         // if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM) &&
         //     (shooterAngle - ANGLE_RANGE < computedAngle && shooterAngle + ANGLE_RANGE > computedAngle)) {
-        if (targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM && shooter.isHoodReady()) {
+        if (targetVelocity - RANGE <= shooterRPM && shooter.isHoodReady()) {
             shooter.runKickup(kickupEffort);
             indexer.runIndexer(intakeEffort);
         } else {
