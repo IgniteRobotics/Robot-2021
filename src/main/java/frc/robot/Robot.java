@@ -36,7 +36,10 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    initLogging();
+    if(Robot.isReal()) {
+      initLogging();
+    }
+
     m_robotContainer = new RobotContainer();
     LiveWindow.disableAllTelemetry();
   }
