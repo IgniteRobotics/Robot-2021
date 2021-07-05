@@ -114,6 +114,7 @@ public class Shooter extends SubsystemBase {
         followMotor.enableVoltageCompensation(true);
 
         kickUp.setInverted(true);
+        kickUp.configOpenloopRamp(Constants.OPEN_LOOP_RAMP);
 
         configureHood(hood_kP_value, hood_kI_value, hood_kD_value, hood_max_vel_value);
         //shooterConfiguration(0,0,0,0); TODO set this later
