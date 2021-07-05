@@ -45,7 +45,7 @@ public class RamseteArcadeDrive extends CommandBase { //TODO Figure out how to m
     }
 
     private double getSpeed() {
-        double speed = -driverJoystick.getRawAxis(ControllerConstants.AXIS_LEFT_STICK_Y);
+        double speed = driverJoystick.getRawAxis(ControllerConstants.AXIS_LEFT_STICK_Y) * (isReversed ? 1 : -1);
         // if(m_driveTrain.isSlowMode) {
         //   speed *= Constants.SLOW_MODE_SPEED_MODIFIER;
         // }
@@ -75,6 +75,10 @@ public class RamseteArcadeDrive extends CommandBase { //TODO Figure out how to m
 
     public void setReversed(boolean b) {
         this.isReversed = b;
+    }
+
+    public void toggleReversed() {
+        this.isReversed = !this.isReversed;
     }
 
     public void outputTelemetry() {

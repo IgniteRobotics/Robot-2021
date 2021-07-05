@@ -25,6 +25,7 @@ public class Indexer extends SubsystemBase {
         indexerFollower.setInverted(true);
         addChild("indexerMaster- Indexer",indexerMaster);
         addChild("indexerFollower- Indexer",indexerFollower);
+       
     }
 
     public void runIndexer(double speed) { //more like percent output

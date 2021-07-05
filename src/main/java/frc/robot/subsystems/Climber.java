@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -15,9 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.MotorConstants;
 
 public class Climber extends SubsystemBase {
-  /** Creates a new Climber. */
-  // Climb won't break if we extend too far. Will it fly off if we let it go up
-  // too fast?
+  public static final double CLIMB_EFFORT = 0.15;
 
   private WPI_TalonFX climberLeader;
   private WPI_TalonFX climberFollower;
@@ -29,16 +29,28 @@ public class Climber extends SubsystemBase {
   private NetworkTableEntry leftClimbCurrent = shuffleTab.add("Left Climb Supply (Amps)", 0).getEntry();
   private NetworkTableEntry rightClimbCurrent = shuffleTab.add("Right Climb Supply (Amps)", 0).getEntry();
 
+  private NetworkTableEntry climbEffort = shuffleTab.add("Climb Effort", CLIMB_EFFORT).getEntry();
+
   public static final int CLIMBER_FORWARD_LIMIT = 290000;
   public static final int CLIMBER_REVERSE_LIMIT = 10000;
+
+  private final int kTimeoutMs = 30;
+  private final int kSlotIdx = 0;
+  private final double  kP = 0.2;
+  private final double  kF = 0;
+  private final double  kI = 0;
+  private final double  kD = 0;
+  private final int kPIDLoopIdx = 0;
 
   public Climber() {
     climberLeader = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
     climberFollower = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
 
-    // TODO check what direction motor needs to pull to bring in climber
-    climberFollower.follow(climberLeader);
+    climberLeader.configFactoryDefault();
+    climberFollower.configFactoryDefault();
+
     climberFollower.setInverted(true);
+    climberFollower.follow(climberLeader);
 
     climberLeader.setNeutralMode(NeutralMode.Brake);
     climberFollower.setNeutralMode(NeutralMode.Brake);
@@ -52,11 +64,7 @@ public class Climber extends SubsystemBase {
     climberFollower.configReverseSoftLimitThreshold(CLIMBER_REVERSE_LIMIT);
     climberFollower.configForwardSoftLimitEnable(true, 0);
     climberFollower.configReverseSoftLimitEnable(true, 0);
-
-    // leftClimb.configMotionCruiseVelocity(CRUISE_VELOCITY, 10);
-    // leftClimb.configMotionAcceleration(MAX_ACCELERATION, 10);
-
-    // Livewindow methods for testing
+    
     addChild("climberLeader- Climber", climberLeader);
     addChild("climberFollower- Climber", climberFollower);
   }
@@ -64,6 +72,22 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     publishData();
+  }
+
+  private void configureMotionMagic() {
+    climberLeader.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
+    climberLeader.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
+    
+    climberFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, 30);
+    climberFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 30);
+    
+    climberLeader.selectProfileSlot(kSlotIdx, kPIDLoopIdx);
+		climberLeader.config_kF(kSlotIdx, kF, kTimeoutMs);
+		climberLeader.config_kP(kSlotIdx, kP, kTimeoutMs);
+		climberLeader.config_kI(kSlotIdx, kI, kTimeoutMs);
+		climberLeader.config_kD(kSlotIdx, kD, kTimeoutMs);
+		climberLeader.configMotionCruiseVelocity(5525, kTimeoutMs);
+		climberLeader.configMotionAcceleration(5525, kTimeoutMs);
   }
 
   private void publishData() {
@@ -76,12 +100,12 @@ public class Climber extends SubsystemBase {
 
   public void goUp() {
     // TODO make this shuffleboard changeable
-    climberLeader.set(ControlMode.PercentOutput, .10);
+    climberLeader.set(ControlMode.PercentOutput, climbEffort.getDouble(0));
 
   }
 
   public void goDown() {
-    climberLeader.set(ControlMode.PercentOutput, -.10);
+    climberLeader.set(ControlMode.PercentOutput, -climbEffort.getDouble(0));
   }
 
   public void go(double effort) {
@@ -109,6 +133,10 @@ public class Climber extends SubsystemBase {
     // motion magic is a little too much for this, let's focus on this later
     return true;
 
+  }
+  public void zeroEncoders() {
+    climberLeader.setSelectedSensorPosition(0);
+    climberFollower.setSelectedSensorPosition(0);
   }
 
   public int getEncoderPos() {

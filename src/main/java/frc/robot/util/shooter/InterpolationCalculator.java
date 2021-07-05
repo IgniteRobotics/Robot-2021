@@ -20,11 +20,9 @@ public class InterpolationCalculator implements ShooterCalculator {
 
         */
 
-        distanceMap.put(6.0, new ShooterParameter(5.388, 5000, 1598));
-        distanceMap.put(8.0, new ShooterParameter(3.86, 5000, 1598));
-        distanceMap.put(3.0, new ShooterParameter(3.34, 3800, 734));
-      
-
+        distanceMap.put(5.388, new ShooterParameter(5.388, 5000, 1598));
+        distanceMap.put(3.86, new ShooterParameter(3.86, 5000, 1598));
+        distanceMap.put(3.34, new ShooterParameter(3.34, 3800, 734));
     }
 
     // https://theeducationlife.com/interpolation-formula/

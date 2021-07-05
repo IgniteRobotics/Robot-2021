@@ -81,7 +81,7 @@ public final class Constants {
     public static double HOOD_DEFAULT_KI = 0.0;
     public static double HOOD_DEFAULT_KD = 0;
     public static double HOOD_DEFAULT_RPM = 100;
-    public static double HOOD_MAX_POSITION = 1599;
+    public static double HOOD_MAX_POSITION = 1600;
     public static double HOOD_SET_POINT_DISTANCE = 4.572;
 
     public static double SHOOTER_GEAR_RATIO = 1.5;
@@ -102,8 +102,8 @@ public final class Constants {
     public static final double VELOCITY_RAMP_EXPONENT = 2;
     public static final double VELOCITY_LIMIT_MULTIPLIER = 1;
     public static final double TURN_RAMP_EXPONENT = 2;
-    public static final double TURN_LIMIT_MULTIPLIER = 1;
-    public static final double LIMELIGHT_HEIGHT = 0.61595;
+    public static final double TURN_LIMIT_MULTIPLIER = 0.4;
+    public static final double LIMELIGHT_HEIGHT = 0.59055;
     public static final double LIMELIGHT_ANGLE = 41.6; // degrees
     public static final double TARGET_HEIGHT = 2.49555;
 

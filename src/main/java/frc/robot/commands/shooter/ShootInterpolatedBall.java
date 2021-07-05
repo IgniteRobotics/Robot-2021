@@ -80,9 +80,11 @@ public class ShootInterpolatedBall extends CommandBase {
         // get velocity from the Shuffleboard
         //setShooterVelocity(targetVelocity);
         setShooterRPM((int) targetVelocity); // use rpm from interpolation
-        shooter.changeHoodAngle(calculatedParameters.angle);
+        shooter.changeHoodTicks(calculatedParameters.angle);
 
         SmartDashboard.putNumber("Target AngleTicks", calculatedParameters.angle);
+        SmartDashboard.putNumber("Interpolated Target Velocity", calculatedParameters.rpm);
+
         double shooterRPM = shooter.getShooterRPM();
 
         // if((targetVelocity - RANGE <= shooterRPM && targetVelocity + RANGE >= shooterRPM) &&

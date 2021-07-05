@@ -11,29 +11,26 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Shooter;
+import frc.robot.util.ShuffleBoardShootBall;
 
 public class SetHoodAngle extends CommandBase {
   /** Creates a new SetHoodAngle. */
   //Command that sets the angle of the hood. Angle (in ticks) is taken from shuffleboard. Meant to be run in test mode
   //Ideally, this would be angle, but ticks will work fine too
   private NetworkTableEntry targetHoodTicksEntry;
-  private ShuffleboardTab tab;
   private Shooter shooter;
   private double targetHoodTicks;
 
   public SetHoodAngle(Shooter shooter) {
-    tab = Shuffleboard.getTab("Shooter");
-    // Use addRequirements() here to declare subsystem dependencies.
-    targetHoodTicksEntry = tab.add("Target Hood Ticks", 0).withProperties(Map.of("min", 0)).getEntry();
+  
     this.shooter = shooter;
-
-
+    addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    targetHoodTicks = targetHoodTicksEntry.getDouble(shooter.getHoodTicks());
+    targetHoodTicks = ShuffleBoardShootBall.getInstance().getTargetHoodTicks();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -52,6 +49,6 @@ public class SetHoodAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return shooter.getHoodTicks() == targetHoodTicks;
+    return false;
   }
 }

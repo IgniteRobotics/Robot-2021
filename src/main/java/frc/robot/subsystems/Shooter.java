@@ -21,6 +21,7 @@ import java.util.Map;
 import com.ctre.phoenix.VelocityPeriod;
 import com.ctre.phoenix.motorcontrol.*;
 import frc.robot.RobotContainer;
+import frc.robot.commands.shooter.ResetHood;
 import frc.robot.util.Util;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -297,12 +298,18 @@ public class Shooter extends SubsystemBase {
 
     public void changeHoodTicks(double targetTicks) {  
         //Change hood ticks by targetTicks amount from the CURRENT hood position
-       hoodPidController.setReference(targetTicks, ControlType.kPosition);
+        if(targetTicks <= hood_max_position_value) {
+            hoodPidController.setReference(targetTicks, ControlType.kPosition);
+            this.hoodPositionTicksSetPoint = targetTicks;
+        } else {
+            hoodPidController.setReference(hood_max_position_value, ControlType.kPosition);
+            this.hoodPositionTicksSetPoint = hood_max_position_value;
+        }
  }
 
     public void resetHood() {
         if (!hoodLimitSwitch.get()) {
-            hood_motor.set(-0.05);
+            hood_motor.set(-0.1);
         } else {
             // reset encoders
             hood_motor.set(0);
@@ -313,7 +320,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isHoodReady() {
-        double range = 25;
+        double range = 3;
         return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint
                 && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
     }
@@ -336,5 +343,9 @@ public class Shooter extends SubsystemBase {
 
     public double getKickupPower() {
         return kickUp.get();
+    }
+
+    public void initDefaultCommand() {
+        setDefaultCommand(new ResetHood(this));
     }
 }

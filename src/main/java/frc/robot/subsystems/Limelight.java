@@ -31,11 +31,11 @@ public class Limelight extends SubsystemBase {
      * Creates a new Limelight.
      */
     public Limelight() {
+        turnOnLED();
     }
 
     public void turnOnLED () {
         table.getEntry("ledMode").setNumber(3);
-        table2.getEntry("camMode").setNumber(0);
         ledStatus = true;
     }
 
@@ -52,11 +52,11 @@ public class Limelight extends SubsystemBase {
         //Cache previous values here
         long delta = System.currentTimeMillis() - lastLimelightUsage;
         if(delta > limelightDuration && isLedOn()) {
-            turnOffLED();
+            //turnOffLED();
         }
     }
 
-    private void onLimelightUse() {
+    public void onLimelightUse() {
         if(!isLedOn()) {
             turnOnLED();
         }
@@ -80,26 +80,7 @@ public class Limelight extends SubsystemBase {
         double ty = this.ty.getDouble(0.0);
       //  this.turnOffLED();
         currentDistance = (Constants.TARGET_HEIGHT - Constants.LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(ty + Constants.LIMELIGHT_ANGLE));
-       
-
-        if (previousDistance == currentDistance) {
-            accuracyCount++;
-            
-        }
-        else {
-            accuracyCount = 0;
-            previousDistance = currentDistance;
-        }
-
-        if (accuracyCount == 4) {
-            return previousDistance;
-        }
-
-
-        
-        return -1; //Limelight does not have consistent distance
-        
-
+        return currentDistance;
     }
 
     public double getHorizontalOffset() {
