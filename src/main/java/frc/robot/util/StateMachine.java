@@ -29,5 +29,4 @@ public class StateMachine {
     public double getShooterDistance(){
         return this.shooterDistance;
     }
-
 }

@@ -8,8 +8,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import badlog.lib.BadLog;
+import frc.robot.util.LogUtil;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
+  public static BadLog logger;
   private Command m_autonomousCommand;
   private Command m_teleopInitCommand;
 
@@ -31,7 +36,23 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    if(Robot.isReal()) {
+      initLogging();
+    }
+
     m_robotContainer = new RobotContainer();
+    LiveWindow.disableAllTelemetry();
+  }
+
+  public void initLogging() {
+    logger = BadLog.init("/home/lvuser/log/" + LogUtil.genSessionName() + ".bag");
+
+    BadLog.createTopicSubscriber("LeftMasterSupply", "Amps", badlog.lib.DataInferMode.LAST);
+    BadLog.createTopicSubscriber("RightMasterSupply", "Amps", badlog.lib.DataInferMode.LAST);
+    BadLog.createTopicSubscriber("LeftFollowSupply", "Amps", badlog.lib.DataInferMode.LAST);
+    BadLog.createTopicSubscriber("RightFollowSupply", "Amps", badlog.lib.DataInferMode.LAST);
+    
+    logger.finishInitialization();
   }
 
   /**
@@ -55,10 +76,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    m_robotContainer.onTeleopDisable();
   }
 
   @Override
   public void disabledPeriodic() {
+
   }
 
   /**
@@ -67,11 +90,14 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_teleopInitCommand = m_robotContainer.getTeleopInitCommand();
+
+    m_robotContainer.getDriveSubsystem().zeroHeading();
+    m_teleopInitCommand.schedule();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
-
     }
   }
 
@@ -91,8 +117,10 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
     m_teleopInitCommand = m_robotContainer.getTeleopInitCommand();
     m_teleopInitCommand.schedule();
+    m_robotContainer.onTeleopEnable();
   }
 
   /**

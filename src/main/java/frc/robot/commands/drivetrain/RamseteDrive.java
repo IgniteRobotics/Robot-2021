@@ -13,86 +13,78 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
-import frc.robot.subsystems.DriveTrain;
+import frc.robot.constants.ControllerConstants;
 import frc.robot.subsystems.RamseteDriveSubsystem;
 
 public class RamseteDrive extends CommandBase { // TODO Figure out how to make a button trigger slow mode
 
-  private final RamseteDriveSubsystem m_driveTrain;
-  private final Joystick driverJoystick;
+    private final RamseteDriveSubsystem m_driveTrain;
+    private final Joystick driverJoystick;
 
-  private boolean isSlowMode = false; // Figure out a button for this.
-  private boolean isReversed = false;
+    private boolean isSlowMode = false; // Figure out a button for this.
+    private boolean isReversed = false;
 
-  /**
-   * Creates a new ArcadeDrive.
-   */
-  public RamseteDrive(Joystick driveController, RamseteDriveSubsystem driveTrain) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    this.driverJoystick = driveController;
-    this.m_driveTrain = driveTrain;
-    addRequirements(driveTrain);
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-  }
-
-  //Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-
-    ShuffleboardTab  tab = Shuffleboard.getTab("DriveTrain");
-    NetworkTableEntry driveMode = tab.add("Choose Control mode", "Arcade Drive").getEntry();
-
-    if (driveMode.getString("Arcade Drive") == "Arcade Drive") {
-      m_driveTrain.arcadeDrive(getSpeed(), getRotation(), true);
-      outputTelemetry(); 
-
+    /**
+     * Creates a new ArcadeDrive.
+     */
+    public RamseteDrive(Joystick driveController, RamseteDriveSubsystem driveTrain) {
+        // Use addRequirements() here to declare subsystem dependencies.
+        this.driverJoystick = driveController;
+        this.m_driveTrain = driveTrain;
+        addRequirements(driveTrain);
     }
 
-    else { 
-      m_driveTrain.driveCurvature(getSpeed(), getRotation(), true);
-      outputTelemetry();
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+    }
+
+    //Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+        ShuffleboardTab tab = Shuffleboard.getTab("DriveTrain");
+        NetworkTableEntry driveMode = tab.add("Choose Control mode", "Arcade Drive").getEntry();
+
+        if (driveMode.getString("Arcade Drive") == "Arcade Drive") {
+            m_driveTrain.arcadeDrive(getSpeed(), getRotation(), true);
+            outputTelemetry();
+        } else {
+            m_driveTrain.driveCurvature(getSpeed(), getRotation(), true);
+            outputTelemetry();
+        }
+    }
+
+    private double getSpeed() {
+        double speed = -driverJoystick.getRawAxis(ControllerConstants.AXIS_LEFT_STICK_Y);
+        // if(m_driveTrain.isSlowMode) {
+        //   speed *= Constants.SLOW_MODE_SPEED_MODIFIER;
+        // }
+        return speed;
+    }
+
+    private double getRotation() {
+        double rotation = (driverJoystick.getRawAxis(ControllerConstants.AXIS_RIGHT_STICK_X));
+        // if(m_driveTrain.isSlowMode) {
+        //   rotation *= Constants.SLOW_MODE_SPEED_MODIFIER;
+        // }
+        return rotation;
     }
 
 
-   
-  }
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        m_driveTrain.stop();
+    }
 
-  private double getSpeed() {
-    double speed = -driverJoystick.getRawAxis(Constants.AXIS_LEFT_STICK_Y);
-    // if(m_driveTrain.isSlowMode) {
-    //   speed *= Constants.SLOW_MODE_SPEED_MODIFIER;
-    // }
-    return speed;
-  }
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 
-  private double getRotation() {
-    double rotation = (driverJoystick.getRawAxis(Constants.AXIS_RIGHT_STICK_X));
-    // if(m_driveTrain.isSlowMode) {
-    //   rotation *= Constants.SLOW_MODE_SPEED_MODIFIER;
-    // }
-    return rotation;
-  }
-
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    m_driveTrain.stop();
-  }
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
-
-  public void outputTelemetry() {
-    SmartDashboard.putNumber("RamseteAD/Speed", this.getSpeed());
-    SmartDashboard.putNumber("RamseteAD/Rotation", this.getRotation());
-  }
+    public void outputTelemetry() {
+        SmartDashboard.putNumber("RamseteAD/Speed", this.getSpeed());
+        SmartDashboard.putNumber("RamseteAD/Rotation", this.getRotation());
+    }
 }

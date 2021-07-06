@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
 public class DriveTrajectory extends RamseteCommand {
 
     private RamseteDriveSubsystem ramseteDriveTrain;
@@ -45,7 +45,6 @@ public class DriveTrajectory extends RamseteCommand {
             ramsetedriveTrain);        
         this.ramseteDriveTrain = ramsetedriveTrain;
         this.trajectory = trajectory;
-
     }
 
 
@@ -69,6 +68,6 @@ public class DriveTrajectory extends RamseteCommand {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return super.isFinished();
+        return !ramseteDriveTrain.isConnected() || super.isFinished();
     }
 }

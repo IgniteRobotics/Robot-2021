@@ -7,7 +7,9 @@
 
 package frc.robot;
 
+import badlog.lib.BadLog;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.util.LogUtil;
 
 /**
  * Do NOT add any static variables to this class, or any initialization at all. Unless you know what
