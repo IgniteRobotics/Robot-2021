@@ -25,8 +25,6 @@ public class ShootBallTest extends CommandBase {
 
     private ShuffleBoardShootBall shuffle = ShuffleBoardShootBall.getInstance();
 
-    private Limelight limelight;
-
     private StateMachine state;
 
     private static final int RANGE = 150;

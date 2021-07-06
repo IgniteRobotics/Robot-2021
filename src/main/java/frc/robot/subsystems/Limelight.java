@@ -19,6 +19,8 @@ public class Limelight extends SubsystemBase {
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     private NetworkTableEntry ty = table.getEntry("ty");
     private NetworkTableEntry tx = table.getEntry("tx");
+    private NetworkTableEntry tv = table.getEntry("tv");
+
     private double previousDistance = 0.0;
     private double currentDistance = 0.0;
     private int accuracyCount = 0;
@@ -27,20 +29,33 @@ public class Limelight extends SubsystemBase {
     private boolean ledStatus = false;
     private long limelightDuration = Duration.ofSeconds(3).toMillis();
 
+    private boolean camMode = false;
+
     /**
      * Creates a new Limelight.
      */
     public Limelight() {
-        turnOnLED();
+        setCamMode(true);
     }
 
-    public void turnOnLED () {
+    public void setCamMode(boolean mode) {
+        camMode = mode;
+
+        if(mode) {
+            turnOffLED();
+            table.getEntry("camMode").setNumber(1);
+        } else {
+            turnOnLED();
+            table.getEntry("camMode").setNumber(0);
+        }
+    }
+
+    public void turnOnLED() {
         table.getEntry("ledMode").setNumber(3);
         ledStatus = true;
     }
 
-    public void turnOffLED() { 
-        //These can be done in pipelines, but I think this is faster?
+    public void turnOffLED() {
         table.getEntry("ledMode").setNumber(1);
         ledStatus = false;
     }
@@ -52,14 +67,14 @@ public class Limelight extends SubsystemBase {
         //Cache previous values here
         SmartDashboard.putNumber("Limelight-reported distance", currentDistance);
         long delta = System.currentTimeMillis() - lastLimelightUsage;
-        if(delta > limelightDuration && isLedOn()) {
-            //turnOffLED();
+        if(delta > limelightDuration && !camMode) {
+            setCamMode(true);
         }
     }
 
     public void onLimelightUse() {
-        if(!isLedOn()) {
-            turnOnLED();
+        if(camMode) {
+            setCamMode(false);
         }
 
         lastLimelightUsage = System.currentTimeMillis();
@@ -87,6 +102,16 @@ public class Limelight extends SubsystemBase {
     public double getHorizontalOffset() {
         onLimelightUse();
         return tx.getDouble(0.0);
+    }
+
+    public double getVerticalOffset() {
+        onLimelightUse();
+        return ty.getDouble(0.0);
+    }
+
+    public double getTargetViewable() {
+        onLimelightUse();
+        return tv.getDouble(0.0);
     }
 
     public boolean isLedOn() {

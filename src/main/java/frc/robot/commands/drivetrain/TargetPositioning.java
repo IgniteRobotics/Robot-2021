@@ -9,9 +9,12 @@ package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.constants.ControllerConstants;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.RamseteDriveSubsystem;
 
 import java.util.Map;
+
+import javax.sound.sampled.LineListener;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -26,7 +29,6 @@ import frc.robot.util.VisionUtils;
 
 public class TargetPositioning extends CommandBase {
     private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    private static NetworkTable table = inst.getTable("limelight");
     private static double KpTurn = 0.015;// or 0.035
     //private static double minCommand = 0.08;
     private static double minCommand = 0.08;
@@ -35,11 +37,6 @@ public class TargetPositioning extends CommandBase {
     //allowed margin of errorit
     private double marginOfErrorTurn = 2.0;
 
-    private ShuffleboardTab tab;
-    private NetworkTableEntry kpTurnEntry;
-    private NetworkTableEntry minTurnEntry;
-    private NetworkTableEntry minInfEntry;
-
     boolean targetFound = false;
 
     private StateMachine state;
@@ -47,20 +44,18 @@ public class TargetPositioning extends CommandBase {
     private final RamseteDriveSubsystem m_driveTrain;
     private final Joystick driverJoystick;
 
+    private Limelight limelight;
 
     /**
      * Creates a new TargetRange.
      */
-    public TargetPositioning(RamseteDriveSubsystem driveTrain, Joystick driveController ) {
+    public TargetPositioning(RamseteDriveSubsystem driveTrain, Joystick driveController, Limelight limelight) {
         addRequirements(driveTrain);
         this.m_driveTrain = driveTrain;
         this.driverJoystick = driveController;
+        this.limelight = limelight;
+        addRequirements(limelight);
         // Use addRequirements() here to declare subsystem dependencies.
-
-        tab = Shuffleboard.getTab("Limelight");
-        kpTurnEntry = tab.add("kPTurn Limelight", KpTurn).withProperties(Map.of("min", 0)).getEntry();
-        minTurnEntry = tab.add("min turn Limelight", minCommand).withProperties(Map.of("min", 0)).getEntry();
-        minInfEntry = tab.add("min inf pt Limelight", minInfPoint).withProperties(Map.of("min", 0)).getEntry();
 
         state = StateMachine.getIntance();
     }
@@ -69,24 +64,20 @@ public class TargetPositioning extends CommandBase {
     @Override
     public void initialize() {
         targetFound = false;
-        KpTurn = kpTurnEntry.getDouble(KpTurn);
-        minCommand = minTurnEntry.getDouble(minCommand);
-        minInfPoint = minInfEntry.getDouble(minInfPoint);
-        table.getEntry("ledMode").setNumber(3);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double tv = (double) table.getEntry("tv").getNumber(0);
+        double tv = limelight.getTargetViewable();
         SmartDashboard.putNumber("Limelight tv", tv);
 
         if (Math.abs(tv) > 0) {
 
             targetFound = true;
 
-            double tx = (double) table.getEntry("tx").getNumber(0);
-            double ty = (double) table.getEntry("ty").getNumber(0);
+            double tx = limelight.getHorizontalOffset();
+            double ty = limelight.getVerticalOffset();
 
             double dist = VisionUtils.getDistanceToTarget(ty);
 
@@ -120,10 +111,7 @@ public class TargetPositioning extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        double tx = (double) table.getEntry("tx").getNumber(0);
-        boolean yawOK = Math.abs(tx) <= marginOfErrorTurn;
-        return yawOK && targetFound;
-
+        return false;
     }
 
     

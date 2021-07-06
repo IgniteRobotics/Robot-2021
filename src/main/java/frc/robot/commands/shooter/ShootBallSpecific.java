@@ -22,8 +22,6 @@ public class ShootBallSpecific extends CommandBase {
     private Shooter shooter;
     private Indexer indexer;
 
-    private Limelight limelight;
-
     private StateMachine state;
 
     private static final int RANGE = 150;

@@ -52,7 +52,7 @@ import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.MotorConstants;
 import frc.robot.commands.intake.ToggleIntake;
 import frc.robot.commands.drivetrain.TargetPositioning;
-import frc.robot.commands.drivetrain.TargetPositioningAuton;
+import frc.robot.commands.drivetrain.TargetPositioning;
 import frc.robot.commands.drivetrain.TurnAngle;
 import frc.robot.commands.drivetrain.DriveDistance;
 import frc.robot.commands.drivetrain.DriveTrajectory;
@@ -94,7 +94,7 @@ public class RobotContainer {
   // private AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
 
   private ShootInterpolatedBall shootBallInterpolated = new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight);
-  private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController);
+  private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController, m_limelight);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
   private DriveDistance drivetoDistance = new DriveDistance(3, m_driveTrain);
   private ShootBallTest autonShootBall = new ShootBallTest(m_shooter, m_indexer); // this must be used in command group
@@ -161,12 +161,12 @@ public class RobotContainer {
 
   private SequentialCommandGroup autonCommandGroup = new
   SequentialCommandGroup(
+    new DriveDistance(2, m_driveTrain).withTimeout(1.5),
     new ResetHood(m_shooter),
     new SetIntake(m_intake, false),
     new RunIntake(1.0, m_intake).withTimeout(1),
-    new TargetPositioningAuton(m_driveTrain, m_driveController).withTimeout(2),
-    new ShootBallSpecific(m_shooter, m_indexer, 6000, 1600).withTimeout(4),
-    new DriveDistance(-2, m_driveTrain)
+    new TargetPositioning(m_driveTrain, m_driveController, m_limelight).withTimeout(2),
+    new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight).withTimeout(4)
   );
 
   private JoystickButton btn_driverA = new JoystickButton(m_driveController, ControllerConstants.BUTTON_A);
