@@ -4,6 +4,7 @@
 
 package frc.robot.commands.shooter;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Shooter;
 
@@ -35,9 +36,12 @@ public class ResetHood extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        m_shooter.stopHood();
+        
         if(!interrupted) {
-            m_shooter.stopHood();
             m_shooter.zeroEncoders();
+        } else {
+            DriverStation.reportError("Reset hood was interrupted!", true);
         }
     }
 

@@ -19,13 +19,25 @@ public class InterpolationCalculator implements ShooterCalculator {
         distanceMap.put(1.0, new ShooterParameter(1, 3500, 484));
 
         */
+        // addShooterParameter(new ShooterParameter(5.388, 5000, 1598));
+        // addShooterParameter(new ShooterParameter(3.34, 3800, 734));
+        // addShooterParameter(new ShooterParameter(3.86, 5000, 1598));
 
-        distanceMap.put(5.388, new ShooterParameter(5.388, 5000, 1598));
-        distanceMap.put(3.86, new ShooterParameter(3.86, 5000, 1598));
-        distanceMap.put(3.34, new ShooterParameter(3.34, 3800, 734));
+        addShooterParameter(new ShooterParameter(1.33, 3500, 140));
+        addShooterParameter(new ShooterParameter(2.1, 3600, 195));
+        addShooterParameter(new ShooterParameter(4.13, 4800, 1600));
+        addShooterParameter(new ShooterParameter(4.75, 4650, 1600));
+        addShooterParameter(new ShooterParameter(5.55, 4850, 1600));
+        addShooterParameter(new ShooterParameter(6.32, 5000, 1600));
+        addShooterParameter(new ShooterParameter(6.89, 5200, 1600));
+
     }
 
     // https://theeducationlife.com/interpolation-formula/
+
+    private static void addShooterParameter(ShooterParameter parameter) {
+        distanceMap.put(parameter.distance, parameter);
+    }
 
     @Override
     public ShooterParameter calculateParameter(double distance) {

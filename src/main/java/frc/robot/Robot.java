@@ -76,10 +76,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    m_robotContainer.onTeleopDisable();
   }
 
   @Override
   public void disabledPeriodic() {
+
   }
 
   /**
@@ -90,6 +92,7 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     m_teleopInitCommand = m_robotContainer.getTeleopInitCommand();
 
+    m_robotContainer.getDriveSubsystem().zeroHeading();
     m_teleopInitCommand.schedule();
 
     // schedule the autonomous command (example)
@@ -117,6 +120,7 @@ public class Robot extends TimedRobot {
 
     m_teleopInitCommand = m_robotContainer.getTeleopInitCommand();
     m_teleopInitCommand.schedule();
+    m_robotContainer.onTeleopEnable();
   }
 
   /**

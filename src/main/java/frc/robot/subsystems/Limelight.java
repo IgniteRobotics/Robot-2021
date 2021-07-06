@@ -50,6 +50,7 @@ public class Limelight extends SubsystemBase {
         // This method will be called once per scheduler run
 
         //Cache previous values here
+        SmartDashboard.putNumber("Limelight-reported distance", currentDistance);
         long delta = System.currentTimeMillis() - lastLimelightUsage;
         if(delta > limelightDuration && isLedOn()) {
             //turnOffLED();

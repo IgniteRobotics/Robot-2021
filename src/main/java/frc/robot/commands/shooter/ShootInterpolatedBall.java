@@ -65,7 +65,6 @@ public class ShootInterpolatedBall extends CommandBase {
         distanceSetpoint = shuffle.getDistanceSetPoint();
         //double currentDistance = state.getShooterDistance(); State machine is not currently being used
         double currentDistance = limelight.getDistancefromgoal();
-        SmartDashboard.putNumber("Limelight-reported distance", currentDistance);
 
         ShooterParameter calculatedParameters = calculator.calculateParameter(currentDistance);
         targetVelocity = calculatedParameters.rpm;

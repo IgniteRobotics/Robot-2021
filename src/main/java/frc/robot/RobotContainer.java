@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.wpilibj.Controller;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -95,7 +97,6 @@ public class RobotContainer {
   private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController);
   private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
   private DriveDistance drivetoDistance = new DriveDistance(3, m_driveTrain);
-  private ShootBallTest shootBall = new ShootBallTest(m_shooter, m_indexer);
   private ShootBallTest autonShootBall = new ShootBallTest(m_shooter, m_indexer); // this must be used in command group
 
   private SetIntake extendIntake = new SetIntake(m_intake, true);
@@ -156,6 +157,8 @@ public class RobotContainer {
 
   private TurnAngle turn90Degrees = new TurnAngle(m_driveTrain, 90);
 
+  private ShootBallTest shootBallTest = new ShootBallTest(m_shooter, m_indexer);
+
   private SequentialCommandGroup autonCommandGroup = new
   SequentialCommandGroup(
     new ResetHood(m_shooter),
@@ -185,6 +188,7 @@ public class RobotContainer {
       ControllerConstants.BUTTON_LEFT_BUMPER);
   private JoystickButton btn_manipRBumper = new JoystickButton(m_manipController,
       ControllerConstants.BUTTON_RIGHT_BUMPER);
+  private JoystickButton btn_manipStart = new JoystickButton(m_manipController, ControllerConstants.BUTTON_START);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -209,7 +213,7 @@ public class RobotContainer {
     SmartDashboard.putData("ShootInterpolatedBall", shootBallInterpolated);
     SmartDashboard.putData("toggleIntakeCommand", toggleIntakeCommand);
     SmartDashboard.putData("drivetoDistance", drivetoDistance);
-    SmartDashboard.putData("ShootBall", shootBall);
+    SmartDashboard.putData("ShootBall", shootBallTest);
     SmartDashboard.putData("Turn90Degrees", turn90Degrees);
     SmartDashboard.putData("takeLimelightSnapShots", takeLimelightSnapShots);
     SmartDashboard.putData("DriveBackAndShoot", DriveBackAndShoot);
@@ -232,8 +236,11 @@ public class RobotContainer {
 
     btn_manipA.whileHeld(shootBallInterpolated);
     btn_manipY.whileHeld(targetingCommand);
-    btn_manipX.whenHeld(retractClimbMax);
+    // btn_manipX.whenHeld(retractClimbMax);
+    btn_manipX.whileHeld(shootBallTest);
     btn_manipB.whenHeld(autonCommandGroup);
+
+    btn_manipStart.whenHeld(resetHood);
   }
 
   private void configureSubsystemCommands() {
@@ -275,6 +282,18 @@ public class RobotContainer {
 
   public Command getTeleopInitCommand() {
     return resetHood;
+  }
+
+  public void onTeleopDisable() {
+    m_driveTrain.setNeutralMode(NeutralMode.Coast);
+  }
+
+  public void onTeleopEnable() {
+    m_driveTrain.setNeutralMode(NeutralMode.Brake);
+  }
+
+  public RamseteDriveSubsystem getDriveSubsystem() {
+    return m_driveTrain;
   }
 
   protected Command loadTrajectoryCommand(String trajectoryName) {
