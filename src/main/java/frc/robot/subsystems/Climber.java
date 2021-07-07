@@ -52,6 +52,9 @@ public class Climber extends SubsystemBase {
     climberLeader = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
     climberFollower = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
 
+    climberLeader.configOpenloopRamp(1);
+    climberFollower.configOpenloopRamp(1);
+
     climberLeader.configFactoryDefault();
     climberFollower.configFactoryDefault();
 

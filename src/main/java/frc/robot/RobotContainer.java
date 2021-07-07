@@ -42,7 +42,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.intake.RunIntake;
@@ -189,6 +189,11 @@ public class RobotContainer {
   private JoystickButton btn_manipRBumper = new JoystickButton(m_manipController,
       ControllerConstants.BUTTON_RIGHT_BUMPER);
   private JoystickButton btn_manipStart = new JoystickButton(m_manipController, ControllerConstants.BUTTON_START);
+
+  private POVButton btn_manipPovUp = new POVButton(m_manipController, 0);
+  private POVButton btn_manipPovRight = new POVButton(m_manipController, 90);
+  private POVButton btn_manipPovDown = new POVButton(m_manipController, 180);
+  private POVButton btn_manipPovLeft = new POVButton(m_manipController, 270);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
