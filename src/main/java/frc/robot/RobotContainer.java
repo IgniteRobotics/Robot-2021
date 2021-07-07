@@ -236,8 +236,8 @@ public class RobotContainer {
 
     btn_manipA.whileHeld(shootBallInterpolated);
     btn_manipY.whileHeld(targetingCommand);
-    // btn_manipX.whenHeld(retractClimbMax);
-    btn_manipX.whileHeld(shootBallTest);
+    btn_manipX.whenHeld(retractClimbMax);
+    // btn_manipX.whileHeld(shootBallTest);
     btn_manipB.whenHeld(autonCommandGroup);
 
     btn_manipStart.whenHeld(resetHood);
