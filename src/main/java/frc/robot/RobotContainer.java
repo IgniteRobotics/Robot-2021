@@ -240,9 +240,7 @@ public class RobotContainer {
     btn_manipY.whileHeld(climbDown);
     btn_manipB.whileHeld(retractClimbMax);
 
-    btn_driverRStick.whenPressed(() -> {
-      teleDriveCommand.toggleReversed();
-    });
+    btn_driverRStick.whenPressed(teleDriveCommand::toggleReversed);
     
     btn_manipPovUp.whileHeld(trenchShot);
     btn_manipPovRight.whileHeld(baseShot);
