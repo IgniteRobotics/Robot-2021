@@ -42,7 +42,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.intake.RunIntake;
@@ -190,6 +190,11 @@ public class RobotContainer {
       ControllerConstants.BUTTON_RIGHT_BUMPER);
   private JoystickButton btn_manipStart = new JoystickButton(m_manipController, ControllerConstants.BUTTON_START);
 
+  private POVButton btn_manipPovUp = new POVButton(m_manipController, 0);
+  private POVButton btn_manipPovRight = new POVButton(m_manipController, 90);
+  private POVButton btn_manipPovDown = new POVButton(m_manipController, 180);
+  private POVButton btn_manipPovLeft = new POVButton(m_manipController, 270);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -224,29 +229,28 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    btn_driverA.whileHeld(shortShot);
-    btn_driverB.whileHeld(baseShot);
-    btn_driverY.whileHeld(trenchShot);
-    btn_driverX.whenPressed(toggleIntakeCommand);
+    btn_driverY.whileHeld(targetingCommand);
     btn_driverLBumper.whileHeld(outtakeBalls);
     btn_driverRBumper.whileHeld(intakeBalls);
 
     btn_manipLBumper.whileHeld(climbUp);
-    btn_manipRBumper.whileHeld(climbDown);
+    btn_manipRBumper.whileHeld(toggleIntakeCommand);
 
     btn_manipA.whileHeld(shootBallInterpolated);
-    btn_manipY.whileHeld(targetingCommand);
-    btn_manipX.whenHeld(retractClimbMax);
-    // btn_manipX.whileHeld(shootBallTest);
-    btn_manipB.whenHeld(autonCommandGroup);
+    btn_manipY.whileHeld(climbDown);
+    btn_manipB.whileHeld(retractClimbMax);
 
-    btn_manipStart.whenHeld(resetHood);
+    btn_driverRStick.whenPressed(teleDriveCommand::toggleReversed);
+    
+    btn_manipPovUp.whileHeld(trenchShot);
+    btn_manipPovRight.whileHeld(baseShot);
+    btn_manipPovDown.whileHeld(shortShot);
+    btn_manipPovLeft.whileHeld(resetHood);
   }
 
   private void configureSubsystemCommands() {
     m_driveTrain.setDefaultCommand(teleDriveCommand);
     m_shooter.setDefaultCommand(retractHood);
-    m_climber.setDefaultCommand(climbDownEngage);
   }
 
   private void configureAutonChooser() {
