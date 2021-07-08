@@ -229,29 +229,22 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    btn_driverA.whileHeld(shortShot);
-    btn_driverB.whileHeld(baseShot);
-    btn_driverY.whileHeld(trenchShot);
-    btn_driverX.whenPressed(toggleIntakeCommand);
+    btn_driverY.whileHeld(targetingCommand);
     btn_driverLBumper.whileHeld(outtakeBalls);
     btn_driverRBumper.whileHeld(intakeBalls);
 
     btn_manipLBumper.whileHeld(climbUp);
-    btn_manipRBumper.whileHeld(climbDown);
+    btn_manipRBumper.whileHeld(toggleIntakeCommand);
 
     btn_manipA.whileHeld(shootBallInterpolated);
-    btn_manipY.whileHeld(targetingCommand);
-    btn_manipX.whenHeld(retractClimbMax);
+    btn_manipY.whileHeld(climbDown);
+    btn_manipB.whileHeld(retractClimbMax);
     // btn_manipX.whileHeld(shootBallTest);
-    btn_manipB.whenHeld(autonCommandGroup);
-
-    btn_manipStart.whenHeld(resetHood);
   }
 
   private void configureSubsystemCommands() {
     m_driveTrain.setDefaultCommand(teleDriveCommand);
     m_shooter.setDefaultCommand(retractHood);
-    m_climber.setDefaultCommand(climbDownEngage);
   }
 
   private void configureAutonChooser() {
