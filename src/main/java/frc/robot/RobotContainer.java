@@ -239,7 +239,15 @@ public class RobotContainer {
     btn_manipA.whileHeld(shootBallInterpolated);
     btn_manipY.whileHeld(climbDown);
     btn_manipB.whileHeld(retractClimbMax);
-    // btn_manipX.whileHeld(shootBallTest);
+
+    btn_driverRStick.whenPressed(() -> {
+      teleDriveCommand.toggleReversed();
+    });
+    
+    btn_manipPovUp.whileHeld(trenchShot);
+    btn_manipPovRight.whileHeld(baseShot);
+    btn_manipPovDown.whileHeld(shortShot);
+    btn_manipPovLeft.whileHeld(resetHood);
   }
 
   private void configureSubsystemCommands() {
