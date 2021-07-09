@@ -188,7 +188,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
                 Util.getMetersFromEncoderTicks(getRightEncoderPosition()));
         m_field.setRobotPose(m_odometry.getPoseMeters());
 
-        outputTelemetry();
+        //outputTelemetry();
 
         velocityLimitMultiplier = velocityLimitMultiplierEntry.getDouble(Constants.VELOCITY_LIMIT_MULTIPLIER);
         velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);

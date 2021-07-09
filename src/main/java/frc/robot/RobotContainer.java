@@ -205,25 +205,25 @@ public class RobotContainer {
     this.configureAutonChooser();
 
     // Livewindow commands to help with individually testing commands. Not exactly
-    // sure how this works
-    SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
-    SmartDashboard.putData("Shooter Subsystem", m_shooter);
-    SmartDashboard.putData("Drivetrain Subsystem", m_driveTrain);
-    SmartDashboard.putData("Limelight Subsystem", m_limelight);
-    SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
-    SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
+    // // sure how this works
+    // SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
+    // SmartDashboard.putData("Shooter Subsystem", m_shooter);
+    // SmartDashboard.putData("Drivetrain Subsystem", m_driveTrain);
+    // SmartDashboard.putData("Limelight Subsystem", m_limelight);
+    // SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
+    // SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
 
-    SmartDashboard.putData("setHoodAngle", sethoodAngle);
+    // SmartDashboard.putData("setHoodAngle", sethoodAngle);
 
-    SmartDashboard.putData("ShootInterpolatedBall", shootBallInterpolated);
-    SmartDashboard.putData("toggleIntakeCommand", toggleIntakeCommand);
-    SmartDashboard.putData("drivetoDistance", drivetoDistance);
-    SmartDashboard.putData("ShootBall", shootBallTest);
-    SmartDashboard.putData("Turn90Degrees", turn90Degrees);
-    SmartDashboard.putData("takeLimelightSnapShots", takeLimelightSnapShots);
-    SmartDashboard.putData("DriveBackAndShoot", DriveBackAndShoot);
-    SmartDashboard.putData("ClimbUp", climbUp);
-    SmartDashboard.putData("ClimbDown", climbDown);
+    // SmartDashboard.putData("ShootInterpolatedBall", shootBallInterpolated);
+    // SmartDashboard.putData("toggleIntakeCommand", toggleIntakeCommand);
+    // SmartDashboard.putData("drivetoDistance", drivetoDistance);
+    // SmartDashboard.putData("ShootBall", shootBallTest);
+    // SmartDashboard.putData("Turn90Degrees", turn90Degrees);
+    // SmartDashboard.putData("takeLimelightSnapShots", takeLimelightSnapShots);
+    // SmartDashboard.putData("DriveBackAndShoot", DriveBackAndShoot);
+    // SmartDashboard.putData("ClimbUp", climbUp);
+    // SmartDashboard.putData("ClimbDown", climbDown);
 
     this.chooseAuton.addOption("Default Auton", autonCommandGroup);
   }
