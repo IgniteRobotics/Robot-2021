@@ -81,12 +81,6 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     // create a field to send odometry data to.
     private Field2d m_field = new Field2d();
 
-    private ShuffleboardTab tab;
-    private NetworkTableEntry velocityRampExponentEntry;
-    private NetworkTableEntry velocityLimitMultiplierEntry;
-    private NetworkTableEntry turnRampExponentEntry;
-    private NetworkTableEntry turnLimitMultiplierEntry;
-
     private double velocityRampExponent;
     private double velocityLimitMultiplier;
     private double turnRampExponent;
@@ -145,21 +139,6 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
         SmartDashboard.putData("Field", m_field);
 
-        tab = Shuffleboard.getTab("Drivetrain");
-        velocityRampExponentEntry = tab.add("DT Vel Ramp Exp", Constants.VELOCITY_RAMP_EXPONENT)
-                .withProperties(Map.of("min", 1)).getEntry();
-        velocityLimitMultiplierEntry = tab.add("DT Vel Lim Mult", Constants.VELOCITY_LIMIT_MULTIPLIER)
-                .withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
-        turnRampExponentEntry = tab.add("DT Turn Ramp Exp", Constants.TURN_RAMP_EXPONENT)
-                .withProperties(Map.of("min", 1)).getEntry();
-        turnLimitMultiplierEntry = tab.add("DT Trun Lim Mult", Constants.TURN_LIMIT_MULTIPLIER)
-                .withProperties(Map.of("min", 0.1, "max", 1)).getEntry();
-
-        velocityLimitMultiplier = velocityLimitMultiplierEntry.getDouble(Constants.VELOCITY_LIMIT_MULTIPLIER);
-        velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);
-        turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
-        turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
-
         // Testing
         // m_driveTrain.setMaxOutput(.5);
         addChild("LeftMaster- Drivetrain", leftMaster);
@@ -189,11 +168,6 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         m_field.setRobotPose(m_odometry.getPoseMeters());
 
         //outputTelemetry();
-
-        velocityLimitMultiplier = velocityLimitMultiplierEntry.getDouble(Constants.VELOCITY_LIMIT_MULTIPLIER);
-        velocityRampExponent = velocityRampExponentEntry.getDouble(Constants.VELOCITY_RAMP_EXPONENT);
-        turnRampExponent = turnRampExponentEntry.getDouble(Constants.TURN_RAMP_EXPONENT);
-        turnLimitMultiplier = turnLimitMultiplierEntry.getDouble(Constants.TURN_LIMIT_MULTIPLIER);
     }
 
     public Pose2d getCurrentPose() {
@@ -423,33 +397,4 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     public double getLeftMasterPositionTicks() {
         return leftMaster.getSelectedSensorPosition();
     }
-
-    public void outputTelemetry() {
-        SmartDashboard.putNumber("Drivetrain/Left enc pos", this.getLeftEncoderPosition());
-        SmartDashboard.putNumber("Drivetrain/Right enc pos", this.getRightEncoderPosition());
-        SmartDashboard.putNumber("Drivetrain/Left enc vel", this.getLeftEncoderVel());
-        SmartDashboard.putNumber("Drivetrain/Right enc vel", this.getRightEncoderVel());
-        SmartDashboard.putNumber("Drivetrain/Left master voltage", this.getLeftMasterVoltage());
-        SmartDashboard.putNumber("Drivetrain/Right master voltage", this.getRightMasterVoltage());
-        SmartDashboard.putNumber("Drivetrain/Left master current", this.getLeftMasterCurrent());
-        SmartDashboard.putNumber("Drivetrain/Right master current", this.getRightMasterCurrent());
-        SmartDashboard.putNumber("Drivetrain/Left percent out", this.getLeftPercentOutput());
-        SmartDashboard.putNumber("Drivetrain/Right percent out", this.getRightPercentOutput());
-        SmartDashboard.putBoolean("Drivetrain/Is navX connected?", this.isConnected());
-        SmartDashboard.putNumber("Drivetrain/Angle", this.getAngle());
-        SmartDashboard.putNumber("Drivetrain/Heading", this.getHeading());
-        // SmartDashboard.putNumber("Drivetrain/Closed loop target",
-        // this.getClosedLoopTarget());
-        SmartDashboard.putBoolean("Drivetrain/Using Encoders?", this.useEncoders);
-        SmartDashboard.putNumber("Drivetrain/Current VRamp Exp", this.velocityRampExponent);
-        SmartDashboard.putNumber("Drivetrain/Current VRamp Lim", this.velocityLimitMultiplier);
-        SmartDashboard.putNumber("Drivetrain/Current TRamp Exp", this.turnRampExponent);
-        SmartDashboard.putNumber("Drivetrain/Current TRamp Lim", this.turnLimitMultiplier);
-
-        SmartDashboard.putNumber("Drivetrain/Yaw", this.getYaw());
-
-        // SmartDashboard.putNumber("Drivetrain/Turn error", this.getTurnError());
-        // SmartDashboard.putNumber("Drivetrain/Turn setpoint", this.getTurnSetpoint());
-    }
-
 }

@@ -53,21 +53,9 @@ public class Shooter extends SubsystemBase {
     private boolean extended;
     private double zeroPosition;
 
-    private ShuffleboardTab tab;
-    private NetworkTableEntry flywheel_kP_entry;
-    private NetworkTableEntry flywheel_kI_entry;
-    private NetworkTableEntry flywheel_kD_entry;
-
     private double flywheel_kP_value;
     private double flywheel_kI_value;
     private double flywheel_kD_value;
-
-    private NetworkTableEntry hood_kP_entry;
-    private NetworkTableEntry hood_kI_entry;
-    private NetworkTableEntry hood_kD_entry;
-    private NetworkTableEntry hood_max_vel_entry;
-    private NetworkTableEntry hood_max_position_entry;
-    private NetworkTableEntry hood_min_position_entry;
 
     private double hood_kP_value;
     private double hood_kI_value;
@@ -77,28 +65,16 @@ public class Shooter extends SubsystemBase {
     private double hood_min_position_value;
 
     public Shooter() {
-        tab = Shuffleboard.getTab("Shooter");
-        flywheel_kP_entry = tab.add("Shooter kP", Constants.TALON_DEFAULT_KP).withProperties(Map.of("min", 0)).getEntry();
-        flywheel_kI_entry = tab.add("Shooter kI", Constants.TALON_DEFAULT_KI).withProperties(Map.of("min", 0)).getEntry();
-        flywheel_kD_entry = tab.add("Shooter kD", Constants.TALON_DEFAULT_KD).withProperties(Map.of("min", 0)).getEntry();
+        flywheel_kP_value = Constants.TALON_DEFAULT_KP;
+        flywheel_kI_value = Constants.TALON_DEFAULT_KI;
+        flywheel_kD_value = Constants.TALON_DEFAULT_KD;
 
-        flywheel_kP_value = flywheel_kP_entry.getDouble(Constants.TALON_DEFAULT_KP);
-        flywheel_kI_value = flywheel_kI_entry.getDouble(Constants.TALON_DEFAULT_KI);
-        flywheel_kD_value = flywheel_kD_entry.getDouble(Constants.TALON_DEFAULT_KD);
-
-        hood_kP_entry = tab.add("hood kP", Constants.HOOD_DEFAULT_KP).withProperties(Map.of("min", 0)).getEntry();
-        hood_kI_entry = tab.add("hood kI", Constants.HOOD_DEFAULT_KI).withProperties(Map.of("min", 0)).getEntry();
-        hood_kD_entry = tab.add("hood kD", Constants.HOOD_DEFAULT_KD).withProperties(Map.of("min", 0)).getEntry();
-        hood_max_vel_entry = tab.add("hood max V", Constants.HOOD_DEFAULT_RPM).withProperties(Map.of("min", 0)).getEntry();
-        hood_max_position_entry = tab.add("hood max position", Constants.HOOD_MAX_POSITION).withProperties(Map.of("min", 0)).getEntry();
-        hood_min_position_entry = tab.add("hood min position", 0).withProperties(Map.of("min", 0)).getEntry();
-
-        hood_kP_value = hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP);
-        hood_kI_value = hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI);
-        hood_kD_value = hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD);
-        hood_max_vel_value = hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM);
-        hood_max_position_value = hood_max_position_entry.getDouble(Constants.HOOD_MAX_POSITION);
-        hood_min_position_value = hood_min_position_entry.getDouble(0);
+        hood_kP_value = Constants.HOOD_DEFAULT_KP;
+        hood_kI_value = Constants.HOOD_DEFAULT_KI;
+        hood_kD_value = Constants.HOOD_DEFAULT_KD;
+        hood_max_vel_value = Constants.HOOD_DEFAULT_RPM;
+        hood_max_position_value = Constants.HOOD_MAX_POSITION;
+        hood_min_position_value = 0;
 
         configureFlywheel(flywheel_kP_value, flywheel_kI_value, flywheel_kD_value);
 
@@ -114,12 +90,6 @@ public class Shooter extends SubsystemBase {
         kickUp.configOpenloopRamp(Constants.OPEN_LOOP_RAMP);
 
         configureHood(hood_kP_value, hood_kI_value, hood_kD_value, hood_max_vel_value);
-        //shooterConfiguration(0,0,0,0); TODO set this later
-
-        //Livewindow methods to help with testing
-        addChild("LeftMaster-Shooter Motor",leftMotor);
-        //addChild("Hood Shoot Motor",hood_motor);
-        
     }
 
     private void configureFlywheel(double kP, double kI, double kD) {
@@ -181,28 +151,6 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Hood Postiton Ticks", this.getHoodTicks());
         SmartDashboard.putNumber("Hood Motor Output", this.hood_motor.getAppliedOutput());
         SmartDashboard.putBoolean("Hood in Position", this.isHoodReady());
-
-        //trust the limit switch?
-        // if(!this.hoodReset) {
-        //   //TODO undo this once it's tested.
-        //   resetHood();
-        // }
-
-        //check if hood pid settings have changed
-        // if (hood_kP_value != hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP)
-        //         || hood_kI_value != hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI)
-        //         || hood_kD_value != hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD)
-        //         || hood_max_vel_value != hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM)) {
-        //     hood_kP_value = hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP);
-        //     hood_kI_value = hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI);
-        //     hood_kD_value = hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD);
-        //     hood_max_vel_value = hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM);
-        //     configureHood(hood_kP_value, hood_kI_value, hood_kD_value, hood_max_vel_value);
-        // }
-
-        // hood_max_position_value = hood_max_position_entry.getDouble(hood_max_position_value);
-        // hood_min_position_value = hood_min_position_entry.getDouble(hood_min_position_value);
-
     }
 
     public void setVelocity(double velocity) {

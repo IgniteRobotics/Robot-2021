@@ -25,13 +25,6 @@ public class Climber extends SubsystemBase {
   private WPI_TalonFX climberLeader;
   private WPI_TalonFX climberFollower;
 
-  private ShuffleboardTab shuffleTab = Shuffleboard.getTab("Climber");
-  private NetworkTableEntry leftClimbTicks = shuffleTab.add("Left Climb (Ticks)", 0).getEntry();
-  private NetworkTableEntry rightClimbTicks = shuffleTab.add("Right Climb (Ticks)", 0).getEntry();
-
-  private NetworkTableEntry leftClimbCurrent = shuffleTab.add("Left Climb Supply (Amps)", 0).getEntry();
-  private NetworkTableEntry rightClimbCurrent = shuffleTab.add("Right Climb Supply (Amps)", 0).getEntry();
-
   public static final int CLIMBER_FORWARD_LIMIT = 290000;
   public static final int CLIMBER_REVERSE_LIMIT = 10000;
 
@@ -85,8 +78,6 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    publishData();
-
     if(isRampingDown) {
       framesSinceRamp++;
 
@@ -114,14 +105,6 @@ public class Climber extends SubsystemBase {
 		climberLeader.config_kD(kSlotIdx, kD, kTimeoutMs);
 		climberLeader.configMotionCruiseVelocity(5525, kTimeoutMs);
 		climberLeader.configMotionAcceleration(5525, kTimeoutMs);
-  }
-
-  private void publishData() {
-    leftClimbTicks.setNumber(climberLeader.getSelectedSensorPosition());
-    rightClimbTicks.setNumber(climberFollower.getSelectedSensorPosition());
-
-    leftClimbCurrent.setNumber(climberLeader.getSupplyCurrent());
-    rightClimbCurrent.setNumber(climberFollower.getSupplyCurrent());
   }
 
   public void goUp() {

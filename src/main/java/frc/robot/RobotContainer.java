@@ -81,62 +81,18 @@ public class RobotContainer {
   private Shooter m_shooter = new Shooter();
   private Indexer m_indexer = new Indexer();
   private Limelight m_limelight = new Limelight();
-  private Realsense m_realsense = new Realsense();
   private Joystick m_driveController = new Joystick(MotorConstants.kDriveControllerPort);
   private Joystick m_manipController = new Joystick(MotorConstants.kManipControllerPort);
   private Climber m_climber = new Climber();
+  
+  SendableChooser<Command> chooseAuton = new SendableChooser<>();
 
-  // private ArcadeDrive teleDriveCommand = new ArcadeDrive(m_driveController,
-  // m_driveTrain);
-  // private RamseteArcadeDrive teleDriveCommand = new
-  // RamseteArcadeDrive(m_driveController, m_driveTrain);
+  // begin current driver commands / input
   private RamseteArcadeDrive teleDriveCommand = new RamseteArcadeDrive(m_driveController, m_driveTrain);
-  // private AutoForward m_auto = new AutoForward(m_driveTrain, 1000);
 
   private ShootInterpolatedBall shootBallInterpolated = new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight);
   private TargetPositioning targetingCommand = new TargetPositioning(m_driveTrain, m_driveController, m_limelight);
-  private RunIntake intakeCommand = new RunIntake(0.7, m_intake);
-  private DriveDistance drivetoDistance = new DriveDistance(3, m_driveTrain);
-  private ShootBallTest autonShootBall = new ShootBallTest(m_shooter, m_indexer); // this must be used in command group
 
-  private SetIntake extendIntake = new SetIntake(m_intake, true);
-  SendableChooser<Command> chooseAuton = new SendableChooser<>();
-
-  // private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new
-  // TurnToAngle(m_driveTrain, m_limelight), shootCommand);
-
-  // private SequentialCommandGroup shootSequence = new SequentialCommandGroup(new
-  // TargetPositioning(m_driveTrain), shootCommand);
-
-  // The realsense camera is blocked by the intake. First, lower down the intake,
-  // then determine path, then move down intake. Then, in parallel, run the intake
-  // and drive the trajectory
-
-  // private ParallelCommandGroup runTrajectoryAndIntake = new
-  // ParallelCommandGroup(intakeCommand, new DriveTrajectory(m_driveTrain,
-  // Constants.robotDeterminedTrajectory) );
-
-  // TODO Will the intake run up before we can determine the path?
-  // private SequentialCommandGroup galacticSearch = new
-  // SequentialCommandGroup(intakeCommand, new DrivegalacticRun(),
-  // runTrajectoryAndIntake);
-  // private Command galacticSearch = new SequentialGalacticSearch(m_driveTrain,
-  // m_realsense, m_intake);
-  private GalacticSearch galacticSearchDrive = new GalacticSearch(m_driveTrain, m_realsense, m_intake);
-  // private ParallelCommandGroup intakeAndSearch = new ParallelCommandGroup(new
-  // RunIntake(1.0, m_intake), galacticSearchDrive);
-  private SequentialCommandGroup autoGalaticSearch = new SequentialCommandGroup(new ToggleIntake(m_intake),
-      galacticSearchDrive);
-  private ParallelCommandGroup intakeAndDrive = new ParallelCommandGroup(new RunIntake(1.0, m_intake),
-      this.loadTrajectoryCommand("28-GS-B-Red"));
-  private SequentialCommandGroup manualGS = new SequentialCommandGroup(new ToggleIntake(m_intake), intakeAndDrive);
-  private LimelightSnapshot takeLimelightSnapShots = new LimelightSnapshot();
-  private SequentialCommandGroup DriveBackAndShoot = new SequentialCommandGroup(new DriveDistance(-3.048, m_driveTrain),
-      new ShootBallSpecific(m_shooter, m_indexer, 4000, 1400));
-
-  private SetHoodAngle sethoodAngle = new SetHoodAngle(m_shooter);
-
-  // begin current driver commands / input
   private ResetHood resetHood = new ResetHood(m_shooter);
   private RetractHood retractHood = new RetractHood(m_shooter);
 
@@ -204,27 +160,6 @@ public class RobotContainer {
     this.configureSubsystemCommands();
     this.configureAutonChooser();
 
-    // Livewindow commands to help with individually testing commands. Not exactly
-    // // sure how this works
-    // SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
-    // SmartDashboard.putData("Shooter Subsystem", m_shooter);
-    // SmartDashboard.putData("Drivetrain Subsystem", m_driveTrain);
-    // SmartDashboard.putData("Limelight Subsystem", m_limelight);
-    // SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
-    // SmartDashboard.putData("Current Running Commands", CommandScheduler.getInstance());
-
-    // SmartDashboard.putData("setHoodAngle", sethoodAngle);
-
-    // SmartDashboard.putData("ShootInterpolatedBall", shootBallInterpolated);
-    // SmartDashboard.putData("toggleIntakeCommand", toggleIntakeCommand);
-    // SmartDashboard.putData("drivetoDistance", drivetoDistance);
-    // SmartDashboard.putData("ShootBall", shootBallTest);
-    // SmartDashboard.putData("Turn90Degrees", turn90Degrees);
-    // SmartDashboard.putData("takeLimelightSnapShots", takeLimelightSnapShots);
-    // SmartDashboard.putData("DriveBackAndShoot", DriveBackAndShoot);
-    // SmartDashboard.putData("ClimbUp", climbUp);
-    // SmartDashboard.putData("ClimbDown", climbDown);
-
     this.chooseAuton.addOption("Default Auton", autonCommandGroup);
   }
 
@@ -262,10 +197,6 @@ public class RobotContainer {
     for (String s : paths) {
       this.chooseAuton.addOption(s, this.loadTrajectoryCommand(s));
     }
-
-    chooseAuton.addOption("Galactic Search-inator", autoGalaticSearch);
-    chooseAuton.addOption("Manual GS", manualGS);
-
   }
 
   /**
