@@ -61,8 +61,8 @@ public class Climber extends SubsystemBase {
     climberLeader.configFactoryDefault();
     climberFollower.configFactoryDefault();
 
-    climberLeader.configOpenloopRamp(1);
-    climberFollower.configOpenloopRamp(1);
+    // climberLeader.configOpenloopRamp(1);
+    // climberFollower.configOpenloopRamp(1);
 
     climberFollower.setInverted(true);
 
