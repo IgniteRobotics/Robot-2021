@@ -39,13 +39,11 @@ public class Intake extends SubsystemBase {
     }
 
     public void extendIntake() {
-        System.out.println("extending intake");
         isExtended = true;
         intakePistonSolenoid.set(Value.kForward);
     }
 
     public void retractIntake() {
-        System.out.println("retracting intake");
         isExtended = false;
         intakePistonSolenoid.set(Value.kReverse);
     }

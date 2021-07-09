@@ -183,30 +183,25 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putBoolean("Hood in Position", this.isHoodReady());
 
         //trust the limit switch?
-         if (this.hoodLimitSwitch.get() == true){
-           this.hood_motor.set(0);
-
-         }
-
         // if(!this.hoodReset) {
         //   //TODO undo this once it's tested.
         //   resetHood();
         // }
 
         //check if hood pid settings have changed
-        if (hood_kP_value != hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP)
-                || hood_kI_value != hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI)
-                || hood_kD_value != hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD)
-                || hood_max_vel_value != hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM)) {
-            hood_kP_value = hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP);
-            hood_kI_value = hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI);
-            hood_kD_value = hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD);
-            hood_max_vel_value = hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM);
-            configureHood(hood_kP_value, hood_kI_value, hood_kD_value, hood_max_vel_value);
-        }
+        // if (hood_kP_value != hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP)
+        //         || hood_kI_value != hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI)
+        //         || hood_kD_value != hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD)
+        //         || hood_max_vel_value != hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM)) {
+        //     hood_kP_value = hood_kP_entry.getDouble(Constants.HOOD_DEFAULT_KP);
+        //     hood_kI_value = hood_kI_entry.getDouble(Constants.HOOD_DEFAULT_KI);
+        //     hood_kD_value = hood_kD_entry.getDouble(Constants.HOOD_DEFAULT_KD);
+        //     hood_max_vel_value = hood_max_vel_entry.getDouble(Constants.HOOD_DEFAULT_RPM);
+        //     configureHood(hood_kP_value, hood_kI_value, hood_kD_value, hood_max_vel_value);
+        // }
 
-        hood_max_position_value = hood_max_position_entry.getDouble(hood_max_position_value);
-        hood_min_position_value = hood_min_position_entry.getDouble(hood_min_position_value);
+        // hood_max_position_value = hood_max_position_entry.getDouble(hood_max_position_value);
+        // hood_min_position_value = hood_min_position_entry.getDouble(hood_min_position_value);
 
     }
 
