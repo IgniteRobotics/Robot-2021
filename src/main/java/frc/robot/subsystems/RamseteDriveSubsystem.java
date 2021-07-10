@@ -81,10 +81,10 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     // create a field to send odometry data to.
     private Field2d m_field = new Field2d();
 
-    private double velocityRampExponent;
-    private double velocityLimitMultiplier;
-    private double turnRampExponent;
-    private double turnLimitMultiplier;
+    private double velocityRampExponent = Constants.VELOCITY_RAMP_EXPONENT;
+    private double velocityLimitMultiplier = Constants.VELOCITY_LIMIT_MULTIPLIER;
+    private double turnRampExponent = Constants.TURN_RAMP_EXPONENT;
+    private double turnLimitMultiplier = Constants.TURN_LIMIT_MULTIPLIER;
     // 7.8 is gear ratio
     private double ticksPerMeter = (2048.0 * 7.8) / Constants.WHEEL_CIRCUMFERENCE_METERS;
 
