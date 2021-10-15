@@ -169,7 +169,7 @@ public class RobotContainer {
     btn_driverRBumper.whileHeld(intakeBalls);
 
     btn_manipLBumper.whileHeld(climbUp);
-    btn_manipRBumper.whileHeld(toggleIntakeCommand);
+    btn_manipRBumper.whenPressed(toggleIntakeCommand);
 
     btn_manipA.whileHeld(shootBallInterpolated);
     btn_manipY.whileHeld(climbDown);
