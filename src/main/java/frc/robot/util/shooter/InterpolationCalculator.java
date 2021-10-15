@@ -7,11 +7,12 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+
 import frc.robot.util.shooter.ShooterParameter;
 
 public class InterpolationCalculator implements ShooterCalculator {
     private static SortedMap<Double, ShooterParameter> distanceMap = new TreeMap<>();
-
+    private static double goalOffset = -.737;
     static {
 /**         distanceMap.put(6.0, new ShooterParameter(6, 5000, 1633));
         distanceMap.put(8.0, new ShooterParameter(8, 6000, 1587));
@@ -23,13 +24,13 @@ public class InterpolationCalculator implements ShooterCalculator {
         // addShooterParameter(new ShooterParameter(3.34, 3800, 734));
         // addShooterParameter(new ShooterParameter(3.86, 5000, 1598));
 
-        addShooterParameter(new ShooterParameter(1.33, 3500, 140));
-        addShooterParameter(new ShooterParameter(2.1, 3600, 195));
-        addShooterParameter(new ShooterParameter(4.13, 4800, 1600));
-        addShooterParameter(new ShooterParameter(4.75, 4650, 1600));
-        addShooterParameter(new ShooterParameter(5.55, 4850, 1600));
-        addShooterParameter(new ShooterParameter(6.32, 5000, 1600));
-        addShooterParameter(new ShooterParameter(6.89, 5200, 1600));
+        addShooterParameter(new ShooterParameter(1.33 + goalOffset, 3500, 140));
+        addShooterParameter(new ShooterParameter(2.1 + goalOffset, 3600, 195));
+        addShooterParameter(new ShooterParameter(4.13 + goalOffset, 4800, 1600));
+        addShooterParameter(new ShooterParameter(4.75 + goalOffset, 4650, 1600));
+        addShooterParameter(new ShooterParameter(5.55 + goalOffset, 4850, 1600));
+        addShooterParameter(new ShooterParameter(6.32 + goalOffset, 5000, 1600));
+        addShooterParameter(new ShooterParameter(6.89 + goalOffset, 5200, 1600));
 
     }
 

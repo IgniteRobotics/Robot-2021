@@ -28,11 +28,7 @@ public class ClimbDownEngage extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (joystick.getRawAxis(XboxController.Axis.kRightTrigger.value) >= 0.7) {
-      climber.goDownEngage();
-    } else {
-      climber.stop();
-    }
+    climber.goDownEngage();
   }
 
   // Called once the command ends or is interrupted.

@@ -28,8 +28,6 @@ public class ShootInterpolatedBall extends CommandBase {
 
     private Limelight limelight;
 
-    private StateMachine state;
-
     private static final int RANGE = 150;
     private static final double ANGLE_RANGE = 5;
 
@@ -50,11 +48,7 @@ public class ShootInterpolatedBall extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        // tab = Shuffleboard.getTab("Shooter");
-        // targetShooterVelocityEntry = tab.add("Target Shooter Velocity", 0).withProperties(Map.of("min", 0)).getEntry();
-        // intakeEffortEntry = tab.add("Intake Effort Percentage", 0.4).withProperties(Map.of("min", -1, "max", 1)).getEntry();
-        // kickupEffortEntry = tab.add("Kickup Wheel Effort Percentage", 0.3).withProperties(Map.of("min", 0, "max", 1)).getEntry();
-        state = StateMachine.getIntance();
+        
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -63,26 +57,13 @@ public class ShootInterpolatedBall extends CommandBase {
         intakeEffort = shuffle.getIntakeEffort();
         kickupEffort = shuffle.getKickupEffort();
         distanceSetpoint = shuffle.getDistanceSetPoint();
-        //double currentDistance = state.getShooterDistance(); State machine is not currently being used
         double currentDistance = limelight.getDistancefromgoal();
 
         ShooterParameter calculatedParameters = calculator.calculateParameter(currentDistance);
         targetVelocity = calculatedParameters.rpm;
 
-        // if (currentDistance > distanceSetpoint){
-        //   shooter.extendHood();
-        // } else {
-        //   shooter.retractHood();
-        // }
-
-
-        // get velocity from the Shuffleboard
-        //setShooterVelocity(targetVelocity);
         setShooterRPM((int) targetVelocity); // use rpm from interpolation
         shooter.changeHoodTicks(calculatedParameters.angle);
-
-        SmartDashboard.putNumber("Target AngleTicks", calculatedParameters.angle);
-        SmartDashboard.putNumber("Interpolated Target Velocity", calculatedParameters.rpm);
 
         double shooterRPM = shooter.getShooterRPM();
 

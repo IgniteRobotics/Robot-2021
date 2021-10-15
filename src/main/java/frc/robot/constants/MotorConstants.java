@@ -23,8 +23,8 @@ public class MotorConstants {
    
     public static final int kTurretMotorPort = 12;
 
-    public static final int kIntakeSolenoidForwardPort = 0;
-    public static final int kIntakeSolenoidReversePort = 1;
+    public static final int kIntakeSolenoidForwardPort = 2;
+    public static final int kIntakeSolenoidReversePort = 3;
     public static final int kKickerSolenoidPort = 1;
 
     public static final int kIntakeMotorPort = 10; //TODO find out what these actually are.

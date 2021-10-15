@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.MotorConstants;
 
@@ -23,13 +24,6 @@ public class Climber extends SubsystemBase {
 
   private WPI_TalonFX climberLeader;
   private WPI_TalonFX climberFollower;
-
-  private ShuffleboardTab shuffleTab = Shuffleboard.getTab("Climber");
-  private NetworkTableEntry leftClimbTicks = shuffleTab.add("Left Climb (Ticks)", 0).getEntry();
-  private NetworkTableEntry rightClimbTicks = shuffleTab.add("Right Climb (Ticks)", 0).getEntry();
-
-  private NetworkTableEntry leftClimbCurrent = shuffleTab.add("Left Climb Supply (Amps)", 0).getEntry();
-  private NetworkTableEntry rightClimbCurrent = shuffleTab.add("Right Climb Supply (Amps)", 0).getEntry();
 
   public static final int CLIMBER_FORWARD_LIMIT = 290000;
   public static final int CLIMBER_REVERSE_LIMIT = 10000;
@@ -48,12 +42,20 @@ public class Climber extends SubsystemBase {
   public static final double safeReduceEffort = 0.08;
   public static final double safeStatorLimit = 0.3;
 
+  public static final double rampDownFrames = 25;
+  private int framesSinceRamp = 0;
+  private double initialRampingEffort = 0;
+  private boolean isRampingDown = false;
+
   public Climber() {
     climberLeader = new WPI_TalonFX(MotorConstants.kLeftClimberMotorPort);
     climberFollower = new WPI_TalonFX(MotorConstants.kRightClimberMotorPort);
 
     climberLeader.configFactoryDefault();
     climberFollower.configFactoryDefault();
+
+    // climberLeader.configOpenloopRamp(1);
+    // climberFollower.configOpenloopRamp(1);
 
     climberFollower.setInverted(true);
 
@@ -76,7 +78,17 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    publishData();
+    if(isRampingDown) {
+      framesSinceRamp++;
+
+      if(framesSinceRamp >= rampDownFrames) {
+        isRampingDown = false;
+        stop();
+      } else {
+        climberLeader.set(ControlMode.PercentOutput, (1 - framesSinceRamp / (double) rampDownFrames) * initialRampingEffort);
+        climberFollower.set(ControlMode.PercentOutput, (1 - framesSinceRamp / (double) rampDownFrames) * initialRampingEffort);
+      }
+    }
   }
 
   private void configureMotionMagic() {
@@ -95,14 +107,6 @@ public class Climber extends SubsystemBase {
 		climberLeader.configMotionAcceleration(5525, kTimeoutMs);
   }
 
-  private void publishData() {
-    leftClimbTicks.setNumber(climberLeader.getSelectedSensorPosition());
-    rightClimbTicks.setNumber(climberFollower.getSelectedSensorPosition());
-
-    leftClimbCurrent.setNumber(climberLeader.getSupplyCurrent());
-    rightClimbCurrent.setNumber(climberFollower.getSupplyCurrent());
-  }
-
   public void goUp() {
     // TODO make this shuffleboard changeable
     climberLeader.set(ControlMode.PercentOutput, CLIMB_EFFORT_UP);
@@ -110,6 +114,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void goDown() {
+    isRampingDown = false;
     climberLeader.set(ControlMode.PercentOutput, -CLIMB_EFFORT_DOWN);
     climberFollower.set(ControlMode.PercentOutput, -CLIMB_EFFORT_DOWN);
   }
@@ -230,6 +235,15 @@ public class Climber extends SubsystemBase {
 
   public void resetCurrentLimits() {
     leaderCurrentStopped = followerCurrentStopped = false;
+  }
+
+  public void stopWithRamping() {
+    if(!isRampingDown) {
+      isRampingDown = true;
+
+      framesSinceRamp = 0;
+      initialRampingEffort = climberLeader.get();
+    }
   }
 
   public void stop() {

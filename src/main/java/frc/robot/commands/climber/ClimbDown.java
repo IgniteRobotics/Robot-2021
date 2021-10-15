@@ -11,6 +11,7 @@ import frc.robot.subsystems.Climber;
 
 public class ClimbDown extends CommandBase {
   private Climber climb;
+
   /** Creates a new ClimbUp. */
   public ClimbDown(Climber climb) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -31,7 +32,7 @@ public class ClimbDown extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    climb.stop();
+    climb.stopWithRamping();
   }
 
   // Returns true when the command should end.
