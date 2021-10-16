@@ -214,15 +214,9 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     public void arcadeDrive(final double speed, final double rotation, final boolean useSquares) {
         var xSpeed = speedRateLimiter.calculate(safeClamp(speed));
         var zRotation = rotationRateLimiter.calculate(safeClamp(rotation));
-        if (useSquares) {
-            // xSpeed *= Math.abs(xSpeed);
-            // zRotation *= Math.abs(zRotation);
-            xSpeed = Util.applyLimiters(xSpeed, velocityRampExponent, velocityLimitMultiplier);
-            zRotation = Util.applyLimiters(zRotation, turnRampExponent, turnLimitMultiplier);
-        }
         // xSpeed *= Constants.kMaxSpeedMetersPerSecond;
         // zRotation *= Constants.kMaxAngularVelocity;
-        m_driveTrain.arcadeDrive(xSpeed, zRotation, false);
+        m_driveTrain.arcadeDrive(xSpeed, zRotation, useSquares);
     }
 
     public void tankDrivePower(double leftPower, double rightPower) {

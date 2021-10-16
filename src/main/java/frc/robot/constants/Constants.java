@@ -27,7 +27,7 @@ public final class Constants {
     public static final int kSorterSensorPort = 1;
 
 
-    public static final double SPEED_RATE_LIMIT_ARCADE = 1.5;
+    public static final double SPEED_RATE_LIMIT_ARCADE = 3;
     public static final double ROTATION_RATE_LIMIT_ARCADE = 3.0;
 
     public static final double SLOW_MODE_SPEED_MODIFIER = 0.5;
