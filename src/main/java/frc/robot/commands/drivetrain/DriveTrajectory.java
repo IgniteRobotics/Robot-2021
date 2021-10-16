@@ -19,31 +19,21 @@ public class DriveTrajectory extends RamseteCommand {
     //     this.trajectory = trajectory;
     // }
 
-    public DriveTrajectory(RamseteDriveSubsystem ramsetedriveTrain, Trajectory trajectory){
-        // public RamseteCommand
-        //     Trajectory trajectory,
-        //     Supplier<Pose2d> pose,
-        //     RamseteController controller,
-        //     SimpleMotorFeedforward feedforward,
-        //     DifferentialDriveKinematics kinematics,
-        //     Supplier<DifferentialDriveWheelSpeeds> wheelSpeeds,
-        //     PIDController leftController,
-        //     PIDController rightController,
-        //     BiConsumer<Double, Double> outputVolts,
-        //     Subsystem... requirements)
-        super(trajectory, 
-            ramsetedriveTrain::getCurrentPose, 
+    public DriveTrajectory(RamseteDriveSubsystem drive, Trajectory trajectory){
+        super(
+            trajectory,
+            drive::getCurrentPose,
             new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
-            new SimpleMotorFeedforward(Constants.ksVolts, 
-                                       Constants.kvVoltSecondsPerMeter,
-                                       Constants.kaVoltSecondsSquaredPerMeter), 
-            new DifferentialDriveKinematics (Constants.kTrackwidthMeters), 
-            ramsetedriveTrain::getWheelSpeeds,
+            new SimpleMotorFeedforward(Constants.ksVolts, Constants.kvVoltSecondsPerMeter, Constants.kaVoltSecondsSquaredPerMeter),
+            Constants.kDriveKinematics,
+            drive::getWheelSpeeds,
             new PIDController(Constants.kPDriveVel, 0, 0),
             new PIDController(Constants.kPDriveVel, 0, 0),
-            ramsetedriveTrain::tankDriveVolts, 
-            ramsetedriveTrain);        
-        this.ramseteDriveTrain = ramsetedriveTrain;
+            drive::tankDriveVolts,
+            drive
+          );  
+
+        this.ramseteDriveTrain = drive;
         this.trajectory = trajectory;
     }
 
@@ -51,23 +41,7 @@ public class DriveTrajectory extends RamseteCommand {
     @Override
     public void initialize() {
         super.initialize();
+        ramseteDriveTrain.resetEncoders();
         ramseteDriveTrain.resetOdometry(trajectory.getInitialPose());
-    }
-
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {
-        super.execute();
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        super.end(interrupted);
-    }
-
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-        return !ramseteDriveTrain.isConnected() || super.isFinished();
     }
 }

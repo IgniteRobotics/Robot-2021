@@ -8,9 +8,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
+
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
@@ -19,7 +24,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import frc.robot.commands.climber.ClimbUp;
 import frc.robot.commands.climber.RetractClimbMax;
 import frc.robot.commands.LimelightSnapshot;
@@ -37,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
@@ -48,6 +59,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.intake.SetIntake;
 import edu.wpi.first.wpilibj.Joystick;
+import frc.robot.constants.Constants;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.MotorConstants;
 import frc.robot.commands.intake.ToggleIntake;
@@ -192,11 +204,11 @@ public class RobotContainer {
 
     SmartDashboard.putData("Auto Chooser", this.chooseAuton);
 
-    String[] paths = { "leftTurn", "line", "oneMeter1", "rightTurn", "slalom", "slalom1", "test", "twoMeter" };
+    // String[] paths = { "leftTurn", "line", "oneMeter1", "rightTurn", "slalom", "slalom1", "test", "twoMeter" };
 
-    for (String s : paths) {
-      this.chooseAuton.addOption(s, this.loadTrajectoryCommand(s));
-    }
+    // for (String s : paths) {
+    //   this.chooseAuton.addOption(s, this.loadTrajectoryCommand(s));
+    // }
   }
 
   /**
@@ -205,11 +217,25 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    if(chooseAuton.getSelected() == null) {
-      return autonCommandGroup;
-    } else {
-      return chooseAuton.getSelected();
-    }
+    Trajectory trajectory = loadTrajectory("DriveStraight");
+
+    m_driveTrain.resetOdometry(trajectory.getInitialPose());
+    m_driveTrain.resetEncoders();
+
+    SequentialCommandGroup command = new RamseteCommand(
+      trajectory,
+      m_driveTrain::getCurrentPose,
+      new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
+      new SimpleMotorFeedforward(Constants.ksVolts, Constants.kvVoltSecondsPerMeter, Constants.kaVoltSecondsSquaredPerMeter),
+      Constants.kDriveKinematics,
+      m_driveTrain::getWheelSpeeds,
+      new PIDController(Constants.kPDriveVel, 0, 0),
+      new PIDController(Constants.kPDriveVel, 0, 0),
+      m_driveTrain::tankDriveVolts,
+      m_driveTrain
+    ).andThen(() -> m_driveTrain.stop());
+
+    return command;
   }
 
   public Command getAutonomousShootCommand() {
@@ -242,7 +268,7 @@ public class RobotContainer {
   public static Trajectory loadTrajectory(String trajectoryName) {
     try {
       Trajectory trajectory = TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath()
-          .resolve(Paths.get("paths", "output", trajectoryName + ".wpilib.json")));
+          .resolve(Paths.get("paths", trajectoryName + ".wpilib.json")));
       return trajectory;
     } catch (IOException e) {
       DriverStation.reportError("Failed to load auto trajectory: " + trajectoryName, false);
