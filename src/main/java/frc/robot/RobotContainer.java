@@ -205,8 +205,11 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    System.out.println("Auto: " + chooseAuton.getSelected().getName());
-    return chooseAuton.getSelected();
+    if(chooseAuton.getSelected() == null) {
+      return autonCommandGroup;
+    } else {
+      return chooseAuton.getSelected();
+    }
   }
 
   public Command getAutonomousShootCommand() {
