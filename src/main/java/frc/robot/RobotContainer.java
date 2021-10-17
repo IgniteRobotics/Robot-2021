@@ -47,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Intake;
@@ -137,6 +138,8 @@ public class RobotContainer {
     new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight).withTimeout(4)
   );
 
+  private SequentialCommandGroup sixBallAuton;
+
   private JoystickButton btn_driverA = new JoystickButton(m_driveController, ControllerConstants.BUTTON_A);
   private JoystickButton btn_driverB = new JoystickButton(m_driveController, ControllerConstants.BUTTON_B);
   private JoystickButton btn_driverY = new JoystickButton(m_driveController, ControllerConstants.BUTTON_Y);
@@ -200,6 +203,26 @@ public class RobotContainer {
     m_shooter.setDefaultCommand(retractHood);
   }
 
+  public void configureAutonCommand() {
+    Trajectory forwards = loadTrajectory("TrenchForwards");
+    Trajectory backwards = loadTrajectory("TrenchBackwards");
+
+    DriveTrajectory forwardsDrive = new DriveTrajectory(m_driveTrain, forwards);
+    DriveTrajectory backwardsDrive = new DriveTrajectory(m_driveTrain, backwards);
+
+    ParallelRaceGroup group = new ParallelRaceGroup(
+      new RunIntake(1, m_intake),
+      forwardsDrive
+    );
+
+    this.sixBallAuton = new SequentialCommandGroup(
+      new SetIntake(m_intake, false),
+      group,
+      backwardsDrive,
+      trenchShot
+    );
+  }
+
   private void configureAutonChooser() {
 
     SmartDashboard.putData("Auto Chooser", this.chooseAuton);
@@ -217,33 +240,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Trajectory trajectory = loadTrajectory("DriveStraight");
-
-    m_driveTrain.resetOdometry(trajectory.getInitialPose());
-    m_driveTrain.resetEncoders();
-
-    SequentialCommandGroup command = new RamseteCommand(
-      trajectory,
-      m_driveTrain::getCurrentPose,
-      new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta),
-      new SimpleMotorFeedforward(Constants.ksVolts, Constants.kvVoltSecondsPerMeter, Constants.kaVoltSecondsSquaredPerMeter),
-      Constants.kDriveKinematics,
-      m_driveTrain::getWheelSpeeds,
-      new PIDController(Constants.kPDriveVel, 0, 0),
-      new PIDController(Constants.kPDriveVel, 0, 0),
-      m_driveTrain::tankDriveVolts,
-      m_driveTrain
-    ).andThen(() -> m_driveTrain.stop());
-
-    ParallelCommandGroup group = new ParallelCommandGroup(
-      command,
-      new RunIntake(1, m_intake)
-    );
-
-    return new SequentialCommandGroup(
-      new SetIntake(m_intake, false),
-      group
-    );
+    return sixBallAuton;
   }
 
   public Command getAutonomousShootCommand() {
