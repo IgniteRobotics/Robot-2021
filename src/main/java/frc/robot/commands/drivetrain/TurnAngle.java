@@ -21,16 +21,17 @@ public class TurnAngle extends PIDCommand {
   private RamseteDriveSubsystem m_driveTrain;
   private double targetAngleDegrees;
 
-  private final static double kP_TURN = 0.013;
+  private final static double kP_TURN = 0.01;
   private final static double kI_TURN = 0;
-  private final static double kD_TURN = 0;
+  private final static double kD_TURN = 0.001;
+  private final static double kFF_TURN = 0.1;
 
   public TurnAngle(RamseteDriveSubsystem driveTrain, double targetAngleDegrees) {
     super(
-      new PIDController(kP_TURN, kI_TURN,kD_TURN),
+      new PIDController(kP_TURN, kI_TURN, kD_TURN),
       driveTrain::getHeading,
       targetAngleDegrees,
-      output -> driveTrain.arcadeDrive(0, output, false),
+      output -> driveTrain.arcadeDrive(0, output + kFF_TURN * Math.signum(output), false),
       driveTrain
     );
     this.m_driveTrain = driveTrain;
