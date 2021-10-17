@@ -50,6 +50,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
@@ -217,7 +218,7 @@ public class RobotContainer {
 
     this.sixBallAuton = new SequentialCommandGroup(
       new SetIntake(m_intake, false),
-      group,
+      new ParallelCommandGroup(group, new ResetHood(m_shooter)),
       backwardsDrive,
       trenchShot
     );
@@ -273,7 +274,7 @@ public class RobotContainer {
   public static Trajectory loadTrajectory(String trajectoryName) {
     try {
       Trajectory trajectory = TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath()
-          .resolve(Paths.get("paths", trajectoryName + ".wpilib.json")));
+          .resolve(Paths.get("paths", "output", trajectoryName + ".wpilib.json")));
       return trajectory;
     } catch (IOException e) {
       DriverStation.reportError("Failed to load auto trajectory: " + trajectoryName, false);
