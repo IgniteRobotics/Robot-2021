@@ -235,7 +235,15 @@ public class RobotContainer {
       m_driveTrain
     ).andThen(() -> m_driveTrain.stop());
 
-    return command;
+    ParallelCommandGroup group = new ParallelCommandGroup(
+      command,
+      new RunIntake(1, m_intake)
+    );
+
+    return new SequentialCommandGroup(
+      new SetIntake(m_intake, false),
+      group
+    );
   }
 
   public Command getAutonomousShootCommand() {

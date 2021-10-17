@@ -144,7 +144,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_odometry.update(navX.getRotation2d(), sensorProfile.uToRev(getLeftEncoderPosition()) * Constants.WHEEL_CIRCUMFERENCE_METERS,
-                      sensorProfile.uToRev(getRightEncoderPosition()) * Constants.WHEEL_CIRCUMFERENCE_METERS);
+                      sensorProfile.uToRev(-getRightEncoderPosition()) * Constants.WHEEL_CIRCUMFERENCE_METERS);
         leftEncoderPosition.set(getLeftEncoderPosition());              
         rightEncoderPosition.set(getRightEncoderPosition());    
         leftEncoderVelocity.set(getLeftEncoderVel());    
