@@ -1,16 +1,35 @@
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2021.3.1"
+    id 'org.ajoberstar.grgit' version '4.0.2'
+
 }
 
 repositories {
     maven { url "https://jitpack.io" }
+    jcenter()
+    maven { url "https://ajoberstar.org/bintray-backup/" }
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
+
+def commitHash = grgit.head().abbreviatedId
+println 'Commit: ' + commitHash
+
+
+tasks.register('checkGitStatus') {
+    doLast{
+        def isCommitClean = grgit.status().clean
+        println 'Commit clean? ' + isCommitClean
+        if (!isCommitClean){
+            println 'Git working tree not clean.  Aborting'
+            throw new GradleException('Git working tree not clean.  Aborting')
+        }
+    }
+}
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
@@ -68,8 +87,7 @@ dependencies {
     // simulation wpi.deps.sim.ws_client(wpi.platforms.desktop, false)
 
     compile "com.github.dominikWin:badlog:v0.1.1"
-
-    compile "org.ajoberstar:grgit:1.1.0"
+    //compile 'org.ajoberstar.grgit:grgit-core:4.1.0'
 }
 
 // Simulation configuration (e.g. environment variables).
