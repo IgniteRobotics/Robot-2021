@@ -230,7 +230,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     }
 
     public void zeroHeading() {
-        navX.reset();
+        navX.zeroYaw();
     }
 
     /**

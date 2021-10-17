@@ -21,7 +21,7 @@ public class TurnAngle extends PIDCommand {
   private RamseteDriveSubsystem m_driveTrain;
   private double targetAngleDegrees;
 
-  private final static double kP_TURN = 0.1;
+  private final static double kP_TURN = 0.013;
   private final static double kI_TURN = 0;
   private final static double kD_TURN = 0;
 
@@ -29,15 +29,12 @@ public class TurnAngle extends PIDCommand {
     super(
       new PIDController(kP_TURN, kI_TURN,kD_TURN),
       driveTrain::getHeading,
-      driveTrain.getHeading() + targetAngleDegrees,
-      output -> driveTrain.arcadeDrive(0, output * 0.1, false),
+      targetAngleDegrees,
+      output -> driveTrain.arcadeDrive(0, output, false),
       driveTrain
     );
     this.m_driveTrain = driveTrain;
-
-    getController().setP(0.05);
-    getController().setTolerance(2.0f);
-
+ 
     addRequirements(m_driveTrain);
     this.targetAngleDegrees = targetAngleDegrees;
   }
@@ -46,7 +43,6 @@ public class TurnAngle extends PIDCommand {
   @Override
   public void initialize() {
     super.initialize();
-    getController().setSetpoint(m_driveTrain.getHeading() + targetAngleDegrees);
   }
 
   // // Called repeatedly when this Command is scheduled to run
@@ -60,7 +56,7 @@ public class TurnAngle extends PIDCommand {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return getController().atSetpoint();
+    return false;
   }
 
 

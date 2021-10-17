@@ -19,7 +19,7 @@ public class TurnToAngle extends PIDCommand {
 
     private RamseteDriveSubsystem m_driveTrain;
 
-    private final static double kP_TURN = 0.007;
+    private final static double kP_TURN = 0.02;
     private final static double kI_TURN = 0;
     private final static double kD_TURN = 0;
 
@@ -35,9 +35,6 @@ public class TurnToAngle extends PIDCommand {
         );
         this.m_driveTrain = driveTrain;
         this.limelight = limelight;
-
-        getController().enableContinuousInput(-180, 180);
-        getController().setTolerance(2.0f);
 
         addRequirements(m_driveTrain);
         addRequirements(limelight);

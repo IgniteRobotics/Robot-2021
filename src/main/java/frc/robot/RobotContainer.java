@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import frc.robot.commands.climber.ClimbUp;
 import frc.robot.commands.climber.RetractClimbMax;
 import frc.robot.commands.LimelightSnapshot;
+import frc.robot.commands.ResetHeading;
 import frc.robot.commands.autonomous.GalacticSearch;
 import frc.robot.commands.shooter.AdjustHoodAngle;
 import frc.robot.commands.shooter.ResetHood;
@@ -111,7 +112,7 @@ public class RobotContainer {
   private RetractHood retractHood = new RetractHood(m_shooter);
 
   private ShootBallSpecific shortShot = new ShootBallSpecific(m_shooter, m_indexer, 3500, 0);
-  private ShootBallSpecific baseShot = new ShootBallSpecific(m_shooter, m_indexer, 6000, 1600);
+  private ShootBallSpecific baseShot = new ShootBallSpecific(m_shooter, m_indexer, 5900, 1600);
   private ShootBallSpecific trenchShot = new ShootBallSpecific(m_shooter, m_indexer, 5500, 1600);
 
   private ClimbUp climbUp = new ClimbUp(m_climber);
@@ -129,14 +130,12 @@ public class RobotContainer {
 
   private ShootBallTest shootBallTest = new ShootBallTest(m_shooter, m_indexer);
 
-  private SequentialCommandGroup autonCommandGroup = new
+  private SequentialCommandGroup threeBallAuton = new
   SequentialCommandGroup(
-    new DriveDistance(2, m_driveTrain).withTimeout(1.5),
     new ResetHood(m_shooter),
     new SetIntake(m_intake, false),
-    new RunIntake(1.0, m_intake).withTimeout(1),
-    new TargetPositioning(m_driveTrain, m_driveController, m_limelight).withTimeout(2),
-    new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight).withTimeout(4)
+    new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight).withTimeout(3)
+    // new TurnAngle(m_driveTrain, 0).withTimeout(1.8)
   );
 
   private SequentialCommandGroup sixBallAuton;
@@ -176,7 +175,7 @@ public class RobotContainer {
     this.configureSubsystemCommands();
     this.configureAutonChooser();
 
-    this.chooseAuton.addOption("Default Auton", autonCommandGroup);
+    SmartDashboard.putData(new ResetHeading(m_driveTrain));
   }
 
   private void configureButtonBindings() {
@@ -196,7 +195,7 @@ public class RobotContainer {
     btn_manipPovUp.whileHeld(trenchShot);
     btn_manipPovRight.whileHeld(baseShot);
     btn_manipPovDown.whileHeld(shortShot);
-    btn_manipPovLeft.whileHeld(resetHood);
+    btn_manipPovLeft.whileHeld(new TurnAngle(m_driveTrain, 0));
   }
 
   private void configureSubsystemCommands() {
@@ -205,7 +204,7 @@ public class RobotContainer {
   }
 
   public void configureAutonCommand() {
-    Trajectory forwards = loadTrajectory("TrenchForwards");
+    Trajectory forwards = loadTrajectory("Centered");
     Trajectory backwards = loadTrajectory("TrenchBackwards");
 
     DriveTrajectory forwardsDrive = new DriveTrajectory(m_driveTrain, forwards);
@@ -217,11 +216,14 @@ public class RobotContainer {
     );
 
     this.sixBallAuton = new SequentialCommandGroup(
-      new SetIntake(m_intake, false),
+      threeBallAuton,
       new ParallelCommandGroup(group, new ResetHood(m_shooter)),
       backwardsDrive,
-      trenchShot
+      new TargetPositioning(m_driveTrain, m_driveController, m_limelight).withTimeout(2),
+      new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight).withTimeout(2)
     );
+
+    this.chooseAuton.addOption("Default Auton", sixBallAuton);
   }
 
   private void configureAutonChooser() {
@@ -256,6 +258,7 @@ public class RobotContainer {
 
   public void onTeleopDisable() {
     m_driveTrain.setNeutralMode(NeutralMode.Coast);
+    m_limelight.turnOnLED();
   }
 
   public void onTeleopEnable() {
