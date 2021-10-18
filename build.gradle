@@ -22,7 +22,7 @@ tasks.register('checkGitStatus') {
         def branch =  grgit.branch.current().getName()
         project.ext.set("commitHash", commitHash)
         project.ext.set("commitBranch", branch)
-        def deployTime = new Date().format('yyyy-MM-dd-HHmm')
+        def deployTime = new Date().format('yyyy-MM-dd HH:mm:ss')
         project.ext.set("deployTime", deployTime)
         println 'Commit: ' + commitHash + ' Branch: ' + branch + ' DTs: ' + deployTime
         def isCommitClean = grgit.status().clean
@@ -33,9 +33,10 @@ tasks.register('checkGitStatus') {
     }
 }
 
-tasks.register('showAuditInfo') {
+tasks.register('writeVersionInfo') {
     doLast {
         println "${project.deployTime}|${project.commitHash}|${project.commitBranch}"
+        file("version.txt").text = "${project.deployTime}|${project.commitHash}|${project.commitBranch}"
 
     }
 }
@@ -67,8 +68,14 @@ deploy {
             targets << "roborio"
             directory = '/home/lvuser/deploy'
         }
+
+        fileArtifact('versionFileArtifact') {
+            file = file('version.txt')               // Set the file to deploy. Required.
+            targets << "roborio"
+            directory = '/home/lvuser/deploy'
+        }
         commandArtifact('updateDeployLog') {
-            command = "echo '${project.deployTime}|${project.commitHash}|${project.commitBranch}' >> /home/lvuser/deploy/deploy.log"
+            command = "echo /home/lvuser/deploy/version.txt >> /home/lvuser/deploy/deploy.log"
             // Output will be stored in 'result' after execution
         }
     }
@@ -80,7 +87,8 @@ def includeDesktopSupport = true
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 project.tasks.deployFrcJavaRoborio.dependsOn(checkGitStatus)
-project.tasks.checkGitStatus.finalizedBy(showAuditInfo)
+project.tasks.checkGitStatus.finalizedBy(writeVersionInfo)
+
 // Also defines JUnit 4.
 dependencies {
     implementation wpi.deps.wpilib()
