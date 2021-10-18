@@ -75,11 +75,6 @@ deploy {
             directory = '/home/lvuser/deploy'
             postdeploy << { execute 'cat /home/lvuser/deploy/version.txt >> /home/lvuser/deploy/deploy.log' }
         }
-        // commandArtifact('updateDeployLog') {
-        //     targets << "roborio"
-        //     command = "cat /home/lvuser/deploy/version.txt >> /home/lvuser/deploy/deploy.log"
-        //     // Output will be stored in 'result' after execution
-        // }
     }
 }
 
@@ -87,10 +82,13 @@ deploy {
 // Set this to true to enable desktop support.
 def includeDesktopSupport = true
 
-// Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
+//setup deploy check dependencies.  git check before continuing.
+//if it passes, write out version info.
 project.tasks.deployFrcJavaRoborio.dependsOn(checkGitStatus)
 project.tasks.checkGitStatus.finalizedBy(writeVersionInfo)
 
+
+// Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 4.
 dependencies {
     implementation wpi.deps.wpilib()
