@@ -35,7 +35,7 @@ tasks.register('checkGitStatus') {
 
 tasks.register('updateAuditLog') {
     doLast {
-        println "Updating Audit Log:  ${project.commitHash}"
+        println "${project.deployTime}|${project.commitHash}|${project.commitBranch}"
 
     }
 }
@@ -66,6 +66,10 @@ deploy {
             // Deploy to RoboRIO target, into /home/lvuser/deploy
             targets << "roborio"
             directory = '/home/lvuser/deploy'
+        }
+        commandArtifact('updateDeployLog') {
+            command = "echo 'Hello World'"              // The command to run. Required.
+            // Output will be stored in 'result' after execution
         }
     }
 }
