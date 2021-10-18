@@ -32,6 +32,9 @@ tasks.register('checkGitStatus') {
 tasks.register('updateAuditLog') {
     doLast {
         println 'Updating Audit Log'
+        for(Map.Entry p: project.getProperties()) {
+            println p;
+        }
     }
 }
 
