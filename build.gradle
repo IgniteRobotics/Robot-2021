@@ -33,7 +33,7 @@ tasks.register('checkGitStatus') {
     }
 }
 
-tasks.register('updateAuditLog') {
+tasks.register('showAuditInfo') {
     doLast {
         println "${project.deployTime}|${project.commitHash}|${project.commitBranch}"
 
@@ -68,7 +68,7 @@ deploy {
             directory = '/home/lvuser/deploy'
         }
         commandArtifact('updateDeployLog') {
-            command = "echo 'Hello World'"              // The command to run. Required.
+            command = "echo '${project.deployTime}|${project.commitHash}|${project.commitBranch}' >> /home/lvuser/deploy/deploy.log"
             // Output will be stored in 'result' after execution
         }
     }
@@ -80,7 +80,7 @@ def includeDesktopSupport = true
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 project.tasks.deployFrcJavaRoborio.dependsOn(checkGitStatus)
-project.tasks.checkGitStatus.finalizedBy(updateAuditLog)
+project.tasks.checkGitStatus.finalizedBy(showAuditInfo)
 // Also defines JUnit 4.
 dependencies {
     implementation wpi.deps.wpilib()
