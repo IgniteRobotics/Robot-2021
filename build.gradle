@@ -75,6 +75,7 @@ deploy {
             directory = '/home/lvuser/deploy'
         }
         commandArtifact('updateDeployLog') {
+            targets << "roborio"
             command = "echo /home/lvuser/deploy/version.txt >> /home/lvuser/deploy/deploy.log"
             // Output will be stored in 'result' after execution
         }
