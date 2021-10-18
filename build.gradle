@@ -20,7 +20,11 @@ tasks.register('checkGitStatus') {
     doLast {
         def commitHash = grgit.head().id
         def branch =  grgit.branch.current().getName()
-        println 'Commit: ' + commitHash + ' Branch: ' + branch
+        project.ext.set("commitHash", commitHash)
+        project.ext.set("commitBranch", branch)
+        def deployTime = new Date().format('yyyy-MM-dd-HHmm')
+        project.ext.set("deployTime", deployTime)
+        println 'Commit: ' + commitHash + ' Branch: ' + branch + ' DTs: ' + deployTime
         def isCommitClean = grgit.status().clean
         println 'Commit clean? ' + isCommitClean
         if (!isCommitClean){
@@ -31,10 +35,8 @@ tasks.register('checkGitStatus') {
 
 tasks.register('updateAuditLog') {
     doLast {
-        println 'Updating Audit Log'
-        for(Map.Entry p: project.getProperties()) {
-            println p;
-        }
+        println "Updating Audit Log:  ${project.commitHash}"
+
     }
 }
 
