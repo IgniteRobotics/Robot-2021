@@ -18,8 +18,9 @@ def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
 tasks.register('checkGitStatus') {
     doLast {
-        def commitHash = grgit.head().abbreviatedId
-        println 'Commit: ' + commitHash
+        def commitHash = grgit.head().id
+        def branch =  grgit.branch.current().getName()
+        println 'Commit: ' + commitHash + ' Branch: ' + branch
         def isCommitClean = grgit.status().clean
         println 'Commit clean? ' + isCommitClean
         if (!isCommitClean){
@@ -70,7 +71,7 @@ def includeDesktopSupport = true
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 project.tasks.deployFrcJavaRoborio.dependsOn(checkGitStatus)
-project.tasks.checkGitStatus.finalizedBy(updateAuditLog)
+project.tasks.deployFrcJavaRoborio.finalizedBy(updateAuditLog)
 // Also defines JUnit 4.
 dependencies {
     implementation wpi.deps.wpilib()
