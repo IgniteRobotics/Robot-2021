@@ -73,12 +73,13 @@ deploy {
             file = file('version.txt')               // Set the file to deploy. Required.
             targets << "roborio"
             directory = '/home/lvuser/deploy'
+            postdeploy << { execute 'cat /home/lvuser/deploy/version.txt >> /home/lvuser/deploy/deploy.log' }
         }
-        commandArtifact('updateDeployLog') {
-            targets << "roborio"
-            command = "cat /home/lvuser/deploy/version.txt >> /home/lvuser/deploy/deploy.log"
-            // Output will be stored in 'result' after execution
-        }
+        // commandArtifact('updateDeployLog') {
+        //     targets << "roborio"
+        //     command = "cat /home/lvuser/deploy/version.txt >> /home/lvuser/deploy/deploy.log"
+        //     // Output will be stored in 'result' after execution
+        // }
     }
 }
 
