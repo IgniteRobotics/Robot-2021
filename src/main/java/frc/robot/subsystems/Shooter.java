@@ -253,7 +253,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isHoodReady() {
-        double range = 3;
+        double range = 10;
         return this.getHoodTicks() - range <= this.hoodPositionTicksSetPoint
                 && this.getHoodTicks() + range >= this.hoodPositionTicksSetPoint;
     }

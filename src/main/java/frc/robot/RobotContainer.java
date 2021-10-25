@@ -8,9 +8,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
+
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
@@ -19,10 +24,16 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import frc.robot.commands.climber.ClimbUp;
 import frc.robot.commands.climber.RetractClimbMax;
 import frc.robot.commands.LimelightSnapshot;
+import frc.robot.commands.ResetHeading;
 import frc.robot.commands.autonomous.GalacticSearch;
 import frc.robot.commands.shooter.AdjustHoodAngle;
 import frc.robot.commands.shooter.ResetHood;
@@ -37,7 +48,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Shooter;
@@ -48,6 +62,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.intake.SetIntake;
 import edu.wpi.first.wpilibj.Joystick;
+import frc.robot.constants.Constants;
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.MotorConstants;
 import frc.robot.commands.intake.ToggleIntake;
@@ -97,7 +112,7 @@ public class RobotContainer {
   private RetractHood retractHood = new RetractHood(m_shooter);
 
   private ShootBallSpecific shortShot = new ShootBallSpecific(m_shooter, m_indexer, 3500, 0);
-  private ShootBallSpecific baseShot = new ShootBallSpecific(m_shooter, m_indexer, 6000, 1600);
+  private ShootBallSpecific baseShot = new ShootBallSpecific(m_shooter, m_indexer, 5900, 1600);
   private ShootBallSpecific trenchShot = new ShootBallSpecific(m_shooter, m_indexer, 5500, 1600);
 
   private ClimbUp climbUp = new ClimbUp(m_climber);
@@ -115,15 +130,15 @@ public class RobotContainer {
 
   private ShootBallTest shootBallTest = new ShootBallTest(m_shooter, m_indexer);
 
-  private SequentialCommandGroup autonCommandGroup = new
+  private SequentialCommandGroup threeBallAuton = new
   SequentialCommandGroup(
-    new DriveDistance(2, m_driveTrain).withTimeout(1.5),
     new ResetHood(m_shooter),
     new SetIntake(m_intake, false),
-    new RunIntake(1.0, m_intake).withTimeout(1),
-    new TargetPositioning(m_driveTrain, m_driveController, m_limelight).withTimeout(2),
-    new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight).withTimeout(4)
+    new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight).withTimeout(2.5),
+    new TurnAngle(m_driveTrain, 0).withTimeout(1)
   );
+
+  private SequentialCommandGroup sixBallAuton;
 
   private JoystickButton btn_driverA = new JoystickButton(m_driveController, ControllerConstants.BUTTON_A);
   private JoystickButton btn_driverB = new JoystickButton(m_driveController, ControllerConstants.BUTTON_B);
@@ -160,7 +175,7 @@ public class RobotContainer {
     this.configureSubsystemCommands();
     this.configureAutonChooser();
 
-    this.chooseAuton.addOption("Default Auton", autonCommandGroup);
+    SmartDashboard.putData(new ResetHeading(m_driveTrain));
   }
 
   private void configureButtonBindings() {
@@ -180,7 +195,7 @@ public class RobotContainer {
     btn_manipPovUp.whileHeld(trenchShot);
     btn_manipPovRight.whileHeld(baseShot);
     btn_manipPovDown.whileHeld(shortShot);
-    btn_manipPovLeft.whileHeld(resetHood);
+    btn_manipPovLeft.whileHeld(new TurnAngle(m_driveTrain, 0));
   }
 
   private void configureSubsystemCommands() {
@@ -188,15 +203,38 @@ public class RobotContainer {
     m_shooter.setDefaultCommand(retractHood);
   }
 
+  public void configureAutonCommand() {
+    Trajectory forwards = loadTrajectory("TrenchForwards");
+    Trajectory backwards = loadTrajectory("TrenchBackwards");
+
+    DriveTrajectory forwardsDrive = new DriveTrajectory(m_driveTrain, forwards);
+    DriveTrajectory backwardsDrive = new DriveTrajectory(m_driveTrain, backwards);
+
+    ParallelRaceGroup group = new ParallelRaceGroup(
+      new RunIntake(1, m_intake),
+      forwardsDrive
+    );
+
+    this.sixBallAuton = new SequentialCommandGroup(
+      threeBallAuton,
+      new ParallelCommandGroup(group, new ResetHood(m_shooter)),
+      backwardsDrive,
+      new TargetPositioning(m_driveTrain, m_driveController, m_limelight).withTimeout(1.5),
+      new ShootBallSpecific(m_shooter, m_indexer, 5800, 1600)
+    );
+
+    this.chooseAuton.addOption("Default Auton", sixBallAuton);
+  }
+
   private void configureAutonChooser() {
 
     SmartDashboard.putData("Auto Chooser", this.chooseAuton);
 
-    String[] paths = { "leftTurn", "line", "oneMeter1", "rightTurn", "slalom", "slalom1", "test", "twoMeter" };
+    // String[] paths = { "leftTurn", "line", "oneMeter1", "rightTurn", "slalom", "slalom1", "test", "twoMeter" };
 
-    for (String s : paths) {
-      this.chooseAuton.addOption(s, this.loadTrajectoryCommand(s));
-    }
+    // for (String s : paths) {
+    //   this.chooseAuton.addOption(s, this.loadTrajectoryCommand(s));
+    // }
   }
 
   /**
@@ -205,8 +243,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    System.out.println("Auto: " + chooseAuton.getSelected().getName());
-    return chooseAuton.getSelected();
+    return sixBallAuton;
   }
 
   public Command getAutonomousShootCommand() {
@@ -221,6 +258,7 @@ public class RobotContainer {
 
   public void onTeleopDisable() {
     m_driveTrain.setNeutralMode(NeutralMode.Coast);
+    m_limelight.turnOnLED();
   }
 
   public void onTeleopEnable() {

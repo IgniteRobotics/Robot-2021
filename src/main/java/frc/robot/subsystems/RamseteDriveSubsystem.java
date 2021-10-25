@@ -47,6 +47,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.igniterobotics.robotbase.calc.SensorProfile;
+import com.igniterobotics.robotbase.reporting.ReportingLevel;
+import com.igniterobotics.robotbase.reporting.ReportingNumber;
 
 import frc.robot.Main;
 import frc.robot.constants.Constants;
@@ -86,10 +89,17 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     private double turnRampExponent = Constants.TURN_RAMP_EXPONENT;
     private double turnLimitMultiplier = Constants.TURN_LIMIT_MULTIPLIER;
     // 7.8 is gear ratio
+    private SensorProfile sensorProfile = new SensorProfile(2048, 7.8);
     private double ticksPerMeter = (2048.0 * 7.8) / Constants.WHEEL_CIRCUMFERENCE_METERS;
 
+    private ReportingNumber leftEncoderPosition = new ReportingNumber("Left Encoder", ReportingLevel.COMPETITON);
+    private ReportingNumber rightEncoderPosition = new ReportingNumber("Right Encoder", ReportingLevel.COMPETITON);
+    private ReportingNumber leftEncoderVelocity = new ReportingNumber("Left Velocity", ReportingLevel.COMPETITON);
+    private ReportingNumber rightEncoderVelocity = new ReportingNumber("Right Velocity", ReportingLevel.COMPETITON);
+    private ReportingNumber theta = new ReportingNumber("NavX Angle", ReportingLevel.COMPETITON);
+
     public RamseteDriveSubsystem() {
-        m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0)); // assume robot starts at x =0, y=0,
+        m_odometry = new DifferentialDriveOdometry(navX.getRotation2d()); // assume robot starts at x =0, y=0,
                                                                                // theta = 0
 
         navX.zeroYaw();
@@ -119,110 +129,57 @@ public class RamseteDriveSubsystem extends SubsystemBase {
 
         setNeutralMode(NeutralMode.Brake);
 
-        // Falcons don't need to set sensor phase
-        // rightMaster.setSensorPhase(false);
-        // rightMaster.setInverted(false);
-        // rightFollower.setInverted(false);
-        // leftMaster.setSensorPhase(true);
-
-        // uninvert right
         leftMaster.setInverted(false);
         leftFollower.setInverted(false);
 
-        rightMaster.overrideLimitSwitchesEnable(false);
         leftMaster.overrideLimitSwitchesEnable(false);
+        rightMaster.overrideLimitSwitchesEnable(false);        
 
         leftFollower.follow(leftMaster);
         rightFollower.follow(rightMaster);
 
-        // inversion etc has to happen BEFORE this statement!
         m_driveTrain = new DifferentialDrive(leftMaster, rightMaster);
-        SmartDashboard.putData("Field", m_field);
-
-        // Testing
-        // m_driveTrain.setMaxOutput(.5);
-        addChild("LeftMaster- Drivetrain", leftMaster);
-        addChild("rightMaster- Drivetrain", rightMaster);
-        addChild("rightFollower- Drivetrain", rightFollower);
-        addChild("leftFollower- Drivetrain", leftFollower);
-        addChild("navX", navX);
-
-    }
-
-    private void enableEncoders() {
-        encodersAvailable = leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0,
-                10) == ErrorCode.OK
-                & rightMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10) == ErrorCode.OK;
-        if (!encodersAvailable) {
-            DriverStation.reportError("Failed to configure drivetrain encoders!", false);
-            useEncoders = false;
-        }
     }
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
-        m_odometry.update(Rotation2d.fromDegrees(getHeading()),
-                Util.getMetersFromEncoderTicks(getLeftEncoderPosition()),
-                Util.getMetersFromEncoderTicks(getRightEncoderPosition()));
-        m_field.setRobotPose(m_odometry.getPoseMeters());
-
-        //outputTelemetry();
+        m_odometry.update(navX.getRotation2d(), sensorProfile.uToRev(getLeftEncoderPosition()) * Constants.WHEEL_CIRCUMFERENCE_METERS,
+                      sensorProfile.uToRev(-getRightEncoderPosition()) * Constants.WHEEL_CIRCUMFERENCE_METERS);
+        leftEncoderPosition.set(getLeftEncoderPosition());              
+        rightEncoderPosition.set(getRightEncoderPosition());    
+        leftEncoderVelocity.set(getLeftEncoderVel());    
+        rightEncoderVelocity.set(getRightEncoderVel());    
+        theta.set(navX.getRotation2d().getDegrees());
     }
 
     public Pose2d getCurrentPose() {
         return m_odometry.getPoseMeters();
     }
 
-    public void saveCurrentPose() {
-        savedPose = getCurrentPose();
-    }
-
-    public Pose2d getSavedPose() {
-        return savedPose;
-    }
-
-    public double getWheelSpeedsMetersPerSecond(double ticksPer100ms) {
-        // CTRE encoders return raw sensor units per 100 miliseconds
-
-        // Ticks / 100second
-        // Wheel circumference / 2048
-        return ticksPer100ms * 10 * (1 / ticksPerMeter);
-    }
-
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
 
         // TODO Convert this to wheel speeds later
         // DifferentialDriveWHeelSpeeds expects meters per second
-        return new DifferentialDriveWheelSpeeds(getWheelSpeedsMetersPerSecond(leftMaster.getSelectedSensorVelocity()),
-                getWheelSpeedsMetersPerSecond(rightMaster.getSelectedSensorVelocity()));
+        return new DifferentialDriveWheelSpeeds(sensorProfile.uToRPS(leftMaster.getSelectedSensorVelocity()) * Constants.WHEEL_CIRCUMFERENCE_METERS,
+                sensorProfile.uToRPS(-rightMaster.getSelectedSensorVelocity()) * Constants.WHEEL_CIRCUMFERENCE_METERS);
     }
 
     public void resetOdometry() {
         resetEncoders();
-        this.zeroHeading();
-        savedPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
         m_odometry.resetPosition(savedPose, Rotation2d.fromDegrees(getAngle()));
     }
 
     public void resetOdometry(Pose2d startingPose) {
         resetEncoders();
-        this.zeroHeading();
-        m_odometry.resetPosition(startingPose, Rotation2d.fromDegrees(getAngle()));
+        m_odometry.resetPosition(startingPose, navX.getRotation2d());
     }
 
     public void arcadeDrive(final double speed, final double rotation, final boolean useSquares) {
         var xSpeed = speedRateLimiter.calculate(safeClamp(speed));
         var zRotation = rotationRateLimiter.calculate(safeClamp(rotation));
-        if (useSquares) {
-            // xSpeed *= Math.abs(xSpeed);
-            // zRotation *= Math.abs(zRotation);
-            xSpeed = Util.applyLimiters(xSpeed, velocityRampExponent, velocityLimitMultiplier);
-            zRotation = Util.applyLimiters(zRotation, turnRampExponent, turnLimitMultiplier);
-        }
         // xSpeed *= Constants.kMaxSpeedMetersPerSecond;
         // zRotation *= Constants.kMaxAngularVelocity;
-        m_driveTrain.arcadeDrive(xSpeed, zRotation, false);
+        m_driveTrain.arcadeDrive(xSpeed, zRotation, useSquares);
     }
 
     public void tankDrivePower(double leftPower, double rightPower) {
@@ -232,47 +189,12 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         m_driveTrain.tankDrive(leftPowerLimited, rightPowerLimited, false);
     }
 
-    public void tankDrive(final double leftSpeed, final double rightSpeed, final boolean useSquares) {
-        var xLeftSpeed = safeClamp(leftSpeed) * Constants.kMaxSpeedMetersPerSecond;
-        var xRightSpeed = safeClamp(rightSpeed) * Constants.kMaxSpeedMetersPerSecond;
-        if (useSquares) {
-            xLeftSpeed *= Math.abs(xLeftSpeed);
-            xRightSpeed *= Math.abs(xRightSpeed);
-        }
-        if (useEncoders) {
-            tankDriveVelocity(xLeftSpeed, xRightSpeed);
-        } else {
-            m_driveTrain.tankDrive(leftSpeed, rightSpeed, useSquares);
-        }
-    }
-
-    public void tankDriveVelocity(double leftVelocity, double rightVelocity) {
-        // TODO - remove later. liting velocity to 1 m/s
-        leftVelocity = Util.limit(leftVelocity, 1.0);
-        rightVelocity = Util.limit(rightVelocity, 1.0);
-        final double leftAccel = (leftVelocity
-                - Util.stepsPerDecisecToMetersPerSec(leftMaster.getSelectedSensorVelocity())) / .20;
-        final double rightAccel = (rightVelocity
-                - Util.stepsPerDecisecToMetersPerSec(rightMaster.getSelectedSensorVelocity())) / .20;
-
-        final double leftFeedForwardVolts = Constants.FEED_FORWARD.calculate(leftVelocity, leftAccel);
-        final double rightFeedForwardVolts = Constants.FEED_FORWARD.calculate(rightVelocity, rightAccel);
-
-        leftMaster.set(ControlMode.Velocity, Util.metersPerSecToStepsPerDecisec(leftVelocity),
-                DemandType.ArbitraryFeedForward, leftFeedForwardVolts / 12);
-        rightMaster.set(ControlMode.Velocity, Util.metersPerSecToStepsPerDecisec(rightVelocity),
-                DemandType.ArbitraryFeedForward, rightFeedForwardVolts / 12);
-        m_driveTrain.feed();
-    }
 
     // used to drive trajectories
     public void tankDriveVolts(double leftVolts, double rightVolts) {
         this.leftMaster.setVoltage(leftVolts);
-        this.leftFollower.setVoltage(leftVolts);
-
-        // if you're raw setting volts, you need to flip the right side.
         this.rightMaster.setVoltage(-rightVolts);
-        this.rightFollower.setVoltage(-rightVolts);
+        m_driveTrain.feed();
     }
 
     private double safeClamp(final double input) {
@@ -308,7 +230,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     }
 
     public void zeroHeading() {
-        navX.reset();
+        navX.zeroYaw();
     }
 
     /**
@@ -329,13 +251,7 @@ public class RamseteDriveSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        tankDriveVelocity(0, 0);
-    }
-
-    public Command createCommandForTrajectory(final Trajectory trajectory) {
-        return new RamseteCommand(trajectory, this::getCurrentPose,
-                new RamseteController(Constants.kRamseteB, Constants.kRamseteZeta), Constants.kDriveKinematics,
-                this::tankDriveVelocity, this).andThen(this::stop, this);
+        tankDriveVolts(0, 0);
     }
 
     public double getLeftEncoderVel() {
@@ -392,9 +308,5 @@ public class RamseteDriveSubsystem extends SubsystemBase {
         // I don't think the arbitary feed forward is really that helpful here
         leftMaster.set(TalonFXControlMode.Position, setpointTicks, DemandType.ArbitraryFeedForward, 0.0007);
         rightMaster.set(TalonFXControlMode.Position, -setpointTicks, DemandType.ArbitraryFeedForward, 0.0007);
-    }
-
-    public double getLeftMasterPositionTicks() {
-        return leftMaster.getSelectedSensorPosition();
     }
 }

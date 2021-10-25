@@ -41,6 +41,7 @@ public class Robot extends TimedRobot {
     }
 
     m_robotContainer = new RobotContainer();
+    m_robotContainer.configureAutonCommand();
     LiveWindow.disableAllTelemetry();
   }
 
@@ -92,7 +93,6 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     m_teleopInitCommand = m_robotContainer.getTeleopInitCommand();
 
-    m_robotContainer.getDriveSubsystem().zeroHeading();
     m_teleopInitCommand.schedule();
 
     // schedule the autonomous command (example)
