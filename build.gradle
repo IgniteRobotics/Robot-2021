@@ -1,16 +1,46 @@
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2021.3.1"
+    id 'org.ajoberstar.grgit' version '4.0.2'
+
 }
 
 repositories {
     maven { url "https://jitpack.io" }
+    jcenter()
+    maven { url "https://ajoberstar.org/bintray-backup/" }
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
+
+tasks.register('checkGitStatus') {
+    doLast {
+        def commitHash = grgit.head().id
+        def branch =  grgit.branch.current().getName()
+        project.ext.set("commitHash", commitHash)
+        project.ext.set("commitBranch", branch)
+        def deployTime = new Date().format('yyyy-MM-dd HH:mm:ss')
+        project.ext.set("deployTime", deployTime)
+        println 'Commit: ' + commitHash + ' Branch: ' + branch + ' DTs: ' + deployTime
+        def isCommitClean = grgit.status().clean
+        println 'Commit clean? ' + isCommitClean
+        if (!isCommitClean){
+            throw new GradleException('*****Git working tree not clean.  Commit before you deploy*****')
+        }
+    }
+}
+
+tasks.register('writeVersionInfo') {
+    doLast {
+        println "${project.deployTime}|${project.commitHash}|${project.commitBranch}"
+        file("version.txt").text = "${project.deployTime}|${project.commitHash}|${project.commitBranch}"
+
+    }
+}
+
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
@@ -38,11 +68,25 @@ deploy {
             targets << "roborio"
             directory = '/home/lvuser/deploy'
         }
+
+        fileArtifact('versionFileArtifact') {
+            file = file('version.txt')               // Set the file to deploy. Required.
+            targets << "roborio"
+            directory = '/home/lvuser/deploy'
+            postdeploy << { execute 'cat /home/lvuser/deploy/version.txt >> /home/lvuser/deploy/deploy.log' }
+        }
     }
 }
 
+
 // Set this to true to enable desktop support.
 def includeDesktopSupport = true
+
+//setup deploy check dependencies.  git check before continuing.
+//if it passes, write out version info.
+project.tasks.deployFrcJavaRoborio.dependsOn(checkGitStatus)
+project.tasks.checkGitStatus.finalizedBy(writeVersionInfo)
+
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 4.
@@ -68,6 +112,7 @@ dependencies {
     // simulation wpi.deps.sim.ws_client(wpi.platforms.desktop, false)
 
     compile "com.github.dominikWin:badlog:v0.1.1"
+    //compile 'org.ajoberstar.grgit:grgit-core:4.1.0'
 }
 
 // Simulation configuration (e.g. environment variables).

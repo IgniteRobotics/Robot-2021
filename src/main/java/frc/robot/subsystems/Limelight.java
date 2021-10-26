@@ -52,6 +52,7 @@ public class Limelight extends SubsystemBase {
 
     public void turnOnLED() {
         table.getEntry("ledMode").setNumber(3);
+        table.getEntry("camMode").setNumber(0);
         ledStatus = true;
     }
 
