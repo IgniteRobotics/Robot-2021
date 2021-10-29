@@ -216,7 +216,9 @@ public class RobotContainer {
     );
 
     this.sixBallAuton = new SequentialCommandGroup(
-      threeBallAuton,
+      new ResetHood(m_shooter),
+      new SetIntake(m_intake, false),
+      new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight).withTimeout(2.5),
       new ParallelCommandGroup(group, new ResetHood(m_shooter)),
       backwardsDrive,
       new TargetPositioning(m_driveTrain, m_driveController, m_limelight).withTimeout(1.5),
