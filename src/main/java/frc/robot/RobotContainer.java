@@ -223,7 +223,8 @@ public class RobotContainer {
       new ShootBallSpecific(m_shooter, m_indexer, 5800, 1600)
     );
 
-    this.chooseAuton.addOption("Default Auton", sixBallAuton);
+    this.chooseAuton.addOption("SixBall Auton", sixBallAuton);
+    this.chooseAuton.addOption("ThreeBall Auton", threeBallAuton);
   }
 
   private void configureAutonChooser() {
@@ -243,7 +244,11 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return sixBallAuton;
+    if(chooseAuton.getSelected() != null) {
+      return chooseAuton.getSelected();
+    } else {
+      return threeBallAuton;
+    }
   }
 
   public Command getAutonomousShootCommand() {
