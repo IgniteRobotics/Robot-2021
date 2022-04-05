@@ -134,8 +134,8 @@ public class RobotContainer {
   SequentialCommandGroup(
     new ResetHood(m_shooter),
     new SetIntake(m_intake, false),
-    new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight).withTimeout(2.5),
-    new TurnAngle(m_driveTrain, 0).withTimeout(1)
+    new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight).withTimeout(2.5)
+    // new TurnAngle(m_driveTrain, 0).withTimeout(1)
   );
 
   private SequentialCommandGroup sixBallAuton;
@@ -204,7 +204,7 @@ public class RobotContainer {
   }
 
   public void configureAutonCommand() {
-    Trajectory forwards = loadTrajectory("TrenchForwards");
+    Trajectory forwards = loadTrajectory("Centered");
     Trajectory backwards = loadTrajectory("TrenchBackwards");
 
     DriveTrajectory forwardsDrive = new DriveTrajectory(m_driveTrain, forwards);
@@ -216,14 +216,17 @@ public class RobotContainer {
     );
 
     this.sixBallAuton = new SequentialCommandGroup(
-      threeBallAuton,
+      new ResetHood(m_shooter),
+      new SetIntake(m_intake, false),
+      new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight).withTimeout(2.5),
       new ParallelCommandGroup(group, new ResetHood(m_shooter)),
       backwardsDrive,
       new TargetPositioning(m_driveTrain, m_driveController, m_limelight).withTimeout(1.5),
-      new ShootBallSpecific(m_shooter, m_indexer, 5800, 1600)
+      new ShootInterpolatedBall(m_shooter, m_indexer, m_limelight)
     );
 
-    this.chooseAuton.addOption("Default Auton", sixBallAuton);
+    this.chooseAuton.addOption("SixBall Auton", sixBallAuton);
+    this.chooseAuton.addOption("ThreeBall Auton", threeBallAuton);
   }
 
   private void configureAutonChooser() {
@@ -243,7 +246,11 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return sixBallAuton;
+    if(chooseAuton.getSelected() != null) {
+      return chooseAuton.getSelected();
+    } else {
+      return threeBallAuton;
+    }
   }
 
   public Command getAutonomousShootCommand() {

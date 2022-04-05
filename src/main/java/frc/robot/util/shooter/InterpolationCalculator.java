@@ -32,7 +32,7 @@ public class InterpolationCalculator implements ShooterCalculator {
         addShooterParameter(new ShooterParameter(6.32 + goalOffset, 5000, 1600));
         addShooterParameter(new ShooterParameter(6.89 + goalOffset, 5200, 1600));
         addShooterParameter(new ShooterParameter(7.60 + goalOffset, 5900, 1600));
-        addShooterParameter(new ShooterParameter(8.60 + goalOffset, 6000, 1600));
+        addShooterParameter(new ShooterParameter(8.60 + goalOffset, 5500, 1600));
         
 
     }
